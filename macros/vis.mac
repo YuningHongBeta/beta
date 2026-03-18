@@ -1,0 +1,48 @@
+#/vis/open VRML2FILE
+/vis/open OGL
+#/vis/open RayTracerX
+/vis/viewer/set/autoRefresh false
+/vis/verbose errors
+/vis/drawVolume
+
+# /vis/viewer/set/background white
+/vis/viewer/set/style wireframe
+# /vis/viewer/set/style cloud
+# /vis/viewer/set/style surface
+/vis/modeling/trajectories/create/drawByCharge
+# /vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+# /vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 3
+/vis/scene/add/hits
+
+# To draw gammas only
+# /vis/filtering/trajectories/create/particleFilter
+# /vis/filtering/trajectories/particleFilter-0/add gamma
+#
+# To draw charged particles only
+# /vis/filtering/trajectories/particleFilter-0/invert true
+#
+# To draw positive charge particl only
+#/vis/filtering/trajectories/create/chargeFilter
+#/vis/filtering/trajectories/chargeFilter-0/add +1
+#
+# Many other options available with /vis/modeling and /vis/filtering.
+# For example, select colour by particle ID
+# /vis/modeling/trajectories/create/drawByParticleID
+# /vis/modeling/trajectories/drawByParticleID-0/set e- blue
+# /vis/modeling/trajectories/drawByParticleID-0/set mu+ green
+# /vis/modeling/trajectories/drawByParticleID-0/set e+ red
+# /vis/modeling/trajectories/drawByParticleID-0/set gamma gray
+# /vis/modeling/trajectories/drawByParticleID-0/set nu_e yellow
+# /vis/modeling/trajectories/drawByParticleID-0/set anti_nu_mu yellow
+
+/tracking/storeTrajectory 1
+/vis/scene/endOfEventAction accumulate
+
+/vis/viewer/flush
+
+# /vis/viewer/set/rotationStyle freeRotation
+/vis/viewer/set/viewpointThetaPhi 269. -90.
+
+# /vis/scene/add/scale   # Simple scale line
+# /vis/scene/add/axes    # Simple axes: x=red, y=green, z=blue.
+/vis/scene/add/trajectories smooth rich

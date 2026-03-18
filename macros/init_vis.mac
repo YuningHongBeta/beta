@@ -1,0 +1,55 @@
+# ============================================================
+# Geant4 visualization init macro (generic & robust)
+# Save as: macros/init_vis.mac
+# Run: /control/execute macros/init_vis.mac
+# ============================================================
+
+/control/verbose 1
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+/tracking/storeTrajectory 1
+
+# --- Open a viewer (try OpenGL first) ---
+# If you use Qt UI, OGL is usually fine. If it fails, change to:
+#   /vis/open OGLI  (immediate)
+#   /vis/open OGLSX (stored)
+#   /vis/open Qt    (depends on build)
+/vis/open OGL 800x600-0+0
+
+# --- Basic scene ---
+/vis/scene/create
+/vis/scene/add/volume
+/vis/scene/add/axes 0 0 0 10 cm
+
+# Trajectories / hits (safe defaults)
+/vis/scene/add/trajectories smooth
+/vis/viewer/set/style surface
+/vis/geometry/set/colour Cell 0.2 0.4 1.0 0.5
+/vis/scene/add/hits
+
+# --- Draw and set view ---
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 70 20 deg
+/vis/viewer/zoom 1.2
+/vis/viewer/set/autoRefresh true
+
+# --- Trajectory visualization style ---
+# /vis/modeling/trajectories/create/drawByCharge traj
+/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
+
+# Alternative (by particle ID) if you prefer:
+# /vis/modeling/trajectories/create/drawByParticleID traj
+
+# --- Accumulate events in the viewer (good for debugging) ---
+/vis/scene/endOfEventAction accumulate -1
+
+# --- Optional: show text overlay ---
+#/vis/scene/add/text2D 0.02 0.95 18 !  "Geant4 vis ready"
+
+# --- IMPORTANT:
+# If your app requires /run/initialize before drawing, you can add:
+# /run/initialize
+# but many examples already initialize elsewhere.
+# ============================================================
