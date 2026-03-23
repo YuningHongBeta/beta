@@ -1,6 +1,9 @@
 build/
 *~
+\#*\#
 *.o
 *.so
 *.root
+*.cc_org*
 output/
+cal.out
