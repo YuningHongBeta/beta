@@ -1,6 +1,6 @@
 # Cal_src
 
-Geant4-based calorimeter simulation for the Hyperball-X Ge detector calibration source study.
+Original (Geant4 v10) simulation for the Lambda beta-decay feasibility study. Simulates particles (π⁻ 100 MeV/c, Lambda beta decay electrons) in a spherical BGO calorimeter + ⁶Li target geometry, recording per-crystal energy deposits and hit patterns. Superseded by [beta_org/](../beta_org/) which uses Geant4 v11 with configurable physics.
 
 ## Build
 
