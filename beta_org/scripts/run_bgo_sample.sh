@@ -13,7 +13,11 @@ segmentation=$4
 primary=$5
 
 project_dir=$(cd "$(dirname "$0")/.." && pwd)
-build_dir="$project_dir/build_opt"
+build_dir=${BETA_BUILD_DIR:-"$project_dir/build_opt"}
+if [[ ! -x "$build_dir/beta" ]]; then
+  echo "beta executable not found: $build_dir/beta" >&2
+  exit 3
+fi
 mkdir -p "$build_dir/output/scan"
 
 export BETA_N_LAYER="$n_layer"
