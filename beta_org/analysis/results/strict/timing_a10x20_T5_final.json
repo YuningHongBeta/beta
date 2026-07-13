@@ -1,0 +1,3423 @@
+{
+  "status": "complete",
+  "electron": "tmp/timing_a10x20_e_T5.bgo2",
+  "pion": "tmp/timing_a10x20_pim_T5.bgo2",
+  "pi0": "tmp/timing_a10x20_pi0_T5.bgo2",
+  "feature_files_ephemeral": {
+    "electron": "tmp/timing_a10x20_e_T5.bgo2",
+    "pion": "tmp/timing_a10x20_pim_T5.bgo2",
+    "pi0": "tmp/timing_a10x20_pi0_T5.bgo2",
+    "note": "temporary extracted BGO2 files; regenerate from source_root_files"
+  },
+  "source_root_files": {
+    "electron": "beta_org/build_thtiming/output/scan/timing_a10x20_e.root",
+    "pion": "beta_org/build_thtiming/output/scan/timing_a10x20_pim.root",
+    "pi0": "beta_org/build_thtiming/output/scan/timing_a10x20_pi0.root"
+  },
+  "extractor_provenance": {
+    "classifier_inputs": [
+      "calarr.dE_MeV",
+      "th.dE_MeV",
+      "th.time_ns",
+      "th.zReco_mm",
+      "tlc.cherenkovExpectedPhotons",
+      "tlc.cherenkovTime_ns"
+    ],
+    "forbidden_inputs_read": [],
+    "event_join": "eventID",
+    "poisson_response": {
+      "efficiencies": [
+        0.01,
+        0.02,
+        0.05,
+        0.1
+      ],
+      "npeThresholds": [
+        1,
+        2,
+        3
+      ],
+      "primaryHitDefinition": "any of 30 segments has Npe >= fixed threshold",
+      "seed": "splitmix64(eventID, efficiencyIndex)"
+    },
+    "timing_response": {
+      "perEndGaussianSigma_ns": [
+        0.0,
+        0.2,
+        0.5,
+        1.0
+      ],
+      "independentEnds": true,
+      "vEffective_mm_per_ns": 150,
+      "seed": "splitmix64(eventID, THsegment, sigmaIndex)",
+      "status": "provisional_no_calibration"
+    }
+  },
+  "metadata": {
+    "version": 2,
+    "nrow": 100000,
+    "ncol": 130,
+    "nLayer": 10,
+    "nSector": 20,
+    "segmentationMode": 1,
+    "physicsFlag": 4,
+    "nSegTH": 30,
+    "nSegTLC": 30,
+    "thetaMin_deg": 5.666,
+    "thetaMax_deg": 170.302,
+    "threshold_MeV": 5.0
+  },
+  "readout_mode": "strict-timing",
+  "split": "even eventID train, odd eventID test, independently per sample",
+  "counts": {
+    "electron_train": 50000,
+    "electron_test": 50000,
+    "pion_train": 50000,
+    "pion_test": 50000
+  },
+  "classifier_truth_usage": "sample label only",
+  "forbidden_inputs": [
+    "target",
+    "pdg",
+    "pid",
+    "tlc.dE_truth_MeV",
+    "th.chargedPath_truth_mm",
+    "tlc.chargedPath_truth_mm"
+  ],
+  "baseline_any_bgo_hit": {
+    "train": {
+      "e_keep": 0.01496,
+      "p_reject": 0.9862
+    },
+    "test": {
+      "e_keep": 0.01524,
+      "p_reject": 0.98686,
+      "e_keep_95ci": [
+        0.014202842977317548,
+        0.01635163872343151
+      ],
+      "p_reject_95ci": [
+        0.9858238023114018,
+        0.9878213933300976
+      ]
+    }
+  },
+  "baseline_ncluster_eq_1": {
+    "four_neighbor": {
+      "train": {
+        "e_keep": 0.94262,
+        "p_reject": 0.62448
+      },
+      "test": {
+        "e_keep": 0.94298,
+        "p_reject": 0.62772,
+        "e_keep_95ci": [
+          0.9409132742579498,
+          0.9449786633940886
+        ],
+        "p_reject_95ci": [
+          0.6234731204006989,
+          0.6319472558621533
+        ]
+      }
+    },
+    "eight_neighbor": {
+      "train": {
+        "e_keep": 0.96126,
+        "p_reject": 0.58056
+      },
+      "test": {
+        "e_keep": 0.96104,
+        "p_reject": 0.58296,
+        "e_keep_95ci": [
+          0.959308208619139,
+          0.9627009541762374
+        ],
+        "p_reject_95ci": [
+          0.578631921799523,
+          0.587275331682831
+        ]
+      }
+    }
+  },
+  "baseline_abs_delta_z_lt90_mm": {
+    "definition": "accept abs(zReco-zPred) < 90 mm; invalid rejects",
+    "all_100k": {
+      "e_keep": 0.96381,
+      "p_reject": 0.23861,
+      "e_keep_95ci": [
+        0.9626345231735449,
+        0.9649498440549609
+      ],
+      "p_reject_95ci": [
+        0.23597829642957932,
+        0.24126178517741684
+      ],
+      "e_valid_fraction": 0.96669,
+      "p_valid_fraction": 0.77471,
+      "invalid_policy": "reject",
+      "e_keep_given_valid": 0.9970207615678243,
+      "p_reject_given_valid": 0.01719353048237405
+    },
+    "train": {
+      "e_keep": 0.9637,
+      "p_reject": 0.23838,
+      "e_keep_95ci": [
+        0.9620246439639875,
+        0.9653041101315705
+      ],
+      "p_reject_95ci": [
+        0.2346653894650685,
+        0.2421348075448951
+      ],
+      "e_valid_fraction": 0.96682,
+      "p_valid_fraction": 0.77546,
+      "invalid_policy": "reject",
+      "e_keep_given_valid": 0.9967729256738587,
+      "p_reject_given_valid": 0.01784747117839734
+    },
+    "test": {
+      "e_keep": 0.96392,
+      "p_reject": 0.23884,
+      "e_keep_95ci": [
+        0.9622494142841671,
+        0.96551930600915
+      ],
+      "p_reject_95ci": [
+        0.23512288180028246,
+        0.24259724453226894
+      ],
+      "e_valid_fraction": 0.96656,
+      "p_valid_fraction": 0.77396,
+      "invalid_policy": "reject",
+      "e_keep_given_valid": 0.9972686641284556,
+      "p_reject_given_valid": 0.016538322393922167
+    }
+  },
+  "fixed_timing_response": {
+    "statistics": "all events (fixed detector operating point)",
+    "response_model": "independent Gaussian end-time smearing; deterministic event/segment hash; v_eff from runmeta; provisional because calibration is not supplied",
+    "points": [
+      {
+        "sigma_t_per_end_ns": 0.0,
+        "cut": "abs(zReco-zPred) < 90 mm",
+        "primary_result": "conditional_on_valid",
+        "e_keep_given_valid": 0.9970207615678243,
+        "p_reject_given_valid": 0.01719353048237405,
+        "full_selection_policy": "require valid and pass cut",
+        "e_keep": 0.96381,
+        "e_keep_95ci": [
+          0.9626345231735449,
+          0.9649498440549609
+        ],
+        "p_reject": 0.23861,
+        "p_reject_95ci": [
+          0.23597829642957932,
+          0.24126178517741684
+        ],
+        "invalid_kept_e_keep": 0.99712,
+        "invalid_kept_p_reject": 0.01332,
+        "e_valid_fraction": 0.96669,
+        "p_valid_fraction": 0.77471,
+        "pi0_reject_given_valid": 0.10231660231660232,
+        "pi0_keep": 0.02325,
+        "pi0_keep_95ci": [
+          0.02233414239541331,
+          0.024202484507434622
+        ],
+        "pi0_reject": 0.97675,
+        "pi0_reject_95ci": [
+          0.9757975154925654,
+          0.9776658576045868
+        ],
+        "invalid_kept_pi0_reject": 0.00265,
+        "pi0_valid_fraction": 0.0259
+      },
+      {
+        "sigma_t_per_end_ns": 0.2,
+        "cut": "abs(zReco-zPred) < 90 mm",
+        "primary_result": "conditional_on_valid",
+        "e_keep_given_valid": 0.9963276748492278,
+        "p_reject_given_valid": 0.018406887738637683,
+        "full_selection_policy": "require valid and pass cut",
+        "e_keep": 0.96314,
+        "e_keep_95ci": [
+          0.9619542909066149,
+          0.9642901277954617
+        ],
+        "p_reject": 0.23955,
+        "p_reject_95ci": [
+          0.23691469651235647,
+          0.24220531287798808
+        ],
+        "invalid_kept_e_keep": 0.99645,
+        "invalid_kept_p_reject": 0.01426,
+        "e_valid_fraction": 0.96669,
+        "p_valid_fraction": 0.77471,
+        "pi0_reject_given_valid": 0.10347490347490347,
+        "pi0_keep": 0.02322,
+        "pi0_keep_95ci": [
+          0.022304731847742263,
+          0.02417189735989243
+        ],
+        "pi0_reject": 0.97678,
+        "pi0_reject_95ci": [
+          0.9758281026401076,
+          0.9776952681522578
+        ],
+        "invalid_kept_pi0_reject": 0.00268,
+        "pi0_valid_fraction": 0.0259
+      },
+      {
+        "sigma_t_per_end_ns": 0.5,
+        "cut": "abs(zReco-zPred) < 90 mm",
+        "primary_result": "conditional_on_valid",
+        "e_keep_given_valid": 0.9041264521201212,
+        "p_reject_given_valid": 0.10911179667230318,
+        "full_selection_policy": "require valid and pass cut",
+        "e_keep": 0.87401,
+        "e_keep_95ci": [
+          0.8719389064202335,
+          0.876052359803292
+        ],
+        "p_reject": 0.30982,
+        "p_reject_95ci": [
+          0.3069612995702755,
+          0.31269331124122657
+        ],
+        "invalid_kept_e_keep": 0.90732,
+        "invalid_kept_p_reject": 0.08453,
+        "e_valid_fraction": 0.96669,
+        "p_valid_fraction": 0.77471,
+        "pi0_reject_given_valid": 0.19305019305019305,
+        "pi0_keep": 0.0209,
+        "pi0_keep_95ci": [
+          0.02003161540574448,
+          0.02180519203873259
+        ],
+        "pi0_reject": 0.9791,
+        "pi0_reject_95ci": [
+          0.9781948079612675,
+          0.9799683845942555
+        ],
+        "invalid_kept_pi0_reject": 0.005,
+        "pi0_valid_fraction": 0.0259
+      },
+      {
+        "sigma_t_per_end_ns": 1.0,
+        "cut": "abs(zReco-zPred) < 90 mm",
+        "primary_result": "conditional_on_valid",
+        "e_keep_given_valid": 0.6020544331688545,
+        "p_reject_given_valid": 0.40333802326031676,
+        "full_selection_policy": "require valid and pass cut",
+        "e_keep": 0.582,
+        "e_keep_95ci": [
+          0.5789398911295467,
+          0.5850538091199897
+        ],
+        "p_reject": 0.53776,
+        "p_reject_95ci": [
+          0.5346684831530285,
+          0.5408486158887092
+        ],
+        "invalid_kept_e_keep": 0.61531,
+        "invalid_kept_p_reject": 0.31247,
+        "e_valid_fraction": 0.96669,
+        "p_valid_fraction": 0.77471,
+        "pi0_reject_given_valid": 0.43397683397683395,
+        "pi0_keep": 0.01466,
+        "pi0_keep_95ci": [
+          0.013933507036275989,
+          0.015423779803846118
+        ],
+        "pi0_reject": 0.98534,
+        "pi0_reject_95ci": [
+          0.984576220196154,
+          0.9860664929637241
+        ],
+        "invalid_kept_pi0_reject": 0.01124,
+        "pi0_valid_fraction": 0.0259
+      }
+    ]
+  },
+  "fixed_th_dedx_response": {
+    "statistics": "all events (fixed threshold grid, no optimization)",
+    "truth_path_usage": "none; path=(thRMax-thRMin)/sin(theta_BGO)",
+    "points": [
+      {
+        "threshold_MeV_per_mm": 0.2,
+        "rule": "accept dE/dx < threshold; invalid geometry keeps",
+        "e_keep": 0.70544,
+        "e_keep_95ci": [
+          0.7026068487398976,
+          0.7082573680804042
+        ],
+        "p_reject": 0.75341,
+        "p_reject_95ci": [
+          0.7507288218657153,
+          0.7560717096005654
+        ],
+        "e_valid_fraction": 0.9849,
+        "p_valid_fraction": 0.98653,
+        "pi0_keep": 0.98651,
+        "pi0_keep_95ci": [
+          0.985776083196445,
+          0.9872065400767496
+        ],
+        "pi0_reject": 0.013490000000000002,
+        "pi0_reject_95ci": [
+          0.012793459923250467,
+          0.014223916803555088
+        ],
+        "pi0_valid_fraction": 0.99998
+      },
+      {
+        "threshold_MeV_per_mm": 0.3,
+        "rule": "accept dE/dx < threshold; invalid geometry keeps",
+        "e_keep": 0.93724,
+        "e_keep_95ci": [
+          0.9357199455240889,
+          0.9387264629772195
+        ],
+        "p_reject": 0.74488,
+        "p_reject_95ci": [
+          0.742168764815268,
+          0.7475724219787134
+        ],
+        "e_valid_fraction": 0.9849,
+        "p_valid_fraction": 0.98653,
+        "pi0_keep": 0.99141,
+        "pi0_keep_95ci": [
+          0.9908188555274724,
+          0.9919633912972188
+        ],
+        "pi0_reject": 0.008589999999999987,
+        "pi0_reject_95ci": [
+          0.008036608702781263,
+          0.009181144472527577
+        ],
+        "pi0_valid_fraction": 0.99998
+      },
+      {
+        "threshold_MeV_per_mm": 0.4,
+        "rule": "accept dE/dx < threshold; invalid geometry keeps",
+        "e_keep": 0.98138,
+        "e_keep_95ci": [
+          0.980523489549619,
+          0.9821995278421106
+        ],
+        "p_reject": 0.70817,
+        "p_reject_95ci": [
+          0.7053444302068677,
+          0.7109795768778395
+        ],
+        "e_valid_fraction": 0.9849,
+        "p_valid_fraction": 0.98653,
+        "pi0_keep": 0.99669,
+        "pi0_keep_95ci": [
+          0.9963144229493369,
+          0.9970274182328854
+        ],
+        "pi0_reject": 0.003310000000000035,
+        "pi0_reject_95ci": [
+          0.002972581767114601,
+          0.0036855770506632095
+        ],
+        "pi0_valid_fraction": 0.99998
+      },
+      {
+        "threshold_MeV_per_mm": 0.5,
+        "rule": "accept dE/dx < threshold; invalid geometry keeps",
+        "e_keep": 0.99349,
+        "e_keep_95ci": [
+          0.9929722441949488,
+          0.9939698428311942
+        ],
+        "p_reject": 0.28394,
+        "p_reject_95ci": [
+          0.28115363514916186,
+          0.28674296392504767
+        ],
+        "e_valid_fraction": 0.9849,
+        "p_valid_fraction": 0.98653,
+        "pi0_keep": 0.99856,
+        "pi0_keep_95ci": [
+          0.9983050479979115,
+          0.9987766495192697
+        ],
+        "pi0_reject": 0.0014399999999999968,
+        "pi0_reject_95ci": [
+          0.0012233504807302893,
+          0.001694952002088505
+        ],
+        "pi0_valid_fraction": 0.99998
+      },
+      {
+        "threshold_MeV_per_mm": 0.75,
+        "rule": "accept dE/dx < threshold; invalid geometry keeps",
+        "e_keep": 0.99879,
+        "e_keep_95ci": [
+          0.998554528263889,
+          0.9989871515832605
+        ],
+        "p_reject": 0.01953,
+        "p_reject_95ci": [
+          0.01869061186255137,
+          0.02040630083385418
+        ],
+        "e_valid_fraction": 0.9849,
+        "p_valid_fraction": 0.98653,
+        "pi0_keep": 0.99942,
+        "pi0_keep_95ci": [
+          0.9992503673281775,
+          0.99955126411845
+        ],
+        "pi0_reject": 0.0005800000000000249,
+        "pi0_reject_95ci": [
+          0.0004487358815500256,
+          0.0007496326718224679
+        ],
+        "pi0_valid_fraction": 0.99998
+      },
+      {
+        "threshold_MeV_per_mm": 1.0,
+        "rule": "accept dE/dx < threshold; invalid geometry keeps",
+        "e_keep": 0.99972,
+        "e_keep_95ci": [
+          0.9995953473897533,
+          0.9998062610090069
+        ],
+        "p_reject": 0.01322,
+        "p_reject_95ci": [
+          0.012530562030054138,
+          0.01394683543983221
+        ],
+        "e_valid_fraction": 0.9849,
+        "p_valid_fraction": 0.98653,
+        "pi0_keep": 0.99968,
+        "pi0_keep_95ci": [
+          0.9995483038145965,
+          0.9997733076572126
+        ],
+        "pi0_reject": 0.00031999999999998696,
+        "pi0_reject_95ci": [
+          0.00022669234278739224,
+          0.00045169618540356817
+        ],
+        "pi0_valid_fraction": 0.99998
+      }
+    ]
+  },
+  "fixed_combined_response": {
+    "statistics": "all events; all thresholds fixed before evaluation",
+    "definitions": {
+      "tlc": "any of 30 segments Npe>=1 at collection*PDE=5%",
+      "dedx": "electron-like pass dE/dx below cut; invalid geometry keeps",
+      "full_dz": "require valid and abs(zReco-zPred)<90 mm, sigma_t=0"
+    },
+    "primary_operating_point": "tlc_any_eff05_npe1",
+    "points": [
+      {
+        "selection": "tlc_any_eff05_npe1",
+        "e_keep": 0.9958,
+        "e_keep_95ci": [
+          0.9953796815726063,
+          0.9961822279849565
+        ],
+        "p_reject": 0.93718,
+        "p_reject_95ci": [
+          0.9356592776764001,
+          0.9386671354344818
+        ],
+        "pi0_reject": 0.91035,
+        "pi0_reject_95ci": [
+          0.9085635725813812,
+          0.9121049017771219
+        ]
+      },
+      {
+        "selection": "tlc_any_and_dedx_lt0p3",
+        "e_keep": 0.93314,
+        "e_keep_95ci": [
+          0.9315751818603065,
+          0.9346715416285251
+        ],
+        "p_reject": 0.98495,
+        "p_reject_95ci": [
+          0.9841765446291808,
+          0.985686198492925
+        ],
+        "pi0_reject": 0.91889,
+        "pi0_reject_95ci": [
+          0.9171818000746356,
+          0.9205660181879046
+        ]
+      },
+      {
+        "selection": "tlc_any_and_dedx_lt0p4",
+        "e_keep": 0.97723,
+        "e_keep_95ci": [
+          0.9762869592513337,
+          0.9781363769692304
+        ],
+        "p_reject": 0.98221,
+        "p_reject_95ci": [
+          0.9813719920712408,
+          0.9830109615547219
+        ],
+        "pi0_reject": 0.91361,
+        "pi0_reject_95ci": [
+          0.9118528264356489,
+          0.9153353974693603
+        ]
+      },
+      {
+        "selection": "tlc_any_and_full_dz",
+        "e_keep": 0.96353,
+        "e_keep_95ci": [
+          0.9623502341824516,
+          0.9646741545573972
+        ],
+        "p_reject": 0.95024,
+        "p_reject_95ci": [
+          0.9488748834810615,
+          0.9515705262793198
+        ],
+        "pi0_reject": 0.9772,
+        "pi0_reject_95ci": [
+          0.9762563659014046,
+          0.9781069726239461
+        ]
+      },
+      {
+        "selection": "tlc_any_and_dedx_lt0p3_and_full_dz",
+        "e_keep": 0.90292,
+        "e_keep_95ci": [
+          0.9010694860423996,
+          0.9047395591349565
+        ],
+        "p_reject": 0.99786,
+        "p_reject_95ci": [
+          0.9975538322972358,
+          0.9981279189983031
+        ],
+        "pi0_reject": 0.98519,
+        "pi0_reject_95ci": [
+          0.9844224830610125,
+          0.9859202416227991
+        ]
+      },
+      {
+        "selection": "tlc_any_and_dedx_lt0p4_and_full_dz",
+        "e_keep": 0.94678,
+        "e_keep_95ci": [
+          0.9453714930059387,
+          0.9481541825731816
+        ],
+        "p_reject": 0.99514,
+        "p_reject_95ci": [
+          0.9946895381536451,
+          0.9955524221092262
+        ],
+        "pi0_reject": 0.98,
+        "pi0_reject_95ci": [
+          0.9791136694446082,
+          0.9808494539673122
+        ]
+      }
+    ]
+  },
+  "fixed_tlc_binary_response": [
+    {
+      "efficiency": 0.01,
+      "npe_threshold": 1,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.95389,
+          "p_reject": 0.97679,
+          "e_keep_95ci": [
+            0.9525726180349129,
+            0.9551725113097466
+          ],
+          "p_reject_95ci": [
+            0.9758382984465849,
+            0.9777050715775183
+          ]
+        },
+        "train": {
+          "e_keep": 0.95366,
+          "p_reject": 0.97658,
+          "e_keep_95ci": [
+            0.9517822606194127,
+            0.95546803608749
+          ],
+          "p_reject_95ci": [
+            0.9752173392007721,
+            0.9778694359272437
+          ]
+        },
+        "test": {
+          "e_keep": 0.95412,
+          "p_reject": 0.977,
+          "e_keep_95ci": [
+            0.9522509489288158,
+            0.9559192771006746
+          ],
+          "p_reject_95ci": [
+            0.9756489586201025,
+            0.978277751976363
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.94151,
+          "p_reject": 0.98789,
+          "e_keep_95ci": [
+            0.9400385106622143,
+            0.9429475697911126
+          ],
+          "p_reject_95ci": [
+            0.9871930988600506,
+            0.9885494183929533
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.94078,
+          "p_reject": 0.98748,
+          "e_keep_95ci": [
+            0.9386770314907062,
+            0.9428152441837383
+          ],
+          "p_reject_95ci": [
+            0.9864672616168253,
+            0.9884178387638143
+          ]
+        },
+        "test": {
+          "e_keep": 0.94224,
+          "p_reject": 0.9883,
+          "e_keep_95ci": [
+            0.9401609908564514,
+            0.9442510604940326
+          ],
+          "p_reject_95ci": [
+            0.9873192358077352,
+            0.9892057385827346
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.95389,
+          "p_reject": 0.97679,
+          "e_keep_95ci": [
+            0.9525726180349129,
+            0.9551725113097466
+          ],
+          "p_reject_95ci": [
+            0.9758382984465849,
+            0.9777050715775183
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.95366,
+          "p_reject": 0.97658,
+          "e_keep_95ci": [
+            0.9517822606194127,
+            0.95546803608749
+          ],
+          "p_reject_95ci": [
+            0.9752173392007721,
+            0.9778694359272437
+          ]
+        },
+        "test": {
+          "e_keep": 0.95412,
+          "p_reject": 0.977,
+          "e_keep_95ci": [
+            0.9522509489288158,
+            0.9559192771006746
+          ],
+          "p_reject_95ci": [
+            0.9756489586201025,
+            0.978277751976363
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.01,
+      "npe_threshold": 2,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.83067,
+          "p_reject": 0.99124,
+          "e_keep_95ci": [
+            0.828332809173804,
+            0.8329817866983205
+          ],
+          "p_reject_95ci": [
+            0.9906432828908158,
+            0.9917989769943336
+          ]
+        },
+        "train": {
+          "e_keep": 0.83,
+          "p_reject": 0.99116,
+          "e_keep_95ci": [
+            0.8266821710319017,
+            0.8332671256071624
+          ],
+          "p_reject_95ci": [
+            0.990300964804671,
+            0.991943570156671
+          ]
+        },
+        "test": {
+          "e_keep": 0.83134,
+          "p_reject": 0.99132,
+          "e_keep_95ci": [
+            0.828032422363385,
+            0.8345966683893045
+          ],
+          "p_reject_95ci": [
+            0.9904683371092302,
+            0.992096173268664
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.81832,
+          "p_reject": 0.99737,
+          "e_keep_95ci": [
+            0.8159179777245568,
+            0.8206975669514486
+          ],
+          "p_reject_95ci": [
+            0.9970328916279053,
+            0.997668897312484
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.81706,
+          "p_reject": 0.99722,
+          "e_keep_95ci": [
+            0.8136468970403176,
+            0.8204243877850815
+          ],
+          "p_reject_95ci": [
+            0.9967187316631407,
+            0.9976448722001185
+          ]
+        },
+        "test": {
+          "e_keep": 0.81958,
+          "p_reject": 0.99752,
+          "e_keep_95ci": [
+            0.8161849363097197,
+            0.8229259613263776
+          ],
+          "p_reject_95ci": [
+            0.9970441602382517,
+            0.9979193975310429
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.83351,
+          "p_reject": 0.99091,
+          "e_keep_95ci": [
+            0.831188337777635,
+            0.8358060399080098
+          ],
+          "p_reject_95ci": [
+            0.9903026217682144,
+            0.9914796634695894
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.83296,
+          "p_reject": 0.9908,
+          "e_keep_95ci": [
+            0.8296649158793826,
+            0.8362039259658988
+          ],
+          "p_reject_95ci": [
+            0.9899246236877925,
+            0.9915999665863067
+          ]
+        },
+        "test": {
+          "e_keep": 0.83406,
+          "p_reject": 0.99102,
+          "e_keep_95ci": [
+            0.83077346220422,
+            0.8372952106298583
+          ],
+          "p_reject_95ci": [
+            0.9901545700302491,
+            0.9918099864416096
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.01,
+      "npe_threshold": 3,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.64998,
+          "p_reject": 0.9942,
+          "e_keep_95ci": [
+            0.6470180170966712,
+            0.6529304605060785
+          ],
+          "p_reject_95ci": [
+            0.9937099915917577,
+            0.9946520408877654
+          ]
+        },
+        "train": {
+          "e_keep": 0.6502,
+          "p_reject": 0.99426,
+          "e_keep_95ci": [
+            0.6460084114383228,
+            0.6543685108501242
+          ],
+          "p_reject_95ci": [
+            0.9935587976774537,
+            0.9948852609795885
+          ]
+        },
+        "test": {
+          "e_keep": 0.64976,
+          "p_reject": 0.99414,
+          "e_keep_95ci": [
+            0.6455672326866958,
+            0.6539297572062323
+          ],
+          "p_reject_95ci": [
+            0.9934319733431174,
+            0.9947721037515105
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.6384,
+          "p_reject": 0.99848,
+          "e_keep_95ci": [
+            0.6354168454597295,
+            0.6413725217907074
+          ],
+          "p_reject_95ci": [
+            0.9982186415225641,
+            0.9987030621407152
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.63808,
+          "p_reject": 0.99842,
+          "e_keep_95ci": [
+            0.6338573604429967,
+            0.6422814240416155
+          ],
+          "p_reject_95ci": [
+            0.9980314881920294,
+            0.9987319312953717
+          ]
+        },
+        "test": {
+          "e_keep": 0.63872,
+          "p_reject": 0.99854,
+          "e_keep_95ci": [
+            0.634498927000098,
+            0.6429197591507232
+          ],
+          "p_reject_95ci": [
+            0.9981648547537411,
+            0.9988385462960744
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.65901,
+          "p_reject": 0.99358,
+          "e_keep_95ci": [
+            0.6560658532318501,
+            0.6619419306300863
+          ],
+          "p_reject_95ci": [
+            0.9930656731090224,
+            0.9940564070027602
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.65886,
+          "p_reject": 0.9935,
+          "e_keep_95ci": [
+            0.6546924117628937,
+            0.663003179946445
+          ],
+          "p_reject_95ci": [
+            0.9927567205473923,
+            0.9941674548810268
+          ]
+        },
+        "test": {
+          "e_keep": 0.65916,
+          "p_reject": 0.99366,
+          "e_keep_95ci": [
+            0.6549932706579754,
+            0.6633022749573986
+          ],
+          "p_reject_95ci": [
+            0.9929253617983466,
+            0.9943187890466244
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.02,
+      "npe_threshold": 1,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.99289,
+          "p_reject": 0.96578,
+          "e_keep_95ci": [
+            0.9923499774686799,
+            0.9933921556531982
+          ],
+          "p_reject_95ci": [
+            0.9646352384888506,
+            0.9668889773919915
+          ]
+        },
+        "train": {
+          "e_keep": 0.993,
+          "p_reject": 0.96658,
+          "e_keep_95ci": [
+            0.9922303932449908,
+            0.993693859006702
+          ],
+          "p_reject_95ci": [
+            0.9649684289833379,
+            0.9681198826101608
+          ]
+        },
+        "test": {
+          "e_keep": 0.99278,
+          "p_reject": 0.96498,
+          "e_keep_95ci": [
+            0.9919991137439839,
+            0.9934851723099498
+          ],
+          "p_reject_95ci": [
+            0.9633326301863333,
+            0.9665559272416427
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.98072,
+          "p_reject": 0.97967,
+          "e_keep_95ci": [
+            0.9798490864306465,
+            0.9815539816663917
+          ],
+          "p_reject_95ci": [
+            0.9787767020482329,
+            0.9805264467163418
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.98024,
+          "p_reject": 0.9797,
+          "e_keep_95ci": [
+            0.9789826995716628,
+            0.9814235132099862
+          ],
+          "p_reject_95ci": [
+            0.9784265345804661,
+            0.9808997611703192
+          ]
+        },
+        "test": {
+          "e_keep": 0.9812,
+          "p_reject": 0.97964,
+          "e_keep_95ci": [
+            0.9799720281394059,
+            0.9823540371415568
+          ],
+          "p_reject_95ci": [
+            0.978364752678641,
+            0.9808415522909371
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.99289,
+          "p_reject": 0.96578,
+          "e_keep_95ci": [
+            0.9923499774686799,
+            0.9933921556531982
+          ],
+          "p_reject_95ci": [
+            0.9646352384888506,
+            0.9668889773919915
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.993,
+          "p_reject": 0.96658,
+          "e_keep_95ci": [
+            0.9922303932449908,
+            0.993693859006702
+          ],
+          "p_reject_95ci": [
+            0.9649684289833379,
+            0.9681198826101608
+          ]
+        },
+        "test": {
+          "e_keep": 0.99278,
+          "p_reject": 0.96498,
+          "e_keep_95ci": [
+            0.9919991137439839,
+            0.9934851723099498
+          ],
+          "p_reject_95ci": [
+            0.9633326301863333,
+            0.9665559272416427
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.02,
+      "npe_threshold": 2,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.97822,
+          "p_reject": 0.98717,
+          "e_keep_95ci": [
+            0.9772967803262491,
+            0.979106479836352
+          ],
+          "p_reject_95ci": [
+            0.986453527516602,
+            0.987849045051284
+          ]
+        },
+        "train": {
+          "e_keep": 0.9788,
+          "p_reject": 0.98726,
+          "e_keep_95ci": [
+            0.9775000943194373,
+            0.9800263397132415
+          ],
+          "p_reject_95ci": [
+            0.986238869610504,
+            0.9882062645723761
+          ]
+        },
+        "test": {
+          "e_keep": 0.97764,
+          "p_reject": 0.98708,
+          "e_keep_95ci": [
+            0.9763068858490852,
+            0.9788997264135894
+          ],
+          "p_reject_95ci": [
+            0.986052059311112,
+            0.9880331025281468
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.96589,
+          "p_reject": 0.99616,
+          "e_keep_95ci": [
+            0.9647469823018867,
+            0.9669972251280708
+          ],
+          "p_reject_95ci": [
+            0.9957571399921276,
+            0.9965247419079942
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.9658,
+          "p_reject": 0.99578,
+          "e_keep_95ci": [
+            0.9641708604803699,
+            0.9673575709574366
+          ],
+          "p_reject_95ci": [
+            0.9951724595120214,
+            0.9963113656022674
+          ]
+        },
+        "test": {
+          "e_keep": 0.96598,
+          "p_reject": 0.99654,
+          "e_keep_95ci": [
+            0.9643548947851651,
+            0.9675335089962626
+          ],
+          "p_reject_95ci": [
+            0.9959857689698969,
+            0.9970179393730151
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.97874,
+          "p_reject": 0.98682,
+          "e_keep_95ci": [
+            0.9778273849049058,
+            0.9796158353080583
+          ],
+          "p_reject_95ci": [
+            0.986094220037112,
+            0.9875083794199527
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.9792,
+          "p_reject": 0.98696,
+          "e_keep_95ci": [
+            0.9779117700771488,
+            0.9804146024969106
+          ],
+          "p_reject_95ci": [
+            0.9859275465011172,
+            0.9879176337757274
+          ]
+        },
+        "test": {
+          "e_keep": 0.97828,
+          "p_reject": 0.98668,
+          "e_keep_95ci": [
+            0.9769650904885093,
+            0.9795214234403745
+          ],
+          "p_reject_95ci": [
+            0.9856370999728598,
+            0.9876481233250184
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.02,
+      "npe_threshold": 3,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.93787,
+          "p_reject": 0.99073,
+          "e_keep_95ci": [
+            0.9363569816270004,
+            0.9393493784737862
+          ],
+          "p_reject_95ci": [
+            0.9901168903780287,
+            0.9913054086884955
+          ]
+        },
+        "train": {
+          "e_keep": 0.93872,
+          "p_reject": 0.9907,
+          "e_keep_95ci": [
+            0.936583826953356,
+            0.9407887652329783
+          ],
+          "p_reject_95ci": [
+            0.989820143047128,
+            0.9915044625916262
+          ]
+        },
+        "test": {
+          "e_keep": 0.93702,
+          "p_reject": 0.99076,
+          "e_keep_95ci": [
+            0.9348569340391997,
+            0.9391159193462666
+          ],
+          "p_reject_95ci": [
+            0.9898828284420319,
+            0.9915617679779293
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.92536,
+          "p_reject": 0.99767,
+          "e_keep_95ci": [
+            0.9237147292706274,
+            0.9269725919262359
+          ],
+          "p_reject_95ci": [
+            0.997351451028932,
+            0.9979503148635896
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.92554,
+          "p_reject": 0.99746,
+          "e_keep_95ci": [
+            0.9232061352090339,
+            0.9278084820388068
+          ],
+          "p_reject_95ci": [
+            0.99697895623131,
+            0.9978646107567777
+          ]
+        },
+        "test": {
+          "e_keep": 0.92518,
+          "p_reject": 0.99788,
+          "e_keep_95ci": [
+            0.9228410567845796,
+            0.9274536157760184
+          ],
+          "p_reject_95ci": [
+            0.9974368030399742,
+            0.9982466994165632
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.93996,
+          "p_reject": 0.99022,
+          "e_keep_95ci": [
+            0.9384706401758068,
+            0.9414155593581691
+          ],
+          "p_reject_95ci": [
+            0.9895909554808726,
+            0.9908113827670266
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.94088,
+          "p_reject": 0.9902,
+          "e_keep_95ci": [
+            0.9387786610758652,
+            0.9429135992339247
+          ],
+          "p_reject_95ci": [
+            0.9892981027441058,
+            0.9910265797179224
+          ]
+        },
+        "test": {
+          "e_keep": 0.93904,
+          "p_reject": 0.99024,
+          "e_keep_95ci": [
+            0.9369089399254192,
+            0.9411036030940195
+          ],
+          "p_reject_95ci": [
+            0.9893398443498314,
+            0.9910648319663349
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.05,
+      "npe_threshold": 1,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.9958,
+          "p_reject": 0.93718,
+          "e_keep_95ci": [
+            0.9953796815726063,
+            0.9961822279849565
+          ],
+          "p_reject_95ci": [
+            0.9356592776764001,
+            0.9386671354344818
+          ]
+        },
+        "train": {
+          "e_keep": 0.99578,
+          "p_reject": 0.9382,
+          "e_keep_95ci": [
+            0.9951724595120214,
+            0.9963113656022674
+          ],
+          "p_reject_95ci": [
+            0.9360555529916095,
+            0.9402771190909298
+          ]
+        },
+        "test": {
+          "e_keep": 0.99582,
+          "p_reject": 0.93616,
+          "e_keep_95ci": [
+            0.9952151380255603,
+            0.9963486809428665
+          ],
+          "p_reject_95ci": [
+            0.933983498640463,
+            0.9382694868810347
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.98378,
+          "p_reject": 0.95657,
+          "e_keep_95ci": [
+            0.9829782817854111,
+            0.9845445512233781
+          ],
+          "p_reject_95ci": [
+            0.9552890791204673,
+            0.9578158443299087
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.98322,
+          "p_reject": 0.95638,
+          "e_keep_95ci": [
+            0.9820564487571348,
+            0.9843093061578003
+          ],
+          "p_reject_95ci": [
+            0.9545543840382436,
+            0.9581354947500478
+          ]
+        },
+        "test": {
+          "e_keep": 0.98434,
+          "p_reject": 0.95676,
+          "e_keep_95ci": [
+            0.9832139401169444,
+            0.9853916427138567
+          ],
+          "p_reject_95ci": [
+            0.9549418136316482,
+            0.9585080067709549
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.9958,
+          "p_reject": 0.93718,
+          "e_keep_95ci": [
+            0.9953796815726063,
+            0.9961822279849565
+          ],
+          "p_reject_95ci": [
+            0.9356592776764001,
+            0.9386671354344818
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.99578,
+          "p_reject": 0.9382,
+          "e_keep_95ci": [
+            0.9951724595120214,
+            0.9963113656022674
+          ],
+          "p_reject_95ci": [
+            0.9360555529916095,
+            0.9402771190909298
+          ]
+        },
+        "test": {
+          "e_keep": 0.99582,
+          "p_reject": 0.93616,
+          "e_keep_95ci": [
+            0.9952151380255603,
+            0.9963486809428665
+          ],
+          "p_reject_95ci": [
+            0.933983498640463,
+            0.9382694868810347
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.05,
+      "npe_threshold": 2,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.99567,
+          "p_reject": 0.97786,
+          "e_keep_95ci": [
+            0.9952435642593274,
+            0.9960583552856448
+          ],
+          "p_reject_95ci": [
+            0.9769295178581691,
+            0.978753769961873
+          ]
+        },
+        "train": {
+          "e_keep": 0.99562,
+          "p_reject": 0.9782,
+          "e_keep_95ci": [
+            0.9950018715328116,
+            0.9961619781649248
+          ],
+          "p_reject_95ci": [
+            0.976882799333924,
+            0.9794437268866836
+          ]
+        },
+        "test": {
+          "e_keep": 0.99572,
+          "p_reject": 0.97752,
+          "e_keep_95ci": [
+            0.9951084656550077,
+            0.9962553686780741
+          ],
+          "p_reject_95ci": [
+            0.976183503712239,
+            0.9787831269880214
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.98355,
+          "p_reject": 0.99028,
+          "e_keep_95ci": [
+            0.9827428531894399,
+            0.9843199974893811
+          ],
+          "p_reject_95ci": [
+            0.9896528076048892,
+            0.9908695260334366
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.98292,
+          "p_reject": 0.99014,
+          "e_keep_95ci": [
+            0.9817466318224191,
+            0.9840191691864808
+          ],
+          "p_reject_95ci": [
+            0.9892354971853266,
+            0.9909691944954946
+          ]
+        },
+        "test": {
+          "e_keep": 0.98418,
+          "p_reject": 0.99042,
+          "e_keep_95ci": [
+            0.9830484998114989,
+            0.9852371076027501
+          ],
+          "p_reject_95ci": [
+            0.9895277274314148,
+            0.9912369212283726
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.99568,
+          "p_reject": 0.97763,
+          "e_keep_95ci": [
+            0.9952540314950147,
+            0.996067887281695
+          ],
+          "p_reject_95ci": [
+            0.9766949110259421,
+            0.978528394464132
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.99564,
+          "p_reject": 0.97806,
+          "e_keep_95ci": [
+            0.9950231842263731,
+            0.9961806623984323
+          ],
+          "p_reject_95ci": [
+            0.9767388006210429,
+            0.9793077471100815
+          ]
+        },
+        "test": {
+          "e_keep": 0.99572,
+          "p_reject": 0.9772,
+          "e_keep_95ci": [
+            0.9951084656550077,
+            0.9962553686780741
+          ],
+          "p_reject_95ci": [
+            0.9758545317734014,
+            0.9784721480937545
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.05,
+      "npe_threshold": 3,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.99547,
+          "p_reject": 0.9857,
+          "e_keep_95ci": [
+            0.9950343316835716,
+            0.9958676032266455
+          ],
+          "p_reject_95ci": [
+            0.9849452717590733,
+            0.9864174137433636
+          ]
+        },
+        "train": {
+          "e_keep": 0.9955,
+          "p_reject": 0.98598,
+          "e_keep_95ci": [
+            0.9948740581644674,
+            0.9960498099708549
+          ],
+          "p_reject_95ci": [
+            0.9849114739975654,
+            0.9869738568528964
+          ]
+        },
+        "test": {
+          "e_keep": 0.99544,
+          "p_reject": 0.98542,
+          "e_keep_95ci": [
+            0.9948101909588769,
+            0.9959936863952383
+          ],
+          "p_reject_95ci": [
+            0.9843314505416758,
+            0.9864339663508532
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.98327,
+          "p_reject": 0.996,
+          "e_keep_95ci": [
+            0.9824562980978758,
+            0.9840465740922882
+          ],
+          "p_reject_95ci": [
+            0.9955892828858005,
+            0.9963726113065171
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.98266,
+          "p_reject": 0.9958,
+          "e_keep_95ci": [
+            0.9814781971143028,
+            0.9837676438426993
+          ],
+          "p_reject_95ci": [
+            0.995193797159557,
+            0.9963300248818008
+          ]
+        },
+        "test": {
+          "e_keep": 0.98388,
+          "p_reject": 0.9962,
+          "e_keep_95ci": [
+            0.9827383765906231,
+            0.9849472769175901
+          ],
+          "p_reject_95ci": [
+            0.9956212582183288,
+            0.9967025023644096
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.99549,
+          "p_reject": 0.98545,
+          "e_keep_95ci": [
+            0.9950552455324556,
+            0.9958866878412368
+          ],
+          "p_reject_95ci": [
+            0.9846889734951536,
+            0.9861737312138397
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.99552,
+          "p_reject": 0.98574,
+          "e_keep_95ci": [
+            0.9948953530169699,
+            0.9960685120454215
+          ],
+          "p_reject_95ci": [
+            0.9846628422619079,
+            0.9867425254637254
+          ]
+        },
+        "test": {
+          "e_keep": 0.99546,
+          "p_reject": 0.98516,
+          "e_keep_95ci": [
+            0.9948314771544058,
+            0.9960123971267785
+          ],
+          "p_reject_95ci": [
+            0.9840622907242104,
+            0.9861831661164212
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.1,
+      "npe_threshold": 1,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.99592,
+          "p_reject": 0.90059,
+          "e_keep_95ci": [
+            0.9955054138809173,
+            0.9962964864574985
+          ],
+          "p_reject_95ci": [
+            0.8987200845073249,
+            0.9024291396751358
+          ]
+        },
+        "train": {
+          "e_keep": 0.99588,
+          "p_reject": 0.90218,
+          "e_keep_95ci": [
+            0.995279180164985,
+            0.9964046295846489
+          ],
+          "p_reject_95ci": [
+            0.8995451246443985,
+            0.9047530817868102
+          ]
+        },
+        "test": {
+          "e_keep": 0.99596,
+          "p_reject": 0.899,
+          "e_keep_95ci": [
+            0.9953646161653934,
+            0.9964791812925166
+          ],
+          "p_reject_95ci": [
+            0.896328056911654,
+            0.9016106381155783
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.98394,
+          "p_reject": 0.9256,
+          "e_keep_95ci": [
+            0.9831420821125763,
+            0.984700738604017
+          ],
+          "p_reject_95ci": [
+            0.9239571298003594,
+            0.92721017295821
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.98338,
+          "p_reject": 0.92604,
+          "e_keep_95ci": [
+            0.9822217222893009,
+            0.9844640080421866
+          ],
+          "p_reject_95ci": [
+            0.9237132146296053,
+            0.9283013257949612
+          ]
+        },
+        "test": {
+          "e_keep": 0.9845,
+          "p_reject": 0.92516,
+          "e_keep_95ci": [
+            0.9833794096801034,
+            0.9855461485672501
+          ],
+          "p_reject_95ci": [
+            0.9228207751078698,
+            0.9274339005256592
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.99592,
+          "p_reject": 0.90059,
+          "e_keep_95ci": [
+            0.9955054138809173,
+            0.9962964864574985
+          ],
+          "p_reject_95ci": [
+            0.8987200845073249,
+            0.9024291396751358
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.99588,
+          "p_reject": 0.90218,
+          "e_keep_95ci": [
+            0.995279180164985,
+            0.9964046295846489
+          ],
+          "p_reject_95ci": [
+            0.8995451246443985,
+            0.9047530817868102
+          ]
+        },
+        "test": {
+          "e_keep": 0.99596,
+          "p_reject": 0.899,
+          "e_keep_95ci": [
+            0.9953646161653934,
+            0.9964791812925166
+          ],
+          "p_reject_95ci": [
+            0.896328056911654,
+            0.9016106381155783
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.1,
+      "npe_threshold": 2,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.99582,
+          "p_reject": 0.96208,
+          "e_keep_95ci": [
+            0.995400631152011,
+            0.9962012768690273
+          ],
+          "p_reject_95ci": [
+            0.9608783138119914,
+            0.9632461863258841
+          ]
+        },
+        "train": {
+          "e_keep": 0.9958,
+          "p_reject": 0.96306,
+          "e_keep_95ci": [
+            0.995193797159557,
+            0.9963300248818008
+          ],
+          "p_reject_95ci": [
+            0.9613708582549015,
+            0.9646779941744473
+          ]
+        },
+        "test": {
+          "e_keep": 0.99584,
+          "p_reject": 0.9611,
+          "e_keep_95ci": [
+            0.9952364821329542,
+            0.9963673337625414
+          ],
+          "p_reject_95ci": [
+            0.9593694571991478,
+            0.9627596963774356
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.98377,
+          "p_reject": 0.97766,
+          "e_keep_95ci": [
+            0.9829680449207663,
+            0.9845347888562852
+          ],
+          "p_reject_95ci": [
+            0.9767255104725385,
+            0.9785577927127487
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.9832,
+          "p_reject": 0.9779,
+          "e_keep_95ci": [
+            0.9820357914313042,
+            0.984289966556562
+          ],
+          "p_reject_95ci": [
+            0.9765742473644151,
+            0.9791523249501569
+          ]
+        },
+        "test": {
+          "e_keep": 0.98434,
+          "p_reject": 0.97742,
+          "e_keep_95ci": [
+            0.9832139401169444,
+            0.9853916427138567
+          ],
+          "p_reject_95ci": [
+            0.9760806926581187,
+            0.9786859534067966
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.99582,
+          "p_reject": 0.96166,
+          "e_keep_95ci": [
+            0.995400631152011,
+            0.9962012768690273
+          ],
+          "p_reject_95ci": [
+            0.9604520529215348,
+            0.9628324794833549
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.9958,
+          "p_reject": 0.96266,
+          "e_keep_95ci": [
+            0.995193797159557,
+            0.9963300248818008
+          ],
+          "p_reject_95ci": [
+            0.9609623102751389,
+            0.9642866036128291
+          ]
+        },
+        "test": {
+          "e_keep": 0.99584,
+          "p_reject": 0.96066,
+          "e_keep_95ci": [
+            0.9952364821329542,
+            0.9963673337625414
+          ],
+          "p_reject_95ci": [
+            0.9589203261127554,
+            0.9623288950683092
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.1,
+      "npe_threshold": 3,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.99574,
+          "p_reject": 0.97857,
+          "e_keep_95ci": [
+            0.9953168464718934,
+            0.9961250676952428
+          ],
+          "p_reject_95ci": [
+            0.9776539029158328,
+            0.9794493303575896
+          ]
+        },
+        "train": {
+          "e_keep": 0.99572,
+          "p_reject": 0.97894,
+          "e_keep_95ci": [
+            0.9951084656550077,
+            0.9962553686780741
+          ],
+          "p_reject_95ci": [
+            0.9776441673428561,
+            0.9801622451793058
+          ]
+        },
+        "test": {
+          "e_keep": 0.99576,
+          "p_reject": 0.9782,
+          "e_keep_95ci": [
+            0.9951511250602997,
+            0.9962927031269199
+          ],
+          "p_reject_95ci": [
+            0.976882799333924,
+            0.9794437268866836
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.98366,
+          "p_reject": 0.99145,
+          "e_keep_95ci": [
+            0.9828554444587353,
+            0.984427397769201
+          ],
+          "p_reject_95ci": [
+            0.990860174941689,
+            0.9920020688099533
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.9831,
+          "p_reject": 0.99126,
+          "e_keep_95ci": [
+            0.9819325109703464,
+            0.9841932623821746
+          ],
+          "p_reject_95ci": [
+            0.9904055643879779,
+            0.9920389552087092
+          ]
+        },
+        "test": {
+          "e_keep": 0.98422,
+          "p_reject": 0.99164,
+          "e_keep_95ci": [
+            0.983089857168937,
+            0.98527574409945
+          ],
+          "p_reject_95ci": [
+            0.9908032938425997,
+            0.9924011673683988
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.99574,
+          "p_reject": 0.97828,
+          "e_keep_95ci": [
+            0.9953168464718934,
+            0.9961250676952428
+          ],
+          "p_reject_95ci": [
+            0.977357996969509,
+            0.9791652585835187
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.99572,
+          "p_reject": 0.97864,
+          "e_keep_95ci": [
+            0.9951084656550077,
+            0.9962553686780741
+          ],
+          "p_reject_95ci": [
+            0.9773354569975029,
+            0.9798710016186235
+          ]
+        },
+        "test": {
+          "e_keep": 0.99576,
+          "p_reject": 0.97792,
+          "e_keep_95ci": [
+            0.9951511250602997,
+            0.9962927031269199
+          ],
+          "p_reject_95ci": [
+            0.9765948155533185,
+            0.9791717536883228
+          ]
+        }
+      }
+    }
+  ],
+  "continuous_tlc_policy": "tlcExpected*, tlcNpeTotal, tlcNpeMax, and freely optimized Npe cuts are diagnostic/systematic only; final groups use one fixed binary any-segment hit per response point",
+  "groups": [
+    {
+      "group": "bgo",
+      "candidate_features": [
+        "maxE",
+        "sumE",
+        "nHit",
+        "nCl4",
+        "nCl8",
+        "cl1Sum4",
+        "cl2Sum4",
+        "cl1Size4",
+        "cl1MaxFrac4",
+        "cl1RmsDeg4",
+        "allRmsDeg",
+        "cl2OverCl1",
+        "isolatedEFrac4",
+        "seed15NCl4",
+        "seed15Cl1Sum4",
+        "seed15Cl1Size4",
+        "e2OverE1",
+        "nHit2T",
+        "sum2T",
+        "local3x3Frac",
+        "meanHitE",
+        "thetaSpan",
+        "phiSpan"
+      ],
+      "log1p_features": [
+        "cl1Sum4",
+        "cl2Sum4",
+        "maxE",
+        "meanHitE",
+        "seed15Cl1Sum4",
+        "sum2T",
+        "sumE"
+      ],
+      "targets": {
+        "93.000": {
+          "fisher": {
+            "threshold": -1.683013489723299,
+            "orientation": 1,
+            "e_keep_train": 0.39826,
+            "p_reject_train": 0.93,
+            "features": [
+              "maxE",
+              "sumE",
+              "nHit",
+              "nCl4",
+              "nCl8",
+              "cl1Sum4",
+              "cl2Sum4",
+              "cl1Size4",
+              "cl1MaxFrac4",
+              "cl1RmsDeg4",
+              "allRmsDeg",
+              "cl2OverCl1",
+              "isolatedEFrac4",
+              "seed15NCl4",
+              "seed15Cl1Sum4",
+              "seed15Cl1Size4",
+              "e2OverE1",
+              "nHit2T",
+              "sum2T",
+              "local3x3Frac",
+              "meanHitE",
+              "thetaSpan",
+              "phiSpan"
+            ],
+            "centers": [
+              3.9122752936420486,
+              4.193019541982029,
+              2.25983,
+              1.53555,
+              1.43596,
+              4.061855124330463,
+              0.957508424726028,
+              1.61452,
+              0.8611564360074699,
+              2.7821998297393207,
+              13.868770863236154,
+              0.13728931895954535,
+              0.5722886701017246,
+              1.34215,
+              4.050519275468302,
+              1.60831,
+              0.2585699849156849,
+              1.65146,
+              4.104597474277499,
+              0.8831397761417925,
+              3.5782965342345063,
+              2.45259,
+              3.07112
+            ],
+            "scales": [
+              0.7287068080811951,
+              0.7575991310800995,
+              1.5950856939675686,
+              0.9792018165322204,
+              0.8392609119934039,
+              0.7452240633649041,
+              1.4350369889207062,
+              0.9143988022739312,
+              0.20610469123189185,
+              3.6824980291496607,
+              20.496163377921338,
+              0.25400996276375354,
+              0.46341965834676535,
+              0.7368469159194466,
+              0.7898764034112826,
+              0.9210803134906316,
+              0.3014097064439492,
+              1.016749658667265,
+              0.8689743937407906,
+              0.20778349686311276,
+              0.7426805974992969,
+              2.2827291323983228,
+              3.3162210338878193
+            ],
+            "weights": [
+              -0.2046993881223998,
+              -0.10053020864928965,
+              0.05478801008837645,
+              -0.030528975500760218,
+              0.10153893756605058,
+              0.03402139628782388,
+              1.3420849128567602,
+              0.05206162681935438,
+              0.07488540783082144,
+              0.3556464846517677,
+              0.18676976077852225,
+              -0.18139020123831687,
+              0.8477900787889402,
+              -0.09454239119206165,
+              0.12685510132898137,
+              0.09374419140470291,
+              0.08611876189517394,
+              0.010629323179218145,
+              0.10068310336902085,
+              -0.07957855566346374,
+              -0.5524530129655955,
+              0.26165681810118196,
+              0.1385525809292377
+            ],
+            "regularization": 0.05,
+            "test": {
+              "e_keep": 0.39770000000000005,
+              "p_reject": 0.93188,
+              "e_keep_95ci": [
+                0.39341811515239256,
+                0.4019976028894975
+              ],
+              "p_reject_95ci": [
+                0.9296382436142747,
+                0.9340553995144498
+              ]
+            }
+          }
+        },
+        "94.000": {
+          "fisher": {
+            "threshold": -1.7196324578097544,
+            "orientation": 1,
+            "e_keep_train": 0.37162,
+            "p_reject_train": 0.94,
+            "features": [
+              "maxE",
+              "sumE",
+              "nHit",
+              "nCl4",
+              "nCl8",
+              "cl1Sum4",
+              "cl2Sum4",
+              "cl1Size4",
+              "cl1MaxFrac4",
+              "cl1RmsDeg4",
+              "allRmsDeg",
+              "cl2OverCl1",
+              "isolatedEFrac4",
+              "seed15NCl4",
+              "seed15Cl1Sum4",
+              "seed15Cl1Size4",
+              "e2OverE1",
+              "nHit2T",
+              "sum2T",
+              "local3x3Frac",
+              "meanHitE",
+              "thetaSpan",
+              "phiSpan"
+            ],
+            "centers": [
+              3.9122752936420486,
+              4.193019541982029,
+              2.25983,
+              1.53555,
+              1.43596,
+              4.061855124330463,
+              0.957508424726028,
+              1.61452,
+              0.8611564360074699,
+              2.7821998297393207,
+              13.868770863236154,
+              0.13728931895954535,
+              0.5722886701017246,
+              1.34215,
+              4.050519275468302,
+              1.60831,
+              0.2585699849156849,
+              1.65146,
+              4.104597474277499,
+              0.8831397761417925,
+              3.5782965342345063,
+              2.45259,
+              3.07112
+            ],
+            "scales": [
+              0.7287068080811951,
+              0.7575991310800995,
+              1.5950856939675686,
+              0.9792018165322204,
+              0.8392609119934039,
+              0.7452240633649041,
+              1.4350369889207062,
+              0.9143988022739312,
+              0.20610469123189185,
+              3.6824980291496607,
+              20.496163377921338,
+              0.25400996276375354,
+              0.46341965834676535,
+              0.7368469159194466,
+              0.7898764034112826,
+              0.9210803134906316,
+              0.3014097064439492,
+              1.016749658667265,
+              0.8689743937407906,
+              0.20778349686311276,
+              0.7426805974992969,
+              2.2827291323983228,
+              3.3162210338878193
+            ],
+            "weights": [
+              -0.2046993881223998,
+              -0.10053020864928965,
+              0.05478801008837645,
+              -0.030528975500760218,
+              0.10153893756605058,
+              0.03402139628782388,
+              1.3420849128567602,
+              0.05206162681935438,
+              0.07488540783082144,
+              0.3556464846517677,
+              0.18676976077852225,
+              -0.18139020123831687,
+              0.8477900787889402,
+              -0.09454239119206165,
+              0.12685510132898137,
+              0.09374419140470291,
+              0.08611876189517394,
+              0.010629323179218145,
+              0.10068310336902085,
+              -0.07957855566346374,
+              -0.5524530129655955,
+              0.26165681810118196,
+              0.1385525809292377
+            ],
+            "regularization": 0.05,
+            "test": {
+              "e_keep": 0.37144,
+              "p_reject": 0.94054,
+              "e_keep_95ci": [
+                0.36721476057176966,
+                0.37568499222847834
+              ],
+              "p_reject_95ci": [
+                0.9384331272740529,
+                0.9425791852755634
+              ]
+            }
+          }
+        },
+        "95.000": {
+          "fisher": {
+            "threshold": -1.7679739428036865,
+            "orientation": 1,
+            "e_keep_train": 0.33508,
+            "p_reject_train": 0.95,
+            "features": [
+              "maxE",
+              "sumE",
+              "nHit",
+              "nCl4",
+              "nCl8",
+              "cl1Sum4",
+              "cl2Sum4",
+              "cl1Size4",
+              "cl1MaxFrac4",
+              "cl1RmsDeg4",
+              "allRmsDeg",
+              "cl2OverCl1",
+              "isolatedEFrac4",
+              "seed15NCl4",
+              "seed15Cl1Sum4",
+              "seed15Cl1Size4",
+              "e2OverE1",
+              "nHit2T",
+              "sum2T",
+              "local3x3Frac",
+              "meanHitE",
+              "thetaSpan",
+              "phiSpan"
+            ],
+            "centers": [
+              3.9122752936420486,
+              4.193019541982029,
+              2.25983,
+              1.53555,
+              1.43596,
+              4.061855124330463,
+              0.957508424726028,
+              1.61452,
+              0.8611564360074699,
+              2.7821998297393207,
+              13.868770863236154,
+              0.13728931895954535,
+              0.5722886701017246,
+              1.34215,
+              4.050519275468302,
+              1.60831,
+              0.2585699849156849,
+              1.65146,
+              4.104597474277499,
+              0.8831397761417925,
+              3.5782965342345063,
+              2.45259,
+              3.07112
+            ],
+            "scales": [
+              0.7287068080811951,
+              0.7575991310800995,
+              1.5950856939675686,
+              0.9792018165322204,
+              0.8392609119934039,
+              0.7452240633649041,
+              1.4350369889207062,
+              0.9143988022739312,
+              0.20610469123189185,
+              3.6824980291496607,
+              20.496163377921338,
+              0.25400996276375354,
+              0.46341965834676535,
+              0.7368469159194466,
+              0.7898764034112826,
+              0.9210803134906316,
+              0.3014097064439492,
+              1.016749658667265,
+              0.8689743937407906,
+              0.20778349686311276,
+              0.7426805974992969,
+              2.2827291323983228,
+              3.3162210338878193
+            ],
+            "weights": [
+              -0.2046993881223998,
+              -0.10053020864928965,
+              0.05478801008837645,
+              -0.030528975500760218,
+              0.10153893756605058,
+              0.03402139628782388,
+              1.3420849128567602,
+              0.05206162681935438,
+              0.07488540783082144,
+              0.3556464846517677,
+              0.18676976077852225,
+              -0.18139020123831687,
+              0.8477900787889402,
+              -0.09454239119206165,
+              0.12685510132898137,
+              0.09374419140470291,
+              0.08611876189517394,
+              0.010629323179218145,
+              0.10068310336902085,
+              -0.07957855566346374,
+              -0.5524530129655955,
+              0.26165681810118196,
+              0.1385525809292377
+            ],
+            "regularization": 0.05,
+            "test": {
+              "e_keep": 0.33740000000000003,
+              "p_reject": 0.95054,
+              "e_keep_95ci": [
+                0.33326823490072083,
+                0.3415567480280311
+              ],
+              "p_reject_95ci": [
+                0.9486046132009511,
+                0.9524061628831824
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "group": "final_eff05_npe1",
+      "candidate_features": [
+        "maxE",
+        "sumE",
+        "nHit",
+        "nCl4",
+        "nCl8",
+        "cl1Sum4",
+        "cl2Sum4",
+        "cl1Size4",
+        "cl1MaxFrac4",
+        "cl1RmsDeg4",
+        "allRmsDeg",
+        "cl2OverCl1",
+        "isolatedEFrac4",
+        "seed15NCl4",
+        "seed15Cl1Sum4",
+        "seed15Cl1Size4",
+        "e2OverE1",
+        "nHit2T",
+        "sum2T",
+        "local3x3Frac",
+        "meanHitE",
+        "thetaSpan",
+        "phiSpan",
+        "thMatchedDEdx_MeV_per_mm",
+        "absDeltaZ_mm",
+        "absDeltaZValid",
+        "absDeltaZLt90",
+        "tlcAnySegHitGe1_eff05"
+      ],
+      "log1p_features": [
+        "cl1Sum4",
+        "cl2Sum4",
+        "maxE",
+        "meanHitE",
+        "seed15Cl1Sum4",
+        "sum2T",
+        "sumE"
+      ],
+      "targets": {
+        "93.000": {
+          "fisher": {
+            "threshold": 8.708332521492908,
+            "orientation": 1,
+            "e_keep_train": 0.99582,
+            "p_reject_train": 0.93742,
+            "features": [
+              "maxE",
+              "sumE",
+              "nHit",
+              "nCl4",
+              "nCl8",
+              "cl1Sum4",
+              "cl2Sum4",
+              "cl1Size4",
+              "cl1MaxFrac4",
+              "cl1RmsDeg4",
+              "allRmsDeg",
+              "cl2OverCl1",
+              "isolatedEFrac4",
+              "seed15NCl4",
+              "seed15Cl1Sum4",
+              "seed15Cl1Size4",
+              "e2OverE1",
+              "nHit2T",
+              "sum2T",
+              "local3x3Frac",
+              "meanHitE",
+              "thetaSpan",
+              "phiSpan",
+              "thMatchedDEdx_MeV_per_mm",
+              "absDeltaZ_mm",
+              "absDeltaZValid",
+              "absDeltaZLt90",
+              "tlcAnySegHitGe1_eff05"
+            ],
+            "centers": [
+              3.9122752936420486,
+              4.193019541982029,
+              2.25983,
+              1.53555,
+              1.43596,
+              4.061855124330463,
+              0.957508424726028,
+              1.61452,
+              0.8611564360074699,
+              2.7821998297393207,
+              13.868770863236154,
+              0.13728931895954535,
+              0.5722886701017246,
+              1.34215,
+              4.050519275468302,
+              1.60831,
+              0.2585699849156849,
+              1.65146,
+              4.104597474277499,
+              0.8831397761417925,
+              3.5782965342345063,
+              2.45259,
+              3.07112,
+              0.2920089563656557,
+              4.860401007952483,
+              0.87114,
+              0.86266,
+              0.52879
+            ],
+            "scales": [
+              0.7287068080811951,
+              0.7575991310800995,
+              1.5950856939675686,
+              0.9792018165322204,
+              0.8392609119934039,
+              0.7452240633649041,
+              1.4350369889207062,
+              0.9143988022739312,
+              0.20610469123189185,
+              3.6824980291496607,
+              20.496163377921338,
+              0.25400996276375354,
+              0.46341965834676535,
+              0.7368469159194466,
+              0.7898764034112826,
+              0.9210803134906316,
+              0.3014097064439492,
+              1.016749658667265,
+              0.8689743937407906,
+              0.20778349686311276,
+              0.7426805974992969,
+              2.2827291323983228,
+              3.3162210338878193,
+              0.2902853259062261,
+              17.779197033628027,
+              0.33504492295810123,
+              0.34420593312724873,
+              0.49917044774305297
+            ],
+            "weights": [
+              -0.2000905934116226,
+              -0.07361712726308624,
+              0.09899826062137693,
+              -0.027899916153988638,
+              0.20944663207508302,
+              0.05969492488101935,
+              1.2882075212929582,
+              0.10057950806591898,
+              0.30374291637673817,
+              0.5048773693764717,
+              0.07262412991304701,
+              -0.13123808361849798,
+              0.9087860599110199,
+              -0.033610993528152625,
+              0.18358760308174185,
+              0.15562287738763103,
+              0.14994625262049388,
+              0.05576053589382705,
+              0.12418778520804466,
+              0.21115016503852527,
+              -0.4787207645816559,
+              0.27824543568683047,
+              0.1249670848667289,
+              1.5253980227805168,
+              -0.14843739284630364,
+              -0.3528369267408284,
+              -0.6842359736331496,
+              -11.066569901042284
+            ],
+            "regularization": 0.05,
+            "test": {
+              "e_keep": 0.99584,
+              "p_reject": 0.93528,
+              "e_keep_95ci": [
+                0.9952364821329542,
+                0.9963673337625414
+              ],
+              "p_reject_95ci": [
+                0.933089865550749,
+                0.9374032551797112
+              ]
+            }
+          }
+        },
+        "94.000": {
+          "fisher": {
+            "threshold": -4.6997386962588354,
+            "orientation": 1,
+            "e_keep_train": 0.9956,
+            "p_reject_train": 0.94002,
+            "features": [
+              "maxE",
+              "sumE",
+              "nHit",
+              "nCl4",
+              "nCl8",
+              "cl1Sum4",
+              "cl2Sum4",
+              "cl1Size4",
+              "cl1MaxFrac4",
+              "cl1RmsDeg4",
+              "allRmsDeg",
+              "cl2OverCl1",
+              "isolatedEFrac4",
+              "seed15NCl4",
+              "seed15Cl1Sum4",
+              "seed15Cl1Size4",
+              "e2OverE1",
+              "nHit2T",
+              "sum2T",
+              "local3x3Frac",
+              "meanHitE",
+              "thetaSpan",
+              "phiSpan",
+              "thMatchedDEdx_MeV_per_mm",
+              "absDeltaZ_mm",
+              "absDeltaZValid",
+              "absDeltaZLt90",
+              "tlcAnySegHitGe1_eff05"
+            ],
+            "centers": [
+              3.9122752936420486,
+              4.193019541982029,
+              2.25983,
+              1.53555,
+              1.43596,
+              4.061855124330463,
+              0.957508424726028,
+              1.61452,
+              0.8611564360074699,
+              2.7821998297393207,
+              13.868770863236154,
+              0.13728931895954535,
+              0.5722886701017246,
+              1.34215,
+              4.050519275468302,
+              1.60831,
+              0.2585699849156849,
+              1.65146,
+              4.104597474277499,
+              0.8831397761417925,
+              3.5782965342345063,
+              2.45259,
+              3.07112,
+              0.2920089563656557,
+              4.860401007952483,
+              0.87114,
+              0.86266,
+              0.52879
+            ],
+            "scales": [
+              0.7287068080811951,
+              0.7575991310800995,
+              1.5950856939675686,
+              0.9792018165322204,
+              0.8392609119934039,
+              0.7452240633649041,
+              1.4350369889207062,
+              0.9143988022739312,
+              0.20610469123189185,
+              3.6824980291496607,
+              20.496163377921338,
+              0.25400996276375354,
+              0.46341965834676535,
+              0.7368469159194466,
+              0.7898764034112826,
+              0.9210803134906316,
+              0.3014097064439492,
+              1.016749658667265,
+              0.8689743937407906,
+              0.20778349686311276,
+              0.7426805974992969,
+              2.2827291323983228,
+              3.3162210338878193,
+              0.2902853259062261,
+              17.779197033628027,
+              0.33504492295810123,
+              0.34420593312724873,
+              0.49917044774305297
+            ],
+            "weights": [
+              -0.2000905934116226,
+              -0.07361712726308624,
+              0.09899826062137693,
+              -0.027899916153988638,
+              0.20944663207508302,
+              0.05969492488101935,
+              1.2882075212929582,
+              0.10057950806591898,
+              0.30374291637673817,
+              0.5048773693764717,
+              0.07262412991304701,
+              -0.13123808361849798,
+              0.9087860599110199,
+              -0.033610993528152625,
+              0.18358760308174185,
+              0.15562287738763103,
+              0.14994625262049388,
+              0.05576053589382705,
+              0.12418778520804466,
+              0.21115016503852527,
+              -0.4787207645816559,
+              0.27824543568683047,
+              0.1249670848667289,
+              1.5253980227805168,
+              -0.14843739284630364,
+              -0.3528369267408284,
+              -0.6842359736331496,
+              -11.066569901042284
+            ],
+            "regularization": 0.05,
+            "test": {
+              "e_keep": 0.99578,
+              "p_reject": 0.93804,
+              "e_keep_95ci": [
+                0.9951724595120214,
+                0.9963113656022674
+              ],
+              "p_reject_95ci": [
+                0.9358930157147278,
+                0.9401196809512591
+              ]
+            }
+          }
+        },
+        "95.000": {
+          "fisher": {
+            "threshold": -6.39979348353235,
+            "orientation": 1,
+            "e_keep_train": 0.99536,
+            "p_reject_train": 0.95138,
+            "features": [
+              "maxE",
+              "sumE",
+              "nHit",
+              "nCl4",
+              "nCl8",
+              "cl1Sum4",
+              "cl2Sum4",
+              "cl1Size4",
+              "cl1MaxFrac4",
+              "cl1RmsDeg4",
+              "allRmsDeg",
+              "cl2OverCl1",
+              "isolatedEFrac4",
+              "seed15NCl4",
+              "seed15Cl1Sum4",
+              "seed15Cl1Size4",
+              "e2OverE1",
+              "nHit2T",
+              "sum2T",
+              "local3x3Frac",
+              "meanHitE",
+              "thetaSpan",
+              "phiSpan",
+              "thMatchedDEdx_MeV_per_mm",
+              "absDeltaZ_mm",
+              "absDeltaZValid",
+              "absDeltaZLt90",
+              "tlcAnySegHitGe1_eff05"
+            ],
+            "centers": [
+              3.9122752936420486,
+              4.193019541982029,
+              2.25983,
+              1.53555,
+              1.43596,
+              4.061855124330463,
+              0.957508424726028,
+              1.61452,
+              0.8611564360074699,
+              2.7821998297393207,
+              13.868770863236154,
+              0.13728931895954535,
+              0.5722886701017246,
+              1.34215,
+              4.050519275468302,
+              1.60831,
+              0.2585699849156849,
+              1.65146,
+              4.104597474277499,
+              0.8831397761417925,
+              3.5782965342345063,
+              2.45259,
+              3.07112,
+              0.2920089563656557,
+              4.860401007952483,
+              0.87114,
+              0.86266,
+              0.52879
+            ],
+            "scales": [
+              0.7287068080811951,
+              0.7575991310800995,
+              1.5950856939675686,
+              0.9792018165322204,
+              0.8392609119934039,
+              0.7452240633649041,
+              1.4350369889207062,
+              0.9143988022739312,
+              0.20610469123189185,
+              3.6824980291496607,
+              20.496163377921338,
+              0.25400996276375354,
+              0.46341965834676535,
+              0.7368469159194466,
+              0.7898764034112826,
+              0.9210803134906316,
+              0.3014097064439492,
+              1.016749658667265,
+              0.8689743937407906,
+              0.20778349686311276,
+              0.7426805974992969,
+              2.2827291323983228,
+              3.3162210338878193,
+              0.2902853259062261,
+              17.779197033628027,
+              0.33504492295810123,
+              0.34420593312724873,
+              0.49917044774305297
+            ],
+            "weights": [
+              -0.2000905934116226,
+              -0.07361712726308624,
+              0.09899826062137693,
+              -0.027899916153988638,
+              0.20944663207508302,
+              0.05969492488101935,
+              1.2882075212929582,
+              0.10057950806591898,
+              0.30374291637673817,
+              0.5048773693764717,
+              0.07262412991304701,
+              -0.13123808361849798,
+              0.9087860599110199,
+              -0.033610993528152625,
+              0.18358760308174185,
+              0.15562287738763103,
+              0.14994625262049388,
+              0.05576053589382705,
+              0.12418778520804466,
+              0.21115016503852527,
+              -0.4787207645816559,
+              0.27824543568683047,
+              0.1249670848667289,
+              1.5253980227805168,
+              -0.14843739284630364,
+              -0.3528369267408284,
+              -0.6842359736331496,
+              -11.066569901042284
+            ],
+            "regularization": 0.05,
+            "test": {
+              "e_keep": 0.9956,
+              "p_reject": 0.94984,
+              "e_keep_95ci": [
+                0.9949805618630378,
+                0.9961432909076295
+              ],
+              "p_reject_95ci": [
+                0.9478919736648198,
+                0.9517189099718973
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "group": "final_matched_eff05_npe1",
+      "candidate_features": [
+        "maxE",
+        "sumE",
+        "nHit",
+        "nCl4",
+        "nCl8",
+        "cl1Sum4",
+        "cl2Sum4",
+        "cl1Size4",
+        "cl1MaxFrac4",
+        "cl1RmsDeg4",
+        "allRmsDeg",
+        "cl2OverCl1",
+        "isolatedEFrac4",
+        "seed15NCl4",
+        "seed15Cl1Sum4",
+        "seed15Cl1Size4",
+        "e2OverE1",
+        "nHit2T",
+        "sum2T",
+        "local3x3Frac",
+        "meanHitE",
+        "thetaSpan",
+        "phiSpan",
+        "thMatchedDEdx_MeV_per_mm",
+        "absDeltaZ_mm",
+        "absDeltaZValid",
+        "absDeltaZLt90",
+        "matchedAnySegHitGe1_eff05"
+      ],
+      "log1p_features": [
+        "cl1Sum4",
+        "cl2Sum4",
+        "maxE",
+        "meanHitE",
+        "seed15Cl1Sum4",
+        "sum2T",
+        "sumE"
+      ],
+      "targets": {
+        "93.000": {
+          "fisher": {
+            "threshold": 9.946618276360656,
+            "orientation": 1,
+            "e_keep_train": 0.99266,
+            "p_reject_train": 0.9301,
+            "features": [
+              "maxE",
+              "sumE",
+              "nHit",
+              "nCl4",
+              "nCl8",
+              "cl1Sum4",
+              "cl2Sum4",
+              "cl1Size4",
+              "cl1MaxFrac4",
+              "cl1RmsDeg4",
+              "allRmsDeg",
+              "cl2OverCl1",
+              "isolatedEFrac4",
+              "seed15NCl4",
+              "seed15Cl1Sum4",
+              "seed15Cl1Size4",
+              "e2OverE1",
+              "nHit2T",
+              "sum2T",
+              "local3x3Frac",
+              "meanHitE",
+              "thetaSpan",
+              "phiSpan",
+              "thMatchedDEdx_MeV_per_mm",
+              "absDeltaZ_mm",
+              "absDeltaZValid",
+              "absDeltaZLt90",
+              "matchedAnySegHitGe1_eff05"
+            ],
+            "centers": [
+              3.9122752936420486,
+              4.193019541982029,
+              2.25983,
+              1.53555,
+              1.43596,
+              4.061855124330463,
+              0.957508424726028,
+              1.61452,
+              0.8611564360074699,
+              2.7821998297393207,
+              13.868770863236154,
+              0.13728931895954535,
+              0.5722886701017246,
+              1.34215,
+              4.050519275468302,
+              1.60831,
+              0.2585699849156849,
+              1.65146,
+              4.104597474277499,
+              0.8831397761417925,
+              3.5782965342345063,
+              2.45259,
+              3.07112,
+              0.2920089563656557,
+              4.860401007952483,
+              0.87114,
+              0.86266,
+              0.51342
+            ],
+            "scales": [
+              0.7287068080811951,
+              0.7575991310800995,
+              1.5950856939675686,
+              0.9792018165322204,
+              0.8392609119934039,
+              0.7452240633649041,
+              1.4350369889207062,
+              0.9143988022739312,
+              0.20610469123189185,
+              3.6824980291496607,
+              20.496163377921338,
+              0.25400996276375354,
+              0.46341965834676535,
+              0.7368469159194466,
+              0.7898764034112826,
+              0.9210803134906316,
+              0.3014097064439492,
+              1.016749658667265,
+              0.8689743937407906,
+              0.20778349686311276,
+              0.7426805974992969,
+              2.2827291323983228,
+              3.3162210338878193,
+              0.2902853259062261,
+              17.779197033628027,
+              0.33504492295810123,
+              0.34420593312724873,
+              0.4998198711535986
+            ],
+            "weights": [
+              -0.21428787260403875,
+              -0.08806922482110427,
+              0.06318398821008372,
+              -0.028933541499974645,
+              0.11430259502744591,
+              0.001362677531233774,
+              1.2030618053327937,
+              0.01636126264295673,
+              0.18419512841381372,
+              0.5390372002806102,
+              0.20338112697497557,
+              -0.1005795158651162,
+              0.877429100579352,
+              -0.03592807014799592,
+              0.2923491671359898,
+              0.13590623905562235,
+              0.07248085652110996,
+              -0.029989839078285157,
+              0.3178574718335207,
+              -0.00039093391061521994,
+              -0.46979963746141146,
+              0.29821027751293505,
+              0.05766074864013144,
+              1.3855393767253714,
+              -0.1906802664712979,
+              0.05031637536317258,
+              -0.3319532108466592,
+              -11.686233095430584
+            ],
+            "regularization": 0.05,
+            "test": {
+              "e_keep": 0.99282,
+              "p_reject": 0.93118,
+              "e_keep_95ci": [
+                0.9920411513797086,
+                0.9935231285283631
+              ],
+              "p_reject_95ci": [
+                0.9289278158185666,
+                0.9333659348627416
+              ]
+            }
+          }
+        },
+        "94.000": {
+          "fisher": {
+            "threshold": 9.210984233502465,
+            "orientation": 1,
+            "e_keep_train": 0.98836,
+            "p_reject_train": 0.94002,
+            "features": [
+              "maxE",
+              "sumE",
+              "nHit",
+              "nCl4",
+              "nCl8",
+              "cl1Sum4",
+              "cl2Sum4",
+              "cl1Size4",
+              "cl1MaxFrac4",
+              "cl1RmsDeg4",
+              "allRmsDeg",
+              "cl2OverCl1",
+              "isolatedEFrac4",
+              "seed15NCl4",
+              "seed15Cl1Sum4",
+              "seed15Cl1Size4",
+              "e2OverE1",
+              "nHit2T",
+              "sum2T",
+              "local3x3Frac",
+              "meanHitE",
+              "thetaSpan",
+              "phiSpan",
+              "thMatchedDEdx_MeV_per_mm",
+              "absDeltaZ_mm",
+              "absDeltaZValid",
+              "absDeltaZLt90",
+              "matchedAnySegHitGe1_eff05"
+            ],
+            "centers": [
+              3.9122752936420486,
+              4.193019541982029,
+              2.25983,
+              1.53555,
+              1.43596,
+              4.061855124330463,
+              0.957508424726028,
+              1.61452,
+              0.8611564360074699,
+              2.7821998297393207,
+              13.868770863236154,
+              0.13728931895954535,
+              0.5722886701017246,
+              1.34215,
+              4.050519275468302,
+              1.60831,
+              0.2585699849156849,
+              1.65146,
+              4.104597474277499,
+              0.8831397761417925,
+              3.5782965342345063,
+              2.45259,
+              3.07112,
+              0.2920089563656557,
+              4.860401007952483,
+              0.87114,
+              0.86266,
+              0.51342
+            ],
+            "scales": [
+              0.7287068080811951,
+              0.7575991310800995,
+              1.5950856939675686,
+              0.9792018165322204,
+              0.8392609119934039,
+              0.7452240633649041,
+              1.4350369889207062,
+              0.9143988022739312,
+              0.20610469123189185,
+              3.6824980291496607,
+              20.496163377921338,
+              0.25400996276375354,
+              0.46341965834676535,
+              0.7368469159194466,
+              0.7898764034112826,
+              0.9210803134906316,
+              0.3014097064439492,
+              1.016749658667265,
+              0.8689743937407906,
+              0.20778349686311276,
+              0.7426805974992969,
+              2.2827291323983228,
+              3.3162210338878193,
+              0.2902853259062261,
+              17.779197033628027,
+              0.33504492295810123,
+              0.34420593312724873,
+              0.4998198711535986
+            ],
+            "weights": [
+              -0.21428787260403875,
+              -0.08806922482110427,
+              0.06318398821008372,
+              -0.028933541499974645,
+              0.11430259502744591,
+              0.001362677531233774,
+              1.2030618053327937,
+              0.01636126264295673,
+              0.18419512841381372,
+              0.5390372002806102,
+              0.20338112697497557,
+              -0.1005795158651162,
+              0.877429100579352,
+              -0.03592807014799592,
+              0.2923491671359898,
+              0.13590623905562235,
+              0.07248085652110996,
+              -0.029989839078285157,
+              0.3178574718335207,
+              -0.00039093391061521994,
+              -0.46979963746141146,
+              0.29821027751293505,
+              0.05766074864013144,
+              1.3855393767253714,
+              -0.1906802664712979,
+              0.05031637536317258,
+              -0.3319532108466592,
+              -11.686233095430584
+            ],
+            "regularization": 0.05,
+            "test": {
+              "e_keep": 0.98928,
+              "p_reject": 0.9414,
+              "e_keep_95ci": [
+                0.9883390127963418,
+                0.9901458110205108
+              ],
+              "p_reject_95ci": [
+                0.9393071619204042,
+                0.9434250184931806
+              ]
+            }
+          }
+        },
+        "95.000": {
+          "fisher": {
+            "threshold": 8.2301913279195,
+            "orientation": 1,
+            "e_keep_train": 0.98324,
+            "p_reject_train": 0.95584,
+            "features": [
+              "maxE",
+              "sumE",
+              "nHit",
+              "nCl4",
+              "nCl8",
+              "cl1Sum4",
+              "cl2Sum4",
+              "cl1Size4",
+              "cl1MaxFrac4",
+              "cl1RmsDeg4",
+              "allRmsDeg",
+              "cl2OverCl1",
+              "isolatedEFrac4",
+              "seed15NCl4",
+              "seed15Cl1Sum4",
+              "seed15Cl1Size4",
+              "e2OverE1",
+              "nHit2T",
+              "sum2T",
+              "local3x3Frac",
+              "meanHitE",
+              "thetaSpan",
+              "phiSpan",
+              "thMatchedDEdx_MeV_per_mm",
+              "absDeltaZ_mm",
+              "absDeltaZValid",
+              "absDeltaZLt90",
+              "matchedAnySegHitGe1_eff05"
+            ],
+            "centers": [
+              3.9122752936420486,
+              4.193019541982029,
+              2.25983,
+              1.53555,
+              1.43596,
+              4.061855124330463,
+              0.957508424726028,
+              1.61452,
+              0.8611564360074699,
+              2.7821998297393207,
+              13.868770863236154,
+              0.13728931895954535,
+              0.5722886701017246,
+              1.34215,
+              4.050519275468302,
+              1.60831,
+              0.2585699849156849,
+              1.65146,
+              4.104597474277499,
+              0.8831397761417925,
+              3.5782965342345063,
+              2.45259,
+              3.07112,
+              0.2920089563656557,
+              4.860401007952483,
+              0.87114,
+              0.86266,
+              0.51342
+            ],
+            "scales": [
+              0.7287068080811951,
+              0.7575991310800995,
+              1.5950856939675686,
+              0.9792018165322204,
+              0.8392609119934039,
+              0.7452240633649041,
+              1.4350369889207062,
+              0.9143988022739312,
+              0.20610469123189185,
+              3.6824980291496607,
+              20.496163377921338,
+              0.25400996276375354,
+              0.46341965834676535,
+              0.7368469159194466,
+              0.7898764034112826,
+              0.9210803134906316,
+              0.3014097064439492,
+              1.016749658667265,
+              0.8689743937407906,
+              0.20778349686311276,
+              0.7426805974992969,
+              2.2827291323983228,
+              3.3162210338878193,
+              0.2902853259062261,
+              17.779197033628027,
+              0.33504492295810123,
+              0.34420593312724873,
+              0.4998198711535986
+            ],
+            "weights": [
+              -0.21428787260403875,
+              -0.08806922482110427,
+              0.06318398821008372,
+              -0.028933541499974645,
+              0.11430259502744591,
+              0.001362677531233774,
+              1.2030618053327937,
+              0.01636126264295673,
+              0.18419512841381372,
+              0.5390372002806102,
+              0.20338112697497557,
+              -0.1005795158651162,
+              0.877429100579352,
+              -0.03592807014799592,
+              0.2923491671359898,
+              0.13590623905562235,
+              0.07248085652110996,
+              -0.029989839078285157,
+              0.3178574718335207,
+              -0.00039093391061521994,
+              -0.46979963746141146,
+              0.29821027751293505,
+              0.05766074864013144,
+              1.3855393767253714,
+              -0.1906802664712979,
+              0.05031637536317258,
+              -0.3319532108466592,
+              -11.686233095430584
+            ],
+            "regularization": 0.05,
+            "test": {
+              "e_keep": 0.98438,
+              "p_reject": 0.95626,
+              "e_keep_95ci": [
+                0.9832553047475807,
+                0.9854302719373587
+              ],
+              "p_reject_95ci": [
+                0.9544320455828359,
+                0.9580178516430413
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+schema: beta-bgo-th-tlc-v1
+tag: timing
+build_dir: build_thtiming
+events: 100000
+seed: 6302026
+threads: 8
+
+# Cartesian product: two geometry definitions x three primaries = six jobs.
+geometries:
+  - name: a10x20
+    n_layer: 10
+    n_sector: 20
+    segmentation: equal_solid_angle
+  - name: a20x40
+    n_layer: 20
+    n_sector: 40
+    segmentation: equal_solid_angle
+
+primaries: [e, pim, pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096

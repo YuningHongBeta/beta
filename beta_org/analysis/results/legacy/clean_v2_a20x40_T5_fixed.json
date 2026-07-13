@@ -1,0 +1,1994 @@
+{
+  "status": "complete",
+  "electron": "tmp/clean_v2_a20x40_e_T5.bgo2",
+  "pion": "tmp/clean_v2_a20x40_pim_T5.bgo2",
+  "pi0": null,
+  "feature_files_ephemeral": {
+    "electron": "tmp/clean_v2_a20x40_e_T5.bgo2",
+    "pion": "tmp/clean_v2_a20x40_pim_T5.bgo2",
+    "pi0": null,
+    "note": "temporary extracted BGO2 files; regenerate from source_root_files"
+  },
+  "source_root_files": {
+    "electron": "beta_org/build_opt/output/scan/incl165_v2_a20x40_e.root",
+    "pion": "beta_org/build_opt/output/scan/incl165_v2_a20x40_pim.root",
+    "pi0": null
+  },
+  "extractor_provenance": {
+    "classifier_inputs": [
+      "calarr.dE_MeV",
+      "th.dE_MeV",
+      "th.time_ns",
+      "tlc.cherenkovExpectedPhotons",
+      "tlc.cherenkovTime_ns"
+    ],
+    "forbidden_inputs_read": [],
+    "event_join": "eventID",
+    "poisson_response": {
+      "efficiencies": [
+        0.01,
+        0.02,
+        0.05,
+        0.1
+      ],
+      "npeThresholds": [
+        1,
+        2,
+        3
+      ],
+      "primaryHitDefinition": "any of 30 segments has Npe >= fixed threshold",
+      "seed": "splitmix64(eventID, efficiencyIndex)"
+    },
+    "timing_response": null
+  },
+  "metadata": {
+    "version": 2,
+    "nrow": 100000,
+    "ncol": 130,
+    "nLayer": 20,
+    "nSector": 40,
+    "segmentationMode": 1,
+    "physicsFlag": 4,
+    "nSegTH": 30,
+    "nSegTLC": 30,
+    "thetaMin_deg": 5.666,
+    "thetaMax_deg": 170.302,
+    "threshold_MeV": 5.0
+  },
+  "readout_mode": "legacy-readout",
+  "split": "even eventID train, odd eventID test, independently per sample",
+  "counts": {
+    "electron_train": 50000,
+    "electron_test": 50000,
+    "pion_train": 50000,
+    "pion_test": 50000
+  },
+  "classifier_truth_usage": "sample label only",
+  "forbidden_inputs": [
+    "target",
+    "pdg",
+    "pid",
+    "tlc.dE_truth_MeV",
+    "th.chargedPath_truth_mm",
+    "tlc.chargedPath_truth_mm"
+  ],
+  "baseline_any_bgo_hit": {
+    "train": {
+      "e_keep": 0.01574,
+      "p_reject": 0.9843
+    },
+    "test": {
+      "e_keep": 0.0159,
+      "p_reject": 0.9851,
+      "e_keep_95ci": [
+        0.01484017078802133,
+        0.017034209506005864
+      ],
+      "p_reject_95ci": [
+        0.9840001888768687,
+        0.9861252771825558
+      ]
+    }
+  },
+  "baseline_ncluster_eq_1": {
+    "four_neighbor": {
+      "train": {
+        "e_keep": 0.8844,
+        "p_reject": 0.66438
+      },
+      "test": {
+        "e_keep": 0.88318,
+        "p_reject": 0.66864,
+        "e_keep_95ci": [
+          0.8803350769426607,
+          0.8859660487729654
+        ],
+        "p_reject_95ci": [
+          0.6645013718812262,
+          0.6727527171648703
+        ]
+      }
+    },
+    "eight_neighbor": {
+      "train": {
+        "e_keep": 0.9277,
+        "p_reject": 0.63
+      },
+      "test": {
+        "e_keep": 0.9251,
+        "p_reject": 0.63456,
+        "e_keep_95ci": [
+          0.9227599303662108,
+          0.9273747544861111
+        ],
+        "p_reject_95ci": [
+          0.6303288886841061,
+          0.638770436636356
+        ]
+      }
+    }
+  },
+  "baseline_abs_delta_z_lt90_mm": null,
+  "fixed_timing_response": null,
+  "fixed_th_dedx_response": null,
+  "fixed_combined_response": null,
+  "fixed_tlc_binary_response": [
+    {
+      "efficiency": 0.01,
+      "npe_threshold": 1,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.95391,
+          "p_reject": 0.97693,
+          "e_keep_95ci": [
+            0.952592885536759,
+            0.955192242271376
+          ],
+          "p_reject_95ci": [
+            0.9759810445134031,
+            0.9778423147550285
+          ]
+        },
+        "train": {
+          "e_keep": 0.95372,
+          "p_reject": 0.9771,
+          "e_keep_95ci": [
+            0.9518433910333384,
+            0.9555268964547714
+          ],
+          "p_reject_95ci": [
+            0.975751741927451,
+            0.9783749533043599
+          ]
+        },
+        "test": {
+          "e_keep": 0.9541,
+          "p_reject": 0.97676,
+          "e_keep_95ci": [
+            0.9522305701294015,
+            0.9558996589730199
+          ],
+          "p_reject_95ci": [
+            0.9754023051121778,
+            0.9780444423594592
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.95028,
+          "p_reject": 0.98547,
+          "e_keep_95ci": [
+            0.9489153953216994,
+            0.9516100113656328
+          ],
+          "p_reject_95ci": [
+            0.9847094752634775,
+            0.9861932279089911
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.95014,
+          "p_reject": 0.98526,
+          "e_keep_95ci": [
+            0.9481973778533187,
+            0.952013459689434
+          ],
+          "p_reject_95ci": [
+            0.9841658037138679,
+            0.986279637762109
+          ]
+        },
+        "test": {
+          "e_keep": 0.95042,
+          "p_reject": 0.98568,
+          "e_keep_95ci": [
+            0.9484824390053554,
+            0.9522883555163637
+          ],
+          "p_reject_95ci": [
+            0.9846006962117381,
+            0.9866846807326884
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.95391,
+          "p_reject": 0.97693,
+          "e_keep_95ci": [
+            0.952592885536759,
+            0.955192242271376
+          ],
+          "p_reject_95ci": [
+            0.9759810445134031,
+            0.9778423147550285
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.95372,
+          "p_reject": 0.9771,
+          "e_keep_95ci": [
+            0.9518433910333384,
+            0.9555268964547714
+          ],
+          "p_reject_95ci": [
+            0.975751741927451,
+            0.9783749533043599
+          ]
+        },
+        "test": {
+          "e_keep": 0.9541,
+          "p_reject": 0.97676,
+          "e_keep_95ci": [
+            0.9522305701294015,
+            0.9558996589730199
+          ],
+          "p_reject_95ci": [
+            0.9754023051121778,
+            0.9780444423594592
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.01,
+      "npe_threshold": 2,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.83076,
+          "p_reject": 0.99141,
+          "e_keep_95ci": [
+            0.8284232976176432,
+            0.8330712913401209
+          ],
+          "p_reject_95ci": [
+            0.9908188555274724,
+            0.9919633912972188
+          ]
+        },
+        "train": {
+          "e_keep": 0.82998,
+          "p_reject": 0.99146,
+          "e_keep_95ci": [
+            0.8266620185908619,
+            0.8332472811211334
+          ],
+          "p_reject_95ci": [
+            0.9906148452760937,
+            0.9922296435912836
+          ]
+        },
+        "test": {
+          "e_keep": 0.83154,
+          "p_reject": 0.99136,
+          "e_keep_95ci": [
+            0.8282339588217527,
+            0.834795101201627
+          ],
+          "p_reject_95ci": [
+            0.9905101910563214,
+            0.9921343131757108
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.8269,
+          "p_reject": 0.99676,
+          "e_keep_95ci": [
+            0.8245425606779457,
+            0.8292323248290474
+          ],
+          "p_reject_95ci": [
+            0.9963881866082385,
+            0.9970936491961482
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.82594,
+          "p_reject": 0.9968,
+          "e_keep_95ci": [
+            0.8225915613152405,
+            0.8292383591288098
+          ],
+          "p_reject_95ci": [
+            0.9962653420671302,
+            0.9972583263276792
+          ]
+        },
+        "test": {
+          "e_keep": 0.82786,
+          "p_reject": 0.99672,
+          "e_keep_95ci": [
+            0.8245259531363154,
+            0.8311436723063623
+          ],
+          "p_reject_95ci": [
+            0.9961792371169688,
+            0.9971844435695646
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.8336,
+          "p_reject": 0.99107,
+          "e_keep_95ci": [
+            0.8312788338070539,
+            0.8358955369642308
+          ],
+          "p_reject_95ci": [
+            0.990467765511748,
+            0.9916345074338597
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.83284,
+          "p_reject": 0.99114,
+          "e_keep_95ci": [
+            0.8295439866503045,
+            0.8360848736325628
+          ],
+          "p_reject_95ci": [
+            0.9902800480980998,
+            0.991924489936173
+          ]
+        },
+        "test": {
+          "e_keep": 0.83436,
+          "p_reject": 0.991,
+          "e_keep_95ci": [
+            0.8310758019382178,
+            0.8375928248018958
+          ],
+          "p_reject_95ci": [
+            0.9901336606815757,
+            0.9917908988632139
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.01,
+      "npe_threshold": 3,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.65038,
+          "p_reject": 0.99439,
+          "e_keep_95ci": [
+            0.6474187823794271,
+            0.6533296644928324
+          ],
+          "p_reject_95ci": [
+            0.9939077063613269,
+            0.9948343115212133
+          ]
+        },
+        "train": {
+          "e_keep": 0.65016,
+          "p_reject": 0.99448,
+          "e_keep_95ci": [
+            0.6459683041175363,
+            0.6543286243167724
+          ],
+          "p_reject_95ci": [
+            0.9937914997887382,
+            0.9950925250660635
+          ]
+        },
+        "test": {
+          "e_keep": 0.6506,
+          "p_reject": 0.9943,
+          "e_keep_95ci": [
+            0.6464094864241953,
+            0.6547673744056323
+          ],
+          "p_reject_95ci": [
+            0.9936010885280286,
+            0.9949229639831514
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.64649,
+          "p_reject": 0.99804,
+          "e_keep_95ci": [
+            0.6435214367295918,
+            0.6494473089966837
+          ],
+          "p_reject_95ci": [
+            0.9977460812915367,
+            0.9982956561752817
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.64628,
+          "p_reject": 0.99816,
+          "e_keep_95ci": [
+            0.6420780472192025,
+            0.6504594773637136
+          ],
+          "p_reject_95ci": [
+            0.9977441593984031,
+            0.9984993000371007
+          ]
+        },
+        "test": {
+          "e_keep": 0.6467,
+          "p_reject": 0.99792,
+          "e_keep_95ci": [
+            0.6424991428961132,
+            0.6508783171552527
+          ],
+          "p_reject_95ci": [
+            0.9974805957583258,
+            0.9982829005523496
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.65936,
+          "p_reject": 0.99381,
+          "e_keep_95ci": [
+            0.6564165682868919,
+            0.6622911886858656
+          ],
+          "p_reject_95ci": [
+            0.9933045488051526,
+            0.9942775136365982
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.65892,
+          "p_reject": 0.99378,
+          "e_keep_95ci": [
+            0.654752583393828,
+            0.6630629990967175
+          ],
+          "p_reject_95ci": [
+            0.9930519158081087,
+            0.9944322165992766
+          ]
+        },
+        "test": {
+          "e_keep": 0.6598,
+          "p_reject": 0.99384,
+          "e_keep_95ci": [
+            0.6556351091578727,
+            0.6639403381237106
+          ],
+          "p_reject_95ci": [
+            0.9931152169349087,
+            0.9944889062536837
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.02,
+      "npe_threshold": 1,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.99286,
+          "p_reject": 0.96599,
+          "e_keep_95ci": [
+            0.9923188898028391,
+            0.9933632456238256
+          ],
+          "p_reject_95ci": [
+            0.9648485703054904,
+            0.9670956294418446
+          ]
+        },
+        "train": {
+          "e_keep": 0.99302,
+          "p_reject": 0.96702,
+          "e_keep_95ci": [
+            0.9922514275662476,
+            0.9937128216125145
+          ],
+          "p_reject_95ci": [
+            0.9654184401484657,
+            0.9685498038405519
+          ]
+        },
+        "test": {
+          "e_keep": 0.9927,
+          "p_reject": 0.96496,
+          "e_keep_95ci": [
+            0.9919150556886537,
+            0.9934092426570039
+          ],
+          "p_reject_95ci": [
+            0.9633121885385351,
+            0.966536371962372
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.98953,
+          "p_reject": 0.97655,
+          "e_keep_95ci": [
+            0.9888800633028246,
+            0.9901423279551699
+          ],
+          "p_reject_95ci": [
+            0.9755936115458229,
+            0.9774697769165742
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.98956,
+          "p_reject": 0.97664,
+          "e_keep_95ci": [
+            0.9886307199324178,
+            0.9904140608634013
+          ],
+          "p_reject_95ci": [
+            0.9752789922153274,
+            0.9779277736938955
+          ]
+        },
+        "test": {
+          "e_keep": 0.9895,
+          "p_reject": 0.97646,
+          "e_keep_95ci": [
+            0.988568197742703,
+            0.9903565922719091
+          ],
+          "p_reject_95ci": [
+            0.9750940399965831,
+            0.9777527535690187
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.99286,
+          "p_reject": 0.96599,
+          "e_keep_95ci": [
+            0.9923188898028391,
+            0.9933632456238256
+          ],
+          "p_reject_95ci": [
+            0.9648485703054904,
+            0.9670956294418446
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.99302,
+          "p_reject": 0.96702,
+          "e_keep_95ci": [
+            0.9922514275662476,
+            0.9937128216125145
+          ],
+          "p_reject_95ci": [
+            0.9654184401484657,
+            0.9685498038405519
+          ]
+        },
+        "test": {
+          "e_keep": 0.9927,
+          "p_reject": 0.96496,
+          "e_keep_95ci": [
+            0.9919150556886537,
+            0.9934092426570039
+          ],
+          "p_reject_95ci": [
+            0.9633121885385351,
+            0.966536371962372
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.02,
+      "npe_threshold": 2,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.97816,
+          "p_reject": 0.98737,
+          "e_keep_95ci": [
+            0.977235565475478,
+            0.9790476992966967
+          ],
+          "p_reject_95ci": [
+            0.9866589054634434,
+            0.9880436517391975
+          ]
+        },
+        "train": {
+          "e_keep": 0.97876,
+          "p_reject": 0.98774,
+          "e_keep_95ci": [
+            0.9774589332400342,
+            0.9799875069385063
+          ],
+          "p_reject_95ci": [
+            0.9867372788481007,
+            0.9886677815844361
+          ]
+        },
+        "test": {
+          "e_keep": 0.97756,
+          "p_reject": 0.987,
+          "e_keep_95ci": [
+            0.976224630012533,
+            0.9788219945418655
+          ],
+          "p_reject_95ci": [
+            0.9859690483605467,
+            0.987956125770436
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.97463,
+          "p_reject": 0.99523,
+          "e_keep_95ci": [
+            0.9736370121298537,
+            0.9755865238388959
+          ],
+          "p_reject_95ci": [
+            0.9947835209172067,
+            0.9956384324313043
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.97502,
+          "p_reject": 0.99502,
+          "e_keep_95ci": [
+            0.973615136353523,
+            0.9763518784631082
+          ],
+          "p_reject_95ci": [
+            0.9943638116862467,
+            0.9956001301994187
+          ]
+        },
+        "test": {
+          "e_keep": 0.97424,
+          "p_reject": 0.99544,
+          "e_keep_95ci": [
+            0.9728145688864447,
+            0.9755925657744942
+          ],
+          "p_reject_95ci": [
+            0.9948101909588769,
+            0.9959936863952383
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.97861,
+          "p_reject": 0.98704,
+          "e_keep_95ci": [
+            0.9776947208753057,
+            0.9794885093250676
+          ],
+          "p_reject_95ci": [
+            0.9863200552064719,
+            0.9877225273488233
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.97914,
+          "p_reject": 0.98744,
+          "e_keep_95ci": [
+            0.9778500111168301,
+            0.9803563706760222
+          ],
+          "p_reject_95ci": [
+            0.9864257301301841,
+            0.9883793763963175
+          ]
+        },
+        "test": {
+          "e_keep": 0.97808,
+          "p_reject": 0.98664,
+          "e_keep_95ci": [
+            0.9767593710273456,
+            0.9793271736308479
+          ],
+          "p_reject_95ci": [
+            0.9855956169829823,
+            0.9876096124607578
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.02,
+      "npe_threshold": 3,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.93792,
+          "p_reject": 0.99088,
+          "e_keep_95ci": [
+            0.9364075419120081,
+            0.9393988143474672
+          ],
+          "p_reject_95ci": [
+            0.9902716625107559,
+            0.9914506250318347
+          ]
+        },
+        "train": {
+          "e_keep": 0.9389,
+          "p_reject": 0.9911,
+          "e_keep_95ci": [
+            0.9367667009922845,
+            0.9409658635376709
+          ],
+          "p_reject_95ci": [
+            0.9902382178664064,
+            0.9918863263137283
+          ]
+        },
+        "test": {
+          "e_keep": 0.93694,
+          "p_reject": 0.99066,
+          "e_keep_95ci": [
+            0.9347756795008503,
+            0.9390371861763399
+          ],
+          "p_reject_95ci": [
+            0.9897783577292938,
+            0.9914662540553221
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.93409,
+          "p_reject": 0.99701,
+          "e_keep_95ci": [
+            0.9325353997609841,
+            0.9356112507429336
+          ],
+          "p_reject_95ci": [
+            0.996651974260191,
+            0.9973298423376392
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.93492,
+          "p_reject": 0.99704,
+          "e_keep_95ci": [
+            0.9327243213279113,
+            0.9370488547153064
+          ],
+          "p_reject_95ci": [
+            0.9965241319387943,
+            0.9974794995808436
+          ]
+        },
+        "test": {
+          "e_keep": 0.93326,
+          "p_reject": 0.99698,
+          "e_keep_95ci": [
+            0.9310389987422685,
+            0.9354144323542193
+          ],
+          "p_reject_95ci": [
+            0.9964593648654275,
+            0.9974242758730033
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.93995,
+          "p_reject": 0.99034,
+          "e_keep_95ci": [
+            0.9384605257945936,
+            0.9414056745076446
+          ],
+          "p_reject_95ci": [
+            0.989714665626972,
+            0.9909276634017801
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.9408,
+          "p_reject": 0.99048,
+          "e_keep_95ci": [
+            0.9386973572743716,
+            0.9428349153271419
+          ],
+          "p_reject_95ci": [
+            0.989590372040614,
+            0.9912942674003807
+          ]
+        },
+        "test": {
+          "e_keep": 0.9391,
+          "p_reject": 0.9902,
+          "e_keep_95ci": [
+            0.9369699004270977,
+            0.9411626333735481
+          ],
+          "p_reject_95ci": [
+            0.9892981027441058,
+            0.9910265797179224
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.05,
+      "npe_threshold": 1,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.99583,
+          "p_reject": 0.93727,
+          "e_keep_95ci": [
+            0.9954111068031598,
+            0.9962108004496161
+          ],
+          "p_reject_95ci": [
+            0.9357502795944942,
+            0.9387561266020276
+          ]
+        },
+        "train": {
+          "e_keep": 0.99584,
+          "p_reject": 0.93882,
+          "e_keep_95ci": [
+            0.9952364821329542,
+            0.9963673337625414
+          ],
+          "p_reject_95ci": [
+            0.9366854230053062,
+            0.9408871538163731
+          ]
+        },
+        "test": {
+          "e_keep": 0.99582,
+          "p_reject": 0.93572,
+          "e_keep_95ci": [
+            0.9952151380255603,
+            0.9963486809428665
+          ],
+          "p_reject_95ci": [
+            0.933536667722731,
+            0.9378363854032481
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.99264,
+          "p_reject": 0.9498,
+          "e_keep_95ci": [
+            0.9920909839107097,
+            0.9931511684177246
+          ],
+          "p_reject_95ci": [
+            0.9484292690830256,
+            0.9511361744808948
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.99262,
+          "p_reject": 0.95036,
+          "e_keep_95ci": [
+            0.9918310202778616,
+            0.9933332903595197
+          ],
+          "p_reject_95ci": [
+            0.9484213530643296,
+            0.9522294506761825
+          ]
+        },
+        "test": {
+          "e_keep": 0.99266,
+          "p_reject": 0.94924,
+          "e_keep_95ci": [
+            0.9918730351756453,
+            0.993371269315874
+          ],
+          "p_reject_95ci": [
+            0.94728122198671,
+            0.9511297538379361
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.99583,
+          "p_reject": 0.93727,
+          "e_keep_95ci": [
+            0.9954111068031598,
+            0.9962108004496161
+          ],
+          "p_reject_95ci": [
+            0.9357502795944942,
+            0.9387561266020276
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.99584,
+          "p_reject": 0.93882,
+          "e_keep_95ci": [
+            0.9952364821329542,
+            0.9963673337625414
+          ],
+          "p_reject_95ci": [
+            0.9366854230053062,
+            0.9408871538163731
+          ]
+        },
+        "test": {
+          "e_keep": 0.99582,
+          "p_reject": 0.93572,
+          "e_keep_95ci": [
+            0.9952151380255603,
+            0.9963486809428665
+          ],
+          "p_reject_95ci": [
+            0.933536667722731,
+            0.9378363854032481
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.05,
+      "npe_threshold": 2,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.99568,
+          "p_reject": 0.97808,
+          "e_keep_95ci": [
+            0.9952540314950147,
+            0.996067887281695
+          ],
+          "p_reject_95ci": [
+            0.9771539484503037,
+            0.9789693224679689
+          ]
+        },
+        "train": {
+          "e_keep": 0.99566,
+          "p_reject": 0.97894,
+          "e_keep_95ci": [
+            0.9950444999643692,
+            0.9961993435875053
+          ],
+          "p_reject_95ci": [
+            0.9776441673428561,
+            0.9801622451793058
+          ]
+        },
+        "test": {
+          "e_keep": 0.9957,
+          "p_reject": 0.97722,
+          "e_keep_95ci": [
+            0.9950871406574399,
+            0.9962366967485728
+          ],
+          "p_reject_95ci": [
+            0.9758750905309134,
+            0.9784915862633116
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.99238,
+          "p_reject": 0.98842,
+          "e_keep_95ci": [
+            0.9918217947487571,
+            0.9929003775544958
+          ],
+          "p_reject_95ci": [
+            0.9877378946264386,
+            0.9890645819086659
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.9923,
+          "p_reject": 0.98856,
+          "e_keep_95ci": [
+            0.9914950979516307,
+            0.9930292618526461
+          ],
+          "p_reject_95ci": [
+            0.9875896152354682,
+            0.9894553192068991
+          ]
+        },
+        "test": {
+          "e_keep": 0.99246,
+          "p_reject": 0.98828,
+          "e_keep_95ci": [
+            0.9916630159452628,
+            0.9931813192755663
+          ],
+          "p_reject_95ci": [
+            0.987298442363025,
+            0.989186535100376
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.9957,
+          "p_reject": 0.97792,
+          "e_keep_95ci": [
+            0.9952749676105811,
+            0.9960869496296042
+          ],
+          "p_reject_95ci": [
+            0.9769907238537324,
+            0.9788125593567364
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.9957,
+          "p_reject": 0.97884,
+          "e_keep_95ci": [
+            0.9950871406574399,
+            0.9962366967485728
+          ],
+          "p_reject_95ci": [
+            0.9775412565701617,
+            0.9800651713166552
+          ]
+        },
+        "test": {
+          "e_keep": 0.9957,
+          "p_reject": 0.977,
+          "e_keep_95ci": [
+            0.9950871406574399,
+            0.9962366967485728
+          ],
+          "p_reject_95ci": [
+            0.9756489586201025,
+            0.978277751976363
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.05,
+      "npe_threshold": 3,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.99548,
+          "p_reject": 0.98605,
+          "e_keep_95ci": [
+            0.9950447883521472,
+            0.9958771457898077
+          ],
+          "p_reject_95ci": [
+            0.9853041867981873,
+            0.9867584718150708
+          ]
+        },
+        "train": {
+          "e_keep": 0.99554,
+          "p_reject": 0.98672,
+          "e_keep_95ci": [
+            0.9949166507934514,
+            0.996087211196009
+          ],
+          "p_reject_95ci": [
+            0.9856785852846833,
+            0.9876866318673331
+          ]
+        },
+        "test": {
+          "e_keep": 0.99542,
+          "p_reject": 0.98538,
+          "e_keep_95ci": [
+            0.9947889076113813,
+            0.9959749728156647
+          ],
+          "p_reject_95ci": [
+            0.9842900358074198,
+            0.9863953872309712
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.99211,
+          "p_reject": 0.99505,
+          "e_keep_95ci": [
+            0.991542420386643,
+            0.9926397726596907
+          ],
+          "p_reject_95ci": [
+            0.994595592598933,
+            0.9954663745782985
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.99204,
+          "p_reject": 0.99512,
+          "e_keep_95ci": [
+            0.9912224085797602,
+            0.9927819911726191
+          ],
+          "p_reject_95ci": [
+            0.9944699870590079,
+            0.9956939394620028
+          ]
+        },
+        "test": {
+          "e_keep": 0.99218,
+          "p_reject": 0.99498,
+          "e_keep_95ci": [
+            0.9913692145166911,
+            0.9929151637251713
+          ],
+          "p_reject_95ci": [
+            0.9943213591315986,
+            0.9955625888999288
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.9955,
+          "p_reject": 0.98579,
+          "e_keep_95ci": [
+            0.9950657032261888,
+            0.9958962293792416
+          ],
+          "p_reject_95ci": [
+            0.9850375532090208,
+            0.986505125379056
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.99556,
+          "p_reject": 0.98654,
+          "e_keep_95ci": [
+            0.9949379515134289,
+            0.9961059074031005
+          ],
+          "p_reject_95ci": [
+            0.9854919195996275,
+            0.9875133252087673
+          ]
+        },
+        "test": {
+          "e_keep": 0.99544,
+          "p_reject": 0.98504,
+          "e_keep_95ci": [
+            0.9948101909588769,
+            0.9959936863952383
+          ],
+          "p_reject_95ci": [
+            0.9839380914570005,
+            0.986067383821217
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.1,
+      "npe_threshold": 1,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.99594,
+          "p_reject": 0.90096,
+          "e_keep_95ci": [
+            0.9955263775113883,
+            0.996315521290503
+          ],
+          "p_reject_95ci": [
+            0.8990931442100858,
+            0.9027960515466718
+          ]
+        },
+        "train": {
+          "e_keep": 0.99594,
+          "p_reject": 0.90284,
+          "e_keep_95ci": [
+            0.9953432521125712,
+            0.9964605484182699
+          ],
+          "p_reject_95ci": [
+            0.9002129226396463,
+            0.9054051823848406
+          ]
+        },
+        "test": {
+          "e_keep": 0.99594,
+          "p_reject": 0.89908,
+          "e_keep_95ci": [
+            0.9953432521125712,
+            0.9964605484182699
+          ],
+          "p_reject_95ci": [
+            0.8964089793601248,
+            0.9016897033753836
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.99292,
+          "p_reject": 0.91462,
+          "e_keep_95ci": [
+            0.9923810674808623,
+            0.9934210633362289
+          ],
+          "p_reject_95ci": [
+            0.9128720386739688,
+            0.9163361076365528
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.9929,
+          "p_reject": 0.91564,
+          "e_keep_95ci": [
+            0.9921252441056653,
+            0.9935990235106825
+          ],
+          "p_reject_95ci": [
+            0.9131718611096945,
+            0.9180442772389742
+          ]
+        },
+        "test": {
+          "e_keep": 0.99294,
+          "p_reject": 0.9136,
+          "e_keep_95ci": [
+            0.992167299293258,
+            0.9936369621772281
+          ],
+          "p_reject_95ci": [
+            0.9111054920853416,
+            0.9160309597022855
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.99594,
+          "p_reject": 0.90096,
+          "e_keep_95ci": [
+            0.9955263775113883,
+            0.996315521290503
+          ],
+          "p_reject_95ci": [
+            0.8990931442100858,
+            0.9027960515466718
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.99594,
+          "p_reject": 0.90284,
+          "e_keep_95ci": [
+            0.9953432521125712,
+            0.9964605484182699
+          ],
+          "p_reject_95ci": [
+            0.9002129226396463,
+            0.9054051823848406
+          ]
+        },
+        "test": {
+          "e_keep": 0.99594,
+          "p_reject": 0.89908,
+          "e_keep_95ci": [
+            0.9953432521125712,
+            0.9964605484182699
+          ],
+          "p_reject_95ci": [
+            0.8964089793601248,
+            0.9016897033753836
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.1,
+      "npe_threshold": 2,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.99585,
+          "p_reject": 0.96242,
+          "e_keep_95ci": [
+            0.9954320598386308,
+            0.9962298458776206
+          ],
+          "p_reject_95ci": [
+            0.9612234108420541,
+            0.9635810631749049
+          ]
+        },
+        "train": {
+          "e_keep": 0.99586,
+          "p_reject": 0.9637,
+          "e_keep_95ci": [
+            0.995257829504937,
+            0.9963859833176278
+          ],
+          "p_reject_95ci": [
+            0.9620246439639875,
+            0.9653041101315705
+          ]
+        },
+        "test": {
+          "e_keep": 0.99584,
+          "p_reject": 0.96114,
+          "e_keep_95ci": [
+            0.9952364821329542,
+            0.9963673337625414
+          ],
+          "p_reject_95ci": [
+            0.9594102901914602,
+            0.9627988572392613
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.99272,
+          "p_reject": 0.97437,
+          "e_keep_95ci": [
+            0.9921738446264808,
+            0.9932283015558555
+          ],
+          "p_reject_95ci": [
+            0.9733721726108143,
+            0.9753313833327536
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.99268,
+          "p_reject": 0.97484,
+          "e_keep_95ci": [
+            0.9918940447274014,
+            0.993390256691187
+          ],
+          "p_reject_95ci": [
+            0.9734303594913108,
+            0.9761766829816992
+          ]
+        },
+        "test": {
+          "e_keep": 0.99276,
+          "p_reject": 0.9739,
+          "e_keep_95ci": [
+            0.991978097086968,
+            0.9934661920398964
+          ],
+          "p_reject_95ci": [
+            0.9724657092958623,
+            0.975261477604903
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.99585,
+          "p_reject": 0.96206,
+          "e_keep_95ci": [
+            0.9954320598386308,
+            0.9962298458776206
+          ],
+          "p_reject_95ci": [
+            0.9608580147901566,
+            0.9632264868842433
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.99586,
+          "p_reject": 0.9634,
+          "e_keep_95ci": [
+            0.995257829504937,
+            0.9963859833176278
+          ],
+          "p_reject_95ci": [
+            0.9617181650563034,
+            0.965010635133219
+          ]
+        },
+        "test": {
+          "e_keep": 0.99584,
+          "p_reject": 0.96072,
+          "e_keep_95ci": [
+            0.9952364821329542,
+            0.9963673337625414
+          ],
+          "p_reject_95ci": [
+            0.9589815678424671,
+            0.9623876441198047
+          ]
+        }
+      }
+    },
+    {
+      "efficiency": 0.1,
+      "npe_threshold": 3,
+      "primary_definition": "any detector segment has Npe >= fixed threshold",
+      "primary_any_segment": {
+        "all_100k": {
+          "e_keep": 0.99577,
+          "p_reject": 0.97885,
+          "e_keep_95ci": [
+            0.995348261480255,
+            0.9961536503820946
+          ],
+          "p_reject_95ci": [
+            0.9779396458902384,
+            0.979723565871841
+          ]
+        },
+        "train": {
+          "e_keep": 0.99578,
+          "p_reject": 0.97952,
+          "e_keep_95ci": [
+            0.9951724595120214,
+            0.9963113656022674
+          ],
+          "p_reject_95ci": [
+            0.9782411972524125,
+            0.9807251261547514
+          ]
+        },
+        "test": {
+          "e_keep": 0.99576,
+          "p_reject": 0.97818,
+          "e_keep_95ci": [
+            0.9951511250602997,
+            0.9962927031269199
+          ],
+          "p_reject_95ci": [
+            0.9768622272489578,
+            0.979424302044581
+          ]
+        }
+      },
+      "matched_pm1_ablation": {
+        "all_100k": {
+          "e_keep": 0.99254,
+          "p_reject": 0.98981,
+          "e_keep_95ci": [
+            0.9919874302750085,
+            0.9930547297360484
+          ],
+          "p_reject_95ci": [
+            0.9891684530221944,
+            0.9904139167244571
+          ]
+        },
+        "definition": "any TLC segment in the BGO/TH azimuth +/-1 window has Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.99252,
+          "p_reject": 0.98976,
+          "e_keep_95ci": [
+            0.991726007305292,
+            0.993238318696744
+          ],
+          "p_reject_95ci": [
+            0.9888391817015224,
+            0.9906055683649869
+          ]
+        },
+        "test": {
+          "e_keep": 0.99256,
+          "p_reject": 0.98986,
+          "e_keep_95ci": [
+            0.9917680083611634,
+            0.9932763114950108
+          ],
+          "p_reject_95ci": [
+            0.9889434445569412,
+            0.9907012901449133
+          ]
+        }
+      },
+      "event_total_npe_comparison": {
+        "all_100k": {
+          "e_keep": 0.99577,
+          "p_reject": 0.97858,
+          "e_keep_95ci": [
+            0.995348261480255,
+            0.9961536503820946
+          ],
+          "p_reject_95ci": [
+            0.9776641073291316,
+            0.9794591251760286
+          ]
+        },
+        "definition": "sum over all detector segments Npe >= fixed threshold",
+        "train": {
+          "e_keep": 0.99578,
+          "p_reject": 0.9792,
+          "e_keep_95ci": [
+            0.9951724595120214,
+            0.9963113656022674
+          ],
+          "p_reject_95ci": [
+            0.9779117700771488,
+            0.9804146024969106
+          ]
+        },
+        "test": {
+          "e_keep": 0.99576,
+          "p_reject": 0.97796,
+          "e_keep_95ci": [
+            0.9951511250602997,
+            0.9962927031269199
+          ],
+          "p_reject_95ci": [
+            0.976635952759151,
+            0.9792106103366283
+          ]
+        }
+      }
+    }
+  ],
+  "continuous_tlc_policy": "tlcExpected*, tlcNpeTotal, tlcNpeMax, and freely optimized Npe cuts are diagnostic/systematic only; final groups use one fixed binary any-segment hit per response point",
+  "groups": [
+    {
+      "group": "bgo",
+      "candidate_features": [
+        "maxE",
+        "sumE",
+        "nHit",
+        "nCl4",
+        "nCl8",
+        "cl1Sum4",
+        "cl2Sum4",
+        "cl1Size4",
+        "cl1MaxFrac4",
+        "cl1RmsDeg4",
+        "allRmsDeg",
+        "cl2OverCl1",
+        "isolatedEFrac4",
+        "seed15NCl4",
+        "seed15Cl1Sum4",
+        "seed15Cl1Size4",
+        "e2OverE1",
+        "nHit2T",
+        "sum2T",
+        "local3x3Frac",
+        "meanHitE",
+        "thetaSpan",
+        "phiSpan"
+      ],
+      "log1p_features": [
+        "cl1Sum4",
+        "cl2Sum4",
+        "maxE",
+        "meanHitE",
+        "seed15Cl1Sum4",
+        "sum2T",
+        "sumE"
+      ],
+      "targets": {
+        "93.000": {
+          "fisher": {
+            "threshold": -1.9387645937675504,
+            "orientation": 1,
+            "e_keep_train": 0.51178,
+            "p_reject_train": 0.93,
+            "features": [
+              "maxE",
+              "sumE",
+              "nHit",
+              "nCl4",
+              "nCl8",
+              "cl1Sum4",
+              "cl2Sum4",
+              "cl1Size4",
+              "cl1MaxFrac4",
+              "cl1RmsDeg4",
+              "allRmsDeg",
+              "cl2OverCl1",
+              "isolatedEFrac4",
+              "seed15NCl4",
+              "seed15Cl1Sum4",
+              "seed15Cl1Size4",
+              "e2OverE1",
+              "nHit2T",
+              "sum2T",
+              "local3x3Frac",
+              "meanHitE",
+              "thetaSpan",
+              "phiSpan"
+            ],
+            "centers": [
+              3.793906593578395,
+              4.137064036190973,
+              2.50205,
+              1.70036,
+              1.57405,
+              3.9661450488310988,
+              1.0763310582959809,
+              1.69105,
+              0.8399156415262818,
+              1.580994924194616,
+              12.653277296660042,
+              0.16574053526496516,
+              0.5193644206031598,
+              1.45288,
+              3.9522007797076606,
+              1.68348,
+              0.3123687237198465,
+              1.77221,
+              4.02480379352174,
+              0.8584651406350732,
+              3.4088578379241707,
+              3.64356,
+              4.70118
+            ],
+            "scales": [
+              0.7328017230010342,
+              0.7727129236765873,
+              1.6322486935206901,
+              1.2000232791075347,
+              1.0419676566477485,
+              0.7608978336220397,
+              1.4511982406470108,
+              0.898687875460663,
+              0.21027587439043638,
+              1.8559097618412894,
+              19.86308808166717,
+              0.2747356379685475,
+              0.4655210890167363,
+              0.9064434376175934,
+              0.8127771223301242,
+              0.9077637851335556,
+              0.3077920237207128,
+              1.0608023924841046,
+              0.9042137435593676,
+              0.2285971484107082,
+              0.7090586247593412,
+              4.301101083025136,
+              6.181021485774014
+            ],
+            "weights": [
+              -0.33581184916784107,
+              -0.17323117369456165,
+              0.15319670436112887,
+              -0.11234162159279412,
+              0.22853442878880023,
+              -0.034814045593432257,
+              1.1724042260949972,
+              -0.13223482805483322,
+              0.04636547231250806,
+              0.49692307108258166,
+              0.22157964495970722,
+              -0.12367134514785132,
+              0.9499285401409887,
+              -0.055046522602705254,
+              0.04355212412655413,
+              -0.11002899091405029,
+              -0.08103131605602594,
+              0.007655682658931886,
+              0.06227466967399097,
+              -0.3207243866908231,
+              0.09522248390134097,
+              0.27887810066600266,
+              0.18953942963261197
+            ],
+            "regularization": 0.05,
+            "test": {
+              "e_keep": 0.50724,
+              "p_reject": 0.92956,
+              "e_keep_95ci": [
+                0.5028574588663908,
+                0.5116214287325997
+              ],
+              "p_reject_95ci": [
+                0.9272839351019424,
+                0.9317700644867741
+              ]
+            }
+          }
+        },
+        "94.000": {
+          "fisher": {
+            "threshold": -2.0544004411579997,
+            "orientation": 1,
+            "e_keep_train": 0.47736,
+            "p_reject_train": 0.94,
+            "features": [
+              "maxE",
+              "sumE",
+              "nHit",
+              "nCl4",
+              "nCl8",
+              "cl1Sum4",
+              "cl2Sum4",
+              "cl1Size4",
+              "cl1MaxFrac4",
+              "cl1RmsDeg4",
+              "allRmsDeg",
+              "cl2OverCl1",
+              "isolatedEFrac4",
+              "seed15NCl4",
+              "seed15Cl1Sum4",
+              "seed15Cl1Size4",
+              "e2OverE1",
+              "nHit2T",
+              "sum2T",
+              "local3x3Frac",
+              "meanHitE",
+              "thetaSpan",
+              "phiSpan"
+            ],
+            "centers": [
+              3.793906593578395,
+              4.137064036190973,
+              2.50205,
+              1.70036,
+              1.57405,
+              3.9661450488310988,
+              1.0763310582959809,
+              1.69105,
+              0.8399156415262818,
+              1.580994924194616,
+              12.653277296660042,
+              0.16574053526496516,
+              0.5193644206031598,
+              1.45288,
+              3.9522007797076606,
+              1.68348,
+              0.3123687237198465,
+              1.77221,
+              4.02480379352174,
+              0.8584651406350732,
+              3.4088578379241707,
+              3.64356,
+              4.70118
+            ],
+            "scales": [
+              0.7328017230010342,
+              0.7727129236765873,
+              1.6322486935206901,
+              1.2000232791075347,
+              1.0419676566477485,
+              0.7608978336220397,
+              1.4511982406470108,
+              0.898687875460663,
+              0.21027587439043638,
+              1.8559097618412894,
+              19.86308808166717,
+              0.2747356379685475,
+              0.4655210890167363,
+              0.9064434376175934,
+              0.8127771223301242,
+              0.9077637851335556,
+              0.3077920237207128,
+              1.0608023924841046,
+              0.9042137435593676,
+              0.2285971484107082,
+              0.7090586247593412,
+              4.301101083025136,
+              6.181021485774014
+            ],
+            "weights": [
+              -0.33581184916784107,
+              -0.17323117369456165,
+              0.15319670436112887,
+              -0.11234162159279412,
+              0.22853442878880023,
+              -0.034814045593432257,
+              1.1724042260949972,
+              -0.13223482805483322,
+              0.04636547231250806,
+              0.49692307108258166,
+              0.22157964495970722,
+              -0.12367134514785132,
+              0.9499285401409887,
+              -0.055046522602705254,
+              0.04355212412655413,
+              -0.11002899091405029,
+              -0.08103131605602594,
+              0.007655682658931886,
+              0.06227466967399097,
+              -0.3207243866908231,
+              0.09522248390134097,
+              0.27887810066600266,
+              0.18953942963261197
+            ],
+            "regularization": 0.05,
+            "test": {
+              "e_keep": 0.47153999999999996,
+              "p_reject": 0.93982,
+              "e_keep_95ci": [
+                0.4671668465582917,
+                0.47591752622247246
+              ],
+              "p_reject_95ci": [
+                0.9377014716430776,
+                0.9418709515320534
+              ]
+            }
+          }
+        },
+        "95.000": {
+          "fisher": {
+            "threshold": -2.1606285061763417,
+            "orientation": 1,
+            "e_keep_train": 0.43292,
+            "p_reject_train": 0.95,
+            "features": [
+              "maxE",
+              "sumE",
+              "nHit",
+              "nCl4",
+              "nCl8",
+              "cl1Sum4",
+              "cl2Sum4",
+              "cl1Size4",
+              "cl1MaxFrac4",
+              "cl1RmsDeg4",
+              "allRmsDeg",
+              "cl2OverCl1",
+              "isolatedEFrac4",
+              "seed15NCl4",
+              "seed15Cl1Sum4",
+              "seed15Cl1Size4",
+              "e2OverE1",
+              "nHit2T",
+              "sum2T",
+              "local3x3Frac",
+              "meanHitE",
+              "thetaSpan",
+              "phiSpan"
+            ],
+            "centers": [
+              3.793906593578395,
+              4.137064036190973,
+              2.50205,
+              1.70036,
+              1.57405,
+              3.9661450488310988,
+              1.0763310582959809,
+              1.69105,
+              0.8399156415262818,
+              1.580994924194616,
+              12.653277296660042,
+              0.16574053526496516,
+              0.5193644206031598,
+              1.45288,
+              3.9522007797076606,
+              1.68348,
+              0.3123687237198465,
+              1.77221,
+              4.02480379352174,
+              0.8584651406350732,
+              3.4088578379241707,
+              3.64356,
+              4.70118
+            ],
+            "scales": [
+              0.7328017230010342,
+              0.7727129236765873,
+              1.6322486935206901,
+              1.2000232791075347,
+              1.0419676566477485,
+              0.7608978336220397,
+              1.4511982406470108,
+              0.898687875460663,
+              0.21027587439043638,
+              1.8559097618412894,
+              19.86308808166717,
+              0.2747356379685475,
+              0.4655210890167363,
+              0.9064434376175934,
+              0.8127771223301242,
+              0.9077637851335556,
+              0.3077920237207128,
+              1.0608023924841046,
+              0.9042137435593676,
+              0.2285971484107082,
+              0.7090586247593412,
+              4.301101083025136,
+              6.181021485774014
+            ],
+            "weights": [
+              -0.33581184916784107,
+              -0.17323117369456165,
+              0.15319670436112887,
+              -0.11234162159279412,
+              0.22853442878880023,
+              -0.034814045593432257,
+              1.1724042260949972,
+              -0.13223482805483322,
+              0.04636547231250806,
+              0.49692307108258166,
+              0.22157964495970722,
+              -0.12367134514785132,
+              0.9499285401409887,
+              -0.055046522602705254,
+              0.04355212412655413,
+              -0.11002899091405029,
+              -0.08103131605602594,
+              0.007655682658931886,
+              0.06227466967399097,
+              -0.3207243866908231,
+              0.09522248390134097,
+              0.27887810066600266,
+              0.18953942963261197
+            ],
+            "regularization": 0.05,
+            "test": {
+              "e_keep": 0.42876000000000003,
+              "p_reject": 0.9503,
+              "e_keep_95ci": [
+                0.42442773617586294,
+                0.4331032096042372
+              ],
+              "p_reject_95ci": [
+                0.9483602678927188,
+                0.9521705450665863
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}
