@@ -1,18 +1,35 @@
 #include "G4RunManagerFactory.hh"
+#include "G4MTRunManager.hh"
 #include "G4UImanager.hh"
 #include "G4UIExecutive.hh"
 #include "G4VisExecutive.hh"
+#include "Randomize.hh"
 
 #include "FTFP_BERT.hh"
 
 #include "betaPhysicsList.hh"
 #include "betaDetectorConstruction.hh"
 #include "betaActionInitialization.hh"
+#include "BetaConfig.hh"
 
 int main(int argc, char **argv)
 {
+  const auto &config = BetaConfig::Instance();
+  G4Random::setTheSeed(config.Seed());
+
   auto *runManager =
       G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
+#ifdef G4MULTITHREADED
+  if (auto *mtRunManager = dynamic_cast<G4MTRunManager *>(runManager))
+    mtRunManager->SetNumberOfThreads(config.Threads());
+#endif
+
+  G4cout << "[BETA-CONFIG] primary=" << config.Primary()
+         << " geometry=" << config.NLayer() << "x" << config.NSector()
+         << " segmentation=" << config.Segmentation()
+         << " output=" << config.Output()
+         << " seed=" << config.Seed()
+         << " threads=" << config.Threads() << G4endl;
 
   runManager->SetUserInitialization(new betaDetectorConstruction());
   if (PhysicsFlag == 1)
@@ -29,8 +46,12 @@ int main(int argc, char **argv)
   // runManager->SetNumberOfThreads(1);
   runManager->Initialize();
 
-  auto *visManager = new G4VisExecutive;
-  visManager->Initialize();
+  G4VisExecutive *visManager = nullptr;
+  if (argc == 1)
+  {
+    visManager = new G4VisExecutive;
+    visManager->Initialize();
+  }
 
   auto *UImanager = G4UImanager::GetUIpointer();
 

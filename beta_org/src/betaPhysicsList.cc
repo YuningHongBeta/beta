@@ -229,10 +229,11 @@ void betaPhysicsList::ConstructProcess()
       return;
     }
 
-    // ProcessManager から外す（old は wrapper が所有して delete する）
+    // ProcessManager から外す。old の寿命は G4ProcessTable が管理し、
+    // wrapper は non-owning pointer として委譲する。
     pm->RemoveProcess(old);
 
-    const double scaleFactor = 1.65;
+    const double scaleFactor = PionInelasticXSScale;
 
     // ---- 条件をここで指定 ----
     // LV名（logical volume名）で限定：あなたのコードなら TargetLV の名前は "Target"

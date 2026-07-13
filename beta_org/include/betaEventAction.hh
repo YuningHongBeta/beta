@@ -25,16 +25,37 @@ public:
   void SetWatchEvtID(int evtID)   { fWatchEvtID = evtID; }
 
   // ---- calarr 用（RunAction が vector column を作る時に参照）----
-  const std::vector<double>& GetDE_MeV() const { return *fDE_MeV; }
-  const std::vector<int>&    GetPID()   const { return *fPID;   }
+  std::vector<double>& GetDE_MeV() { return fDE_MeV; }
+  std::vector<int>&    GetPID()    { return fPID; }
+  std::vector<double>& GetTHDE_MeV() { return fTHDE_MeV; }
+  std::vector<double>& GetTHTime_ns() { return fTHTime_ns; }
+  std::vector<double>& GetTHPath_mm() { return fTHPath_mm; }
+  std::vector<double>& GetTLCDE_MeV() { return fTLCDE_MeV; }
+  std::vector<double>& GetTLCCherenkovTime_ns() { return fTLCCherenkovTime_ns; }
+  std::vector<double>& GetTLCPath_mm() { return fTLCPath_mm; }
+  std::vector<double>& GetTLCCherenkovPath_mm() { return fTLCCherenkovPath_mm; }
+  std::vector<double>& GetTLCCherenkovExpectedPhotons() { return fTLCCherenkovExpectedPhotons; }
 
 private:
   double fEvtEdepCell   = 0.0; // internal unit
   double fEvtEdepTarget = 0.0; // internal unit
   int fWatchEvtID = -1;
 
-  std::vector<double>* fDE_MeV; // size=225, MeV, heap allocated
-  std::vector<int>*    fPID;    // size=225, PDG code, heap allocated
+  std::vector<double> fDE_MeV;
+  std::vector<int>    fPID;
+  std::vector<double> fTHDE_MeV;
+  std::vector<double> fTHTime_ns;
+  std::vector<double> fTHPath_mm;
+  std::vector<double> fTLCDE_MeV;
+  std::vector<double> fTLCCherenkovTime_ns;
+  std::vector<double> fTLCPath_mm;
+  std::vector<double> fTLCCherenkovPath_mm;
+  std::vector<double> fTLCCherenkovExpectedPhotons;
+
+  G4int fCalHCID = -1;
+  G4int fTargetHCID = -1;
+  G4int fTHHCID = -1;
+  G4int fTLCHCID = -1;
 
   std::unique_ptr<G4GenericMessenger> fMessenger;
 

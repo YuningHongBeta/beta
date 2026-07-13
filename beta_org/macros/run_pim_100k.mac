@@ -1,0 +1,6 @@
+# Set BETA_PRIMARY=pim before launching the executable.
+# Initialize kernel
+/run/initialize
+
+/tracking/verbose 0
+/run/beamOn 100000

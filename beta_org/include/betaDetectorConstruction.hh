@@ -7,6 +7,8 @@
 #include "globals.hh"
 #include "Constant.hh"
 
+#include <vector>
+
 class G4VPhysicalVolume;
 class G4VSensitiveDetector;
 class G4GlobalMagFieldMessenger;
@@ -32,9 +34,13 @@ class betaDetectorConstruction : public G4VUserDetectorConstruction
     //
     void DefineMaterials();
     G4VPhysicalVolume* DefineVolumes();
-    void ConstructCalorimeter(G4double rmin, G4double rmax, G4String mat, G4LogicalVolume* CELL[], G4LogicalVolume* mother);
-    G4LogicalVolume* ConstructCell(G4double rmin, G4double rmax, G4double center, G4String mat);
-    G4Transform3D Rotate(G4double icrys);
+    void ConstructCalorimeter(G4double rmin, G4double rmax, G4String mat,
+                              std::vector<G4LogicalVolume*>& cells,
+                              G4LogicalVolume* mother);
+    G4LogicalVolume* ConstructCell(G4double rmin, G4double rmax,
+                                   G4double thetaStart, G4double thetaSpan,
+                                   G4double phiSpan, G4String mat);
+    G4Transform3D Rotate(G4double icrys, G4double phiSpan);
   
     // data members
     //
@@ -42,9 +48,9 @@ class betaDetectorConstruction : public G4VUserDetectorConstruction
     static G4ThreadLocal G4GlobalMagFieldMessenger*  fMagFieldMessenger; 
     G4LogicalVolume* calorLV;
     G4LogicalVolume* cellLV;
-    G4LogicalVolume* cellLV_Cal[nLayer];     
-    G4LogicalVolume* cellLV_Scinti[nLayer];     
-    G4LogicalVolume* cellLV_AC[nLayer];     
+    std::vector<G4LogicalVolume*> cellLV_Cal;
+    std::vector<G4LogicalVolume*> cellLV_Scinti;
+    std::vector<G4LogicalVolume*> cellLV_AC;
     G4LogicalVolume* TargetLV;
     G4LogicalVolume* THsegLV;
     G4LogicalVolume* TLCsegLV;

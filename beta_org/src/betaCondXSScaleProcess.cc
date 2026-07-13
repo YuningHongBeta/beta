@@ -22,7 +22,6 @@ betaCondXSScaleProcess::betaCondXSScaleProcess(const G4String& name,
 
 betaCondXSScaleProcess::~betaCondXSScaleProcess()
 {
-  delete fWrapped;
   fWrapped = nullptr;
 }
 

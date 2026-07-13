@@ -1,8 +1,10 @@
 // betaDetectorConstruction.cc
 #include "betaDetectorConstruction.hh"
+#include "BetaConfig.hh"
 #include "Constant.hh"
 #include "TargetSD.hh"
 #include "CalorimeterSD.hh"
+#include "HodoscopeSD.hh"
 
 #include "G4Material.hh"
 #include "G4Element.hh"
@@ -38,6 +40,8 @@
 #include "G4SystemOfUnits.hh"
 
 #include "betaBiasingOperator.hh"
+
+#include <cmath>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -121,6 +125,11 @@ void betaDetectorConstruction::DefineMaterials()
 
 G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
 {
+  const auto &config = BetaConfig::Instance();
+  const G4int nLayer = config.NLayer();
+  const G4int nSector = config.NSector();
+  const G4int nCells = config.NCells();
+
   // Geometry parameters
   auto worldSizeXY = 3 * Rmax;
   auto worldSizeZ = 3 * Rmax;
@@ -186,7 +195,7 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
         fCheckOverlaps); // checking overlaps
 
     G4Box *cellS = new G4Box("Cell",                                                            // its name
-                             calorSizeXY / 2, calorSizeXY / 2, absoThickness / (nb_cryst * 2)); // its size
+                             calorSizeXY / 2, calorSizeXY / 2, absoThickness / (nCells * 2)); // its size
 
     cellLV = new G4LogicalVolume(
         cellS,            // its solid
@@ -194,10 +203,10 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
         "Cell");          // its name
 
     G4int CopyNo = 0;
-    for (G4int icrys = 0; icrys < nb_cryst; icrys++)
+    for (G4int icrys = 0; icrys < nCells; icrys++)
     {
       G4RotationMatrix rotm = G4RotationMatrix();
-      G4double posZ = absoThickness * ((1. - nb_cryst + 2. * icrys) / (2. * nb_cryst));
+      G4double posZ = absoThickness * ((1. - nCells + 2. * icrys) / (2. * nCells));
       G4ThreeVector pos = G4ThreeVector(0, 0, posZ);
       G4Transform3D transform = G4Transform3D(rotm, pos);
       fCellPV = new G4PVPlacement(transform,       // rotation,position
@@ -427,14 +436,17 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4LogicalVolume *betaDetectorConstruction::ConstructCell(G4double rmin, G4double rmax, G4double center, G4String mat)
+G4LogicalVolume *betaDetectorConstruction::ConstructCell(
+    G4double rmin, G4double rmax,
+    G4double thetaStart, G4double thetaSpan,
+    G4double phiSpan, G4String mat)
 {
   auto Material = G4Material::GetMaterial(mat);
 
-  G4Sphere *cellS = new G4Sphere("Cell",                                                  // its name
-                                 rmin, rmax,                                              // Rmin, Rmax
-                                 0 * deg, phi * deg,                                      // phi
-                                 center * deg - (cellAngle * deg / 2.), cellAngle * deg); // theta
+  G4Sphere *cellS = new G4Sphere("Cell",
+                                 rmin, rmax,
+                                 0 * deg, phiSpan * deg,
+                                 thetaStart * deg, thetaSpan * deg);
 
   cellLV = new G4LogicalVolume(
       cellS,    // its solid
@@ -445,31 +457,55 @@ G4LogicalVolume *betaDetectorConstruction::ConstructCell(G4double rmin, G4double
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4Transform3D betaDetectorConstruction::Rotate(G4double icrys)
+G4Transform3D betaDetectorConstruction::Rotate(G4double icrys, G4double phiSpan)
 {
   G4ThreeVector pos = G4ThreeVector(0, 0, 0);
   G4RotationMatrix rotm = G4RotationMatrix();
-  rotm.rotateZ(phi * icrys * deg);
+  rotm.rotateZ(phiSpan * icrys * deg);
   G4Transform3D transform = G4Transform3D(rotm, pos);
   return transform;
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void betaDetectorConstruction::ConstructCalorimeter(G4double rmin, G4double rmax, G4String mat, G4LogicalVolume *CELL[], G4LogicalVolume *mother)
+void betaDetectorConstruction::ConstructCalorimeter(
+    G4double rmin, G4double rmax, G4String mat,
+    std::vector<G4LogicalVolume *> &cells,
+    G4LogicalVolume *mother)
 {
+  const auto &config = BetaConfig::Instance();
+  const G4int nLayer = config.NLayer();
+  const G4int nSector = config.NSector();
+  const G4double phiSpan = config.PhiWidthDeg();
   G4int CopyNo = 0;
-  G4double center = 90;
+  cells.assign(nLayer, nullptr);
 
   for (G4int j = 0; j < nLayer; j++)
   {
-    // center = (180 - (1 - nLayer + 2 * j) * cellAngle) / 2.;
-    // CELL[j] = ConstructCell(rmin, rmax, center, mat);
-    G4double center = thetaMin + (j + 0.5) * cellAngle; // [deg]
-    CELL[j] = ConstructCell(rmin, rmax, center, mat);
+    G4double thetaStart = 0.0;
+    G4double thetaStop = 0.0;
+    if (config.EqualSolidAngle())
+    {
+      const G4double cosMin = std::cos(thetaMin * deg);
+      const G4double cosMax = std::cos(thetaMax * deg);
+      const G4double cosStart =
+          cosMin + (cosMax - cosMin) * (static_cast<G4double>(j) / nLayer);
+      const G4double cosStop =
+          cosMin + (cosMax - cosMin) * (static_cast<G4double>(j + 1) / nLayer);
+      thetaStart = std::acos(cosStart) / deg;
+      thetaStop = std::acos(cosStop) / deg;
+    }
+    else
+    {
+      const G4double thetaSpan = (thetaMax - thetaMin) / nLayer;
+      thetaStart = thetaMin + j * thetaSpan;
+      thetaStop = thetaStart + thetaSpan;
+    }
+    cells[j] = ConstructCell(rmin, rmax, thetaStart,
+                             thetaStop - thetaStart, phiSpan, mat);
     for (G4int icrys = 0; icrys < nSector; icrys++)
     {
-      G4Transform3D transform = Rotate(icrys);
-      fCellPV = new G4PVPlacement(transform, CELL[j], "cellPhysical",
+      G4Transform3D transform = Rotate(icrys, phiSpan);
+      fCellPV = new G4PVPlacement(transform, cells[j], "cellPhysical",
                                   mother, false, CopyNo, fCheckOverlaps);
       CopyNo++;
     }
@@ -478,6 +514,7 @@ void betaDetectorConstruction::ConstructCalorimeter(G4double rmin, G4double rmax
 
 void betaDetectorConstruction::ConstructSDandField()
 {
+  const G4int nLayer = BetaConfig::Instance().NLayer();
 
   // sensitive detectors -----------------------------------------------------
   auto sdManager = G4SDManager::GetSDMpointer();
@@ -494,6 +531,14 @@ void betaDetectorConstruction::ConstructSDandField()
     auto target = new TargetSD(SDname = "/target", "TargetHC");
     sdManager->AddNewDetector(target);
     TargetLV->SetSensitiveDetector(target);
+
+    auto th = new HodoscopeSD("/th", "THHC", false);
+    sdManager->AddNewDetector(th);
+    THsegLV->SetSensitiveDetector(th);
+
+    auto tlc = new HodoscopeSD("/tlc", "TLCHC", true);
+    sdManager->AddNewDetector(tlc);
+    TLCsegLV->SetSensitiveDetector(tlc);
 
     for (G4int j = 0; j < nLayer; j++)
     {

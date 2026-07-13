@@ -24,8 +24,16 @@ void betaActionInitialization::Build() const
 
   // eventAction が持つ vector を RunAction の branch に直結
   SetUserAction(new betaRunAction(
-    const_cast<std::vector<double>*>(&eventAction->GetDE_MeV()),
-    const_cast<std::vector<int>*>(&eventAction->GetPID())
+    &eventAction->GetDE_MeV(),
+    &eventAction->GetPID(),
+    &eventAction->GetTHDE_MeV(),
+    &eventAction->GetTHTime_ns(),
+    &eventAction->GetTHPath_mm(),
+    &eventAction->GetTLCDE_MeV(),
+    &eventAction->GetTLCCherenkovTime_ns(),
+    &eventAction->GetTLCPath_mm(),
+    &eventAction->GetTLCCherenkovPath_mm(),
+    &eventAction->GetTLCCherenkovExpectedPhotons()
   ));
 
   SetUserAction(new betaSteppingAction(eventAction));

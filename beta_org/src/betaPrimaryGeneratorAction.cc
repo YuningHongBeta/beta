@@ -1,4 +1,5 @@
 #include "betaPrimaryGeneratorAction.hh"
+#include "BetaConfig.hh"
 
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
@@ -81,8 +82,7 @@ betaPrimaryGeneratorAction::betaPrimaryGeneratorAction()
   }
   fWmax *= 1.2; // safety margin
 
-  // default
-  SetMode("e");
+  SetMode(BetaConfig::Instance().Primary());
 }
 
 betaPrimaryGeneratorAction::~betaPrimaryGeneratorAction()

@@ -47,7 +47,9 @@ private:
   bool MatchName(const G4String& s, const std::vector<G4String>& list) const;
 
 private:
-  G4VProcess* fWrapped = nullptr;  // owned
+  // Non-owning: G4ProcessTable retains and destroys the process removed from
+  // the particle's ProcessManager.
+  G4VProcess* fWrapped = nullptr;
   double      fXSFactor = 1.0;     // XS倍率 (>1 で増える)
   std::vector<G4String> fTargetLVs;
   std::vector<G4String> fTargetMats;
