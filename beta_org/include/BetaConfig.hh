@@ -26,6 +26,28 @@ public:
   bool WriteCalHit() const { return fWriteCalHit; }
   int Threads() const { return fThreads; }
   long Seed() const { return fSeed; }
+  const std::string &Geometry() const { return fGeometry; }
+  int GeometryMode() const { return fGeometry == "bgoegg_envelope" ? 1 : 0; }
+  bool BGOeggEnvelope() const { return GeometryMode() == 1; }
+  const std::string &PhotonCounter() const { return fPhotonCounter; }
+  int PhotonCounterMode() const
+  {
+    if (fPhotonCounter == "downstream")
+      return 1;
+    return fPhotonCounter == "two_sided" ? 2 : 0;
+  }
+  bool HasDownstreamPhotonCounter() const { return PhotonCounterMode() >= 1; }
+  bool HasUpstreamPhotonCounter() const { return PhotonCounterMode() == 2; }
+  double RMinCm() const { return BGOeggEnvelope() ? 20.0 : 30.0; }
+  double ThicknessCm() const { return BGOeggEnvelope() ? 22.0 : 20.0; }
+  double ThetaMinDeg() const { return BGOeggEnvelope() ? 24.0 : 5.666; }
+  double ThetaMaxDeg() const { return BGOeggEnvelope() ? 144.0 : 170.302; }
+  const char *GeometryModel() const
+  {
+    return BGOeggEnvelope()
+               ? "spherical_shell_envelope_not_exact_bgoegg_trapezoids"
+               : "spherical_shell_current";
+  }
 
 private:
   static int ReadInt(const char *name, int fallback, int minimum, int maximum)
@@ -60,8 +82,10 @@ private:
   }
 
   BetaConfig()
-      : fNLayer(ReadInt("BETA_N_LAYER", 15, 1, 200)),
-        fNSector(ReadInt("BETA_N_SECTOR", 15, 1, 360)),
+      : fGeometry(ReadString("BETA_GEOMETRY", "current")),
+        fPhotonCounter(ReadString("BETA_PHOTON_COUNTER", "none")),
+        fNLayer(ReadInt("BETA_N_LAYER", fGeometry == "bgoegg_envelope" ? 22 : 15, 1, 200)),
+        fNSector(ReadInt("BETA_N_SECTOR", fGeometry == "bgoegg_envelope" ? 60 : 15, 1, 360)),
         fSegmentation(ReadString("BETA_SEGMENTATION", "uniform_theta")),
         fOutput(ReadString("BETA_OUTPUT", "output/beta")),
         fPrimary(ReadString("BETA_PRIMARY", "e")),
@@ -69,6 +93,14 @@ private:
         fThreads(ReadInt("BETA_THREADS", 8, 1, 256)),
         fSeed(ReadInt("BETA_SEED", 6302026, 1, 2147483647))
   {
+    if (fGeometry != "current" && fGeometry != "bgoegg_envelope")
+      throw std::runtime_error("BETA_GEOMETRY must be current or bgoegg_envelope");
+    if (fPhotonCounter != "none" && fPhotonCounter != "downstream" &&
+        fPhotonCounter != "two_sided")
+      throw std::runtime_error("BETA_PHOTON_COUNTER must be none, downstream, or two_sided");
+    if (fGeometry != "bgoegg_envelope" && fPhotonCounter != "none")
+      throw std::runtime_error(
+          "BETA_PHOTON_COUNTER collars require BETA_GEOMETRY=bgoegg_envelope");
     if (fSegmentation != "uniform_theta" &&
         fSegmentation != "equal_solid_angle")
       throw std::runtime_error("BETA_SEGMENTATION must be uniform_theta or equal_solid_angle");
@@ -78,6 +110,8 @@ private:
       throw std::runtime_error("BETA_N_LAYER * BETA_N_SECTOR exceeds 20000");
   }
 
+  std::string fGeometry;
+  std::string fPhotonCounter;
   int fNLayer;
   int fNSector;
   std::string fSegmentation;

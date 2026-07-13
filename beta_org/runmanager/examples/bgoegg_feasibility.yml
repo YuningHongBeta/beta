@@ -1,0 +1,36 @@
+schema: beta-bgo-th-tlc-pc-v2
+tag: bgoegg_feasibility
+build_dir: build_opt
+events: 100000
+seed: 6302026
+threads: 8
+
+# All entries use the provisional spherical BGOegg envelope. The exact
+# trapezoidal crystals, support material, segmentation gaps, electronics,
+# timing, and pile-up are not modeled.
+geometries:
+  - name: egg_none
+    n_layer: 22
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+  - name: egg_downstream_pc
+    n_layer: 22
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: downstream
+  - name: egg_two_sided_pc
+    n_layer: 22
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: two_sided
+
+primaries: [e, pim, pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096

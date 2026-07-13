@@ -22,6 +22,20 @@ Upgraded from Cal_src (v10) with configurable π⁻ absorption physics and more 
   30 segments
 - TLC hodoscope: acrylic Cherenkov, r=2.2–2.8 cm, 30 segments
 
+For feasibility scans, `BETA_GEOMETRY=bgoegg_envelope` selects a spherical
+shell envelope with R_min=20 cm, thickness=22 cm, theta=24–144 degrees, and
+default segmentation 22x60. It reproduces the published active depth and polar
+coverage only. It does **not** model the exact BGOegg trapezoidal crystals,
+forward prolate-spheroid inner face, support, gaps, PMTs, or services, and must
+not be used as an engineering geometry.
+
+`BETA_PHOTON_COUNTER=downstream|two_sided` adds provisional unsegmented collars
+for acceptance studies. Each collar is `8 x (1 mm Pb + 5 mm plastic)` beginning
+at `|z|=52 cm`. The downstream (+z) collar covers 9.698–24 degrees and the
+optional upstream (-z) collar covers 5.666–36 degrees. `evt.EdepPC_MeV` is the
+sum of energy deposited in all enabled plastic layers. Optical response,
+threshold, segmentation, timing, pile-up, supports, and readout are absent.
+
 TH and TLC are sensitive detectors. The `th` tree stores per-segment deposited
 energy, earliest step-midpoint deposit time, and analytic arrival times at both
 TH ends. The left MPPC is the z=-300 mm end and the right MPPC is the z=+300 mm
@@ -88,6 +102,9 @@ BETA_PRIMARY=pim BETA_OUTPUT=output/incl_pim_15x15 \
 
 Geometry/readout scan controls are environment variables:
 
+- `BETA_GEOMETRY`: `current` (default) or the provisional
+  `bgoegg_envelope`. The latter defaults to 22x60 cells.
+- `BETA_PHOTON_COUNTER`: `none` (default), `downstream`, or `two_sided`.
 - `BETA_N_LAYER`, `BETA_N_SECTOR`: BGO theta/phi segmentation (default 15x15).
 - `BETA_SEGMENTATION`: `uniform_theta` or `equal_solid_angle`.
 - `BETA_PRIMARY`: `e`, `pim`, or `pi0`.
@@ -96,5 +113,14 @@ Geometry/readout scan controls are environment variables:
   the event-level `calarr` vector remains available.
 - `BETA_SEED`, `BETA_THREADS`: reproducibility and worker count.
 
-Every output contains a `runmeta` tree with the geometry, primary, seed, and
-fixed physics parameters. The tuned INCL physics parameters are not scan axes.
+Every output contains a `runmeta` tree with the geometry/counter modes and
+dimensions, primary, seed, and fixed physics parameters. The tuned INCL physics
+parameters are not scan axes.
+
+Example BGOegg-envelope run:
+
+```bash
+BETA_GEOMETRY=bgoegg_envelope BETA_PHOTON_COUNTER=downstream \
+  BETA_PRIMARY=pi0 BETA_OUTPUT=output/egg_down_pi0 \
+  ./beta macros/run.mac
+```

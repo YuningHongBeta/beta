@@ -79,6 +79,7 @@ void betaEventAction::BeginOfEventAction(const G4Event *evt)
 
   fEvtEdepCell = 0.;
   fEvtEdepTarget = 0.;
+  fEvtEdepPC = 0.;
 
   std::fill(fDE_MeV.begin(), fDE_MeV.end(), 0.0);
   std::fill(fPID.begin(), fPID.end(), 0);
@@ -248,6 +249,7 @@ void betaEventAction::EndOfEventAction(const G4Event *evt)
   ana->FillNtupleIColumn(0, 0, eventID);
   ana->FillNtupleDColumn(0, 1, fEvtEdepCell / MeV);
   ana->FillNtupleDColumn(0, 2, fEvtEdepTarget / MeV);
+  ana->FillNtupleDColumn(0, 3, fEvtEdepPC / MeV);
   ana->AddNtupleRow(0);
 
   // --------------------------

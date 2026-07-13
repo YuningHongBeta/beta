@@ -1,5 +1,5 @@
-schema: beta-bgo-th-tlc-v1
-tag: timing
+schema: beta-bgo-th-tlc-pc-v2
+tag: timing_pc_v2
 build_dir: build_thtiming
 events: 100000
 seed: 6302026
@@ -11,10 +11,14 @@ geometries:
     n_layer: 10
     n_sector: 20
     segmentation: equal_solid_angle
+    geometry_mode: current
+    photon_counter: none
   - name: a20x40
     n_layer: 20
     n_sector: 40
     segmentation: equal_solid_angle
+    geometry_mode: current
+    photon_counter: none
 
 primaries: [e, pim, pi0]
 

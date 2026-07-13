@@ -6,7 +6,7 @@ the E63 analyzer runmanager and it does not change physics.
 
 ## Manifest contract
 
-The accepted schema is exactly `beta-bgo-th-tlc-v1`. Unknown manifest fields,
+The accepted schema is exactly `beta-bgo-th-tlc-pc-v2`. Unknown manifest fields,
 unknown schemas, modified manifests with existing state, unsupported geometry,
 and any event count other than 100,000 are rejected. The fixed event count is
 intentional: `run_bgo_sample.sh` executes the checked-in 100k macro.
@@ -14,12 +14,13 @@ intentional: `run_bgo_sample.sh` executes the checked-in 100k macro.
 Relative `build_dir` paths are resolved from `beta_org/`, not from the manifest
 directory. `geometries` and `primaries` form a Cartesian product. The current
 geometry/timing example is
-`examples/current_geometry_timing.yml`.
+`examples/current_geometry_timing.yml`. The BGOegg envelope/counter matrix is
+`examples/bgoegg_feasibility.yml`.
 
 Each job invokes
 
 ```text
-scripts/run_bgo_sample.sh RUN_TAG N_LAYER N_SECTOR SEGMENTATION PRIMARY
+scripts/run_bgo_sample.sh RUN_TAG N_LAYER N_SECTOR SEGMENTATION PRIMARY GEOMETRY PHOTON_COUNTER
 ```
 
 with `BETA_BUILD_DIR`, `BETA_THREADS`, and `BETA_SEED` set from the manifest.
@@ -79,7 +80,8 @@ Validation requires a non-zombie, non-recovered ROOT file and checks:
 - exact branch schema for `evt`, `calhit`, `target`, `calarr`, `runmeta`, `th`,
   and `tlc`;
 - BGO vector length `n_layer*n_sector` and TH/TLC vector length 30;
-- manifest geometry, segmentation, primary, seed, and output path;
+- manifest geometry mode, segmentation, photon-counter mode, primary, seed,
+  and output path;
 - fixed `physicsFlag=4`, `neutronScale=2`, `inelasticBias=3`, and
   `pionInelasticXSScale=1.65`.
 

@@ -22,6 +22,7 @@ public:
   // ---- SteppingAction からの加算用（コンパイルエラー回避 + 使うならここに足す）----
   void AddEdepCell(double edep)   { fEvtEdepCell   += edep; } // edep: internal unit
   void AddEdepTarget(double edep) { fEvtEdepTarget += edep; } // edep: internal unit
+  void AddEdepPC(double edep)     { fEvtEdepPC     += edep; } // edep: internal unit
   void SetWatchEvtID(int evtID)   { fWatchEvtID = evtID; }
 
   // ---- calarr 用（RunAction が vector column を作る時に参照）----
@@ -43,6 +44,7 @@ public:
 private:
   double fEvtEdepCell   = 0.0; // internal unit
   double fEvtEdepTarget = 0.0; // internal unit
+  double fEvtEdepPC     = 0.0; // enabled photon-counter plastic layers
   int fWatchEvtID = -1;
 
   std::vector<double> fDE_MeV;

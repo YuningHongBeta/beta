@@ -33,12 +33,16 @@ def base_manifest() -> dict:
                 "n_layer": 15,
                 "n_sector": 15,
                 "segmentation": "uniform_theta",
+                "geometry_mode": "current",
+                "photon_counter": "none",
             },
             {
                 "name": "a10x20",
                 "n_layer": 10,
                 "n_sector": 20,
                 "segmentation": "equal_solid_angle",
+                "geometry_mode": "bgoegg_envelope",
+                "photon_counter": "two_sided",
             },
         ],
         "primaries": ["e", "pim"],
@@ -86,6 +90,26 @@ class RunManagerTests(unittest.TestCase):
             with self.assertRaisesRegex(rm.RunManagerError, "duplicate geometry name"):
                 rm.load_manifest(path)
 
+    def test_rejects_unknown_geometry_and_counter_modes(self):
+        for field, value in (
+            ("geometry_mode", "exact_bgoegg"),
+            ("photon_counter", "upstream_only"),
+        ):
+            content = base_manifest()
+            content["geometries"][0][field] = value
+            with tempfile.TemporaryDirectory() as directory:
+                path = self.write_manifest(directory, content)
+                with self.assertRaisesRegex(rm.RunManagerError, field):
+                    rm.load_manifest(path)
+
+    def test_current_geometry_rejects_photon_counter(self):
+        content = base_manifest()
+        content["geometries"][0]["photon_counter"] = "downstream"
+        with tempfile.TemporaryDirectory() as directory:
+            path = self.write_manifest(directory, content)
+            with self.assertRaisesRegex(rm.RunManagerError, "bgoegg_envelope"):
+                rm.load_manifest(path)
+
     def test_schema_and_runmeta_validation(self):
         job = {
             "events": 100000,
@@ -96,6 +120,8 @@ class RunManagerTests(unittest.TestCase):
                 "n_layer": 15,
                 "n_sector": 15,
                 "segmentation": "uniform_theta",
+                "geometry_mode": "current",
+                "photon_counter": "none",
             },
         }
         inspection = {
@@ -117,6 +143,23 @@ class RunManagerTests(unittest.TestCase):
                 "output": job["output_stem"],
                 "nSegTH": "30",
                 "nSegTLC": "30",
+                "geometryMode": "0",
+                "photonCounterMode": "0",
+                "geometry": "current",
+                "geometryModel": "spherical_shell_current",
+                "photonCounter": "none",
+                "pcNLayers": "8",
+                "thetaMin_deg": "5.666",
+                "thetaMax_deg": "170.302",
+                "rMin_cm": "30",
+                "thickness_cm": "20",
+                "pcPbThickness_mm": "1",
+                "pcScintiThickness_mm": "5",
+                "pcZFront_cm": "52",
+                "pcDownThetaInner_deg": "9.698",
+                "pcDownThetaOuter_deg": "24",
+                "pcUpThetaInner_deg": "5.666",
+                "pcUpThetaOuter_deg": "36",
             },
             "vectors": {
                 tree: {

@@ -50,6 +50,17 @@ constexpr G4double TLCRefractiveIndex = 1.49;
 constexpr G4double TLCLambdaMin = 300.*nm;
 constexpr G4double TLCLambdaMax = 600.*nm;
 
+// Provisional photon-counter collars for the BGOegg feasibility study.
+// These are simple unsegmented Pb/plastic annuli, not an engineering design.
+constexpr G4int PCNLayers = 8;
+constexpr G4double PCPbThickness = 1.*mm;
+constexpr G4double PCScintiThickness = 5.*mm;
+constexpr G4double PCZFront = 52.*cm;
+constexpr G4double PCDownThetaInner = 9.698*deg;
+constexpr G4double PCDownThetaOuter = 24.0*deg;
+constexpr G4double PCUpThetaInner = 5.666*deg;
+constexpr G4double PCUpThetaOuter = 36.0*deg;
+
 // -----------------------------
 // physics switch
 // 1: FTFP_BERT

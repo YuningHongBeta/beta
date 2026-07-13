@@ -21,14 +21,14 @@ import yaml
 RUNMANAGER_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = RUNMANAGER_DIR.parent
 RUNNER = PROJECT_DIR / "scripts" / "run_bgo_sample.sh"
-EXPECTED_SCHEMA = "beta-bgo-th-tlc-v1"
+EXPECTED_SCHEMA = "beta-bgo-th-tlc-pc-v2"
 SUPPORTED_EVENTS = 100_000
 ACTIVE_LSF_STATES = {"PEND", "RUN", "PROV", "WAIT", "SSUSP", "USUSP", "PSUSP"}
 RETRYABLE_VALIDATION = {"failed", "missing"}
 SAFE_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 
 EXPECTED_BRANCHES = {
-    "evt": {"eventID", "EdepCell_MeV", "EdepTarget_MeV"},
+    "evt": {"eventID", "EdepCell_MeV", "EdepTarget_MeV", "EdepPC_MeV"},
     "calhit": {
         "eventID", "copyNo", "t_ns", "dE_MeV", "pdg", "px_MeV",
         "py_MeV", "pz_MeV", "creator", "originType",
@@ -44,6 +44,10 @@ EXPECTED_BRANCHES = {
         "tlcResponseModel", "tlcCollectionEfficiencyApplied", "thBarZMin_mm",
         "thBarZMax_mm", "thEffectiveLightSpeed_mm_per_ns",
         "thTimingSmearingApplied", "thTimingModel", "thRMin_mm", "thRMax_mm",
+        "geometryMode", "photonCounterMode", "geometry", "geometryModel",
+        "photonCounter", "pcNLayers", "pcPbThickness_mm",
+        "pcScintiThickness_mm", "pcZFront_cm", "pcDownThetaInner_deg",
+        "pcDownThetaOuter_deg", "pcUpThetaInner_deg", "pcUpThetaOuter_deg",
     },
     "th": {
         "eventID", "dE_MeV", "time_ns", "timeLeft_ns", "timeRight_ns",
@@ -201,14 +205,20 @@ def load_manifest(path: Path) -> dict[str, Any]:
         if not isinstance(item, dict):
             raise RunManagerError(f"geometries[{index}] must be a mapping")
         unknown_geometry = sorted(
-            set(item) - {"name", "n_layer", "n_sector", "segmentation"}
+            set(item) - {
+                "name", "n_layer", "n_sector", "segmentation",
+                "geometry_mode", "photon_counter",
+            }
         )
         if unknown_geometry:
             raise RunManagerError(
                 f"unknown fields in geometries[{index}]: {', '.join(unknown_geometry)}"
             )
         missing_geometry = sorted(
-            {"name", "n_layer", "n_sector", "segmentation"} - set(item)
+            {
+                "name", "n_layer", "n_sector", "segmentation",
+                "geometry_mode", "photon_counter",
+            } - set(item)
         )
         if missing_geometry:
             raise RunManagerError(
@@ -227,12 +237,28 @@ def load_manifest(path: Path) -> dict[str, Any]:
             raise RunManagerError(
                 f"{name}.segmentation must be uniform_theta or equal_solid_angle"
             )
+        geometry_mode = item["geometry_mode"]
+        if geometry_mode not in {"current", "bgoegg_envelope"}:
+            raise RunManagerError(
+                f"{name}.geometry_mode must be current or bgoegg_envelope"
+            )
+        photon_counter = item["photon_counter"]
+        if photon_counter not in {"none", "downstream", "two_sided"}:
+            raise RunManagerError(
+                f"{name}.photon_counter must be none, downstream, or two_sided"
+            )
+        if geometry_mode != "bgoegg_envelope" and photon_counter != "none":
+            raise RunManagerError(
+                f"{name}.photon_counter collars require geometry_mode=bgoegg_envelope"
+            )
         geometries.append(
             {
                 "name": name,
                 "n_layer": n_layer,
                 "n_sector": n_sector,
                 "segmentation": segmentation,
+                "geometry_mode": geometry_mode,
+                "photon_counter": photon_counter,
             }
         )
 
@@ -409,6 +435,8 @@ def bsub_command(manifest: dict[str, Any], job: dict[str, Any]) -> list[str]:
             str(geometry["n_sector"]),
             geometry["segmentation"],
             job["primary"],
+            geometry["geometry_mode"],
+            geometry["photon_counter"],
         ]
     )
     return command
@@ -581,7 +609,11 @@ TTree *meta = dynamic_cast<TTree *>(f->Get("runmeta"));
 if (meta && meta->GetEntries() == 1) {
   int nLayer=-1,nSector=-1,segmentationMode=-1,physicsFlag=-1,writeCalHit=-1,nSegTH=-1,nSegTLC=-1;
   double neutronScale=-1,inelasticBias=-1,pionInelasticXSScale=-1,seed=-1;
+  double thetaMin=-1,thetaMax=-1,rMin=-1,thickness=-1;
+  double pcPb=-1,pcScinti=-1,pcZFront=-1,pcDownInner=-1,pcDownOuter=-1,pcUpInner=-1,pcUpOuter=-1;
+  int geometryMode=-1,photonCounterMode=-1,pcNLayers=-1;
   char segmentation[128]={0},primary[128]={0},output[1024]={0};
+  char geometry[128]={0},geometryModel[256]={0},photonCounter[128]={0};
   if(meta->GetBranch("nLayer")) meta->SetBranchAddress("nLayer",&nLayer);
   if(meta->GetBranch("nSector")) meta->SetBranchAddress("nSector",&nSector);
   if(meta->GetBranch("segmentationMode")) meta->SetBranchAddress("segmentationMode",&segmentationMode);
@@ -596,6 +628,23 @@ if (meta && meta->GetEntries() == 1) {
   if(meta->GetBranch("output")) meta->SetBranchAddress("output",&output);
   if(meta->GetBranch("nSegTH")) meta->SetBranchAddress("nSegTH",&nSegTH);
   if(meta->GetBranch("nSegTLC")) meta->SetBranchAddress("nSegTLC",&nSegTLC);
+  if(meta->GetBranch("geometryMode")) meta->SetBranchAddress("geometryMode",&geometryMode);
+  if(meta->GetBranch("photonCounterMode")) meta->SetBranchAddress("photonCounterMode",&photonCounterMode);
+  if(meta->GetBranch("geometry")) meta->SetBranchAddress("geometry",&geometry);
+  if(meta->GetBranch("geometryModel")) meta->SetBranchAddress("geometryModel",&geometryModel);
+  if(meta->GetBranch("photonCounter")) meta->SetBranchAddress("photonCounter",&photonCounter);
+  if(meta->GetBranch("pcNLayers")) meta->SetBranchAddress("pcNLayers",&pcNLayers);
+  if(meta->GetBranch("thetaMin_deg")) meta->SetBranchAddress("thetaMin_deg",&thetaMin);
+  if(meta->GetBranch("thetaMax_deg")) meta->SetBranchAddress("thetaMax_deg",&thetaMax);
+  if(meta->GetBranch("rMin_cm")) meta->SetBranchAddress("rMin_cm",&rMin);
+  if(meta->GetBranch("thickness_cm")) meta->SetBranchAddress("thickness_cm",&thickness);
+  if(meta->GetBranch("pcPbThickness_mm")) meta->SetBranchAddress("pcPbThickness_mm",&pcPb);
+  if(meta->GetBranch("pcScintiThickness_mm")) meta->SetBranchAddress("pcScintiThickness_mm",&pcScinti);
+  if(meta->GetBranch("pcZFront_cm")) meta->SetBranchAddress("pcZFront_cm",&pcZFront);
+  if(meta->GetBranch("pcDownThetaInner_deg")) meta->SetBranchAddress("pcDownThetaInner_deg",&pcDownInner);
+  if(meta->GetBranch("pcDownThetaOuter_deg")) meta->SetBranchAddress("pcDownThetaOuter_deg",&pcDownOuter);
+  if(meta->GetBranch("pcUpThetaInner_deg")) meta->SetBranchAddress("pcUpThetaInner_deg",&pcUpInner);
+  if(meta->GetBranch("pcUpThetaOuter_deg")) meta->SetBranchAddress("pcUpThetaOuter_deg",&pcUpOuter);
   meta->GetEntry(0);
   std::cout << std::setprecision(17);
   std::cout << "META\tnLayer\t" << nLayer << std::endl;
@@ -612,6 +661,23 @@ if (meta && meta->GetEntries() == 1) {
   std::cout << "META\toutput\t" << output << std::endl;
   std::cout << "META\tnSegTH\t" << nSegTH << std::endl;
   std::cout << "META\tnSegTLC\t" << nSegTLC << std::endl;
+  std::cout << "META\tgeometryMode\t" << geometryMode << std::endl;
+  std::cout << "META\tphotonCounterMode\t" << photonCounterMode << std::endl;
+  std::cout << "META\tgeometry\t" << geometry << std::endl;
+  std::cout << "META\tgeometryModel\t" << geometryModel << std::endl;
+  std::cout << "META\tphotonCounter\t" << photonCounter << std::endl;
+  std::cout << "META\tpcNLayers\t" << pcNLayers << std::endl;
+  std::cout << "META\tthetaMin_deg\t" << thetaMin << std::endl;
+  std::cout << "META\tthetaMax_deg\t" << thetaMax << std::endl;
+  std::cout << "META\trMin_cm\t" << rMin << std::endl;
+  std::cout << "META\tthickness_cm\t" << thickness << std::endl;
+  std::cout << "META\tpcPbThickness_mm\t" << pcPb << std::endl;
+  std::cout << "META\tpcScintiThickness_mm\t" << pcScinti << std::endl;
+  std::cout << "META\tpcZFront_cm\t" << pcZFront << std::endl;
+  std::cout << "META\tpcDownThetaInner_deg\t" << pcDownInner << std::endl;
+  std::cout << "META\tpcDownThetaOuter_deg\t" << pcDownOuter << std::endl;
+  std::cout << "META\tpcUpThetaInner_deg\t" << pcUpInner << std::endl;
+  std::cout << "META\tpcUpThetaOuter_deg\t" << pcUpOuter << std::endl;
 }
 auto dumpVectorSizes = [](TTree *tree, const char *treeName, std::initializer_list<const char *> names) {
   if (!tree || tree->GetEntries() < 1) return;
@@ -722,6 +788,18 @@ def validate_inspection(job: dict[str, Any], inspection: dict[str, Any]) -> list
         "output": job["output_stem"],
         "nSegTH": "30",
         "nSegTLC": "30",
+        "geometryMode": "1" if geometry["geometry_mode"] == "bgoegg_envelope" else "0",
+        "photonCounterMode": {
+            "none": "0", "downstream": "1", "two_sided": "2",
+        }[geometry["photon_counter"]],
+        "geometry": geometry["geometry_mode"],
+        "geometryModel": (
+            "spherical_shell_envelope_not_exact_bgoegg_trapezoids"
+            if geometry["geometry_mode"] == "bgoegg_envelope"
+            else "spherical_shell_current"
+        ),
+        "photonCounter": geometry["photon_counter"],
+        "pcNLayers": "8",
     }
     for key, expected in expected_meta.items():
         if meta.get(key) != expected:
@@ -731,6 +809,17 @@ def validate_inspection(job: dict[str, Any], inspection: dict[str, Any]) -> list
         "inelasticBias": 3.0,
         "pionInelasticXSScale": 1.65,
         "seed": float(job["seed"]),
+        "thetaMin_deg": 24.0 if geometry["geometry_mode"] == "bgoegg_envelope" else 5.666,
+        "thetaMax_deg": 144.0 if geometry["geometry_mode"] == "bgoegg_envelope" else 170.302,
+        "rMin_cm": 20.0 if geometry["geometry_mode"] == "bgoegg_envelope" else 30.0,
+        "thickness_cm": 22.0 if geometry["geometry_mode"] == "bgoegg_envelope" else 20.0,
+        "pcPbThickness_mm": 1.0,
+        "pcScintiThickness_mm": 5.0,
+        "pcZFront_cm": 52.0,
+        "pcDownThetaInner_deg": 9.698,
+        "pcDownThetaOuter_deg": 24.0,
+        "pcUpThetaInner_deg": 5.666,
+        "pcUpThetaOuter_deg": 36.0,
     }.items():
         if not float_equal(meta.get(key), expected):
             errors.append(f"runmeta {key}={meta.get(key)!r}, expected={expected}")

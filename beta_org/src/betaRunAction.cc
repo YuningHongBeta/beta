@@ -88,6 +88,7 @@ betaRunAction::betaRunAction(
   man->CreateNtupleIColumn("eventID");        // col0
   man->CreateNtupleDColumn("EdepCell_MeV");   // col1
   man->CreateNtupleDColumn("EdepTarget_MeV"); // col2
+  man->CreateNtupleDColumn("EdepPC_MeV");     // col3
   man->FinishNtuple();
 
   // ---- ntuple 1: calhit (per segment hit list) ----
@@ -154,6 +155,19 @@ betaRunAction::betaRunAction(
   man->CreateNtupleSColumn("thTimingModel");
   man->CreateNtupleDColumn("thRMin_mm");
   man->CreateNtupleDColumn("thRMax_mm");
+  man->CreateNtupleIColumn("geometryMode");
+  man->CreateNtupleIColumn("photonCounterMode");
+  man->CreateNtupleSColumn("geometry");
+  man->CreateNtupleSColumn("geometryModel");
+  man->CreateNtupleSColumn("photonCounter");
+  man->CreateNtupleIColumn("pcNLayers");
+  man->CreateNtupleDColumn("pcPbThickness_mm");
+  man->CreateNtupleDColumn("pcScintiThickness_mm");
+  man->CreateNtupleDColumn("pcZFront_cm");
+  man->CreateNtupleDColumn("pcDownThetaInner_deg");
+  man->CreateNtupleDColumn("pcDownThetaOuter_deg");
+  man->CreateNtupleDColumn("pcUpThetaInner_deg");
+  man->CreateNtupleDColumn("pcUpThetaOuter_deg");
   man->FinishNtuple();
 
   // ---- ntuple 5: TH plastic hodoscope event vectors ----
@@ -203,10 +217,10 @@ void betaRunAction::BeginOfRunAction(const G4Run *)
     man->FillNtupleIColumn(4, 2, config.SegmentationMode());
     man->FillNtupleIColumn(4, 3, PhysicsFlag);
     man->FillNtupleIColumn(4, 4, config.WriteCalHit() ? 1 : 0);
-    man->FillNtupleDColumn(4, 5, thetaMin);
-    man->FillNtupleDColumn(4, 6, thetaMax);
-    man->FillNtupleDColumn(4, 7, Rmin / cm);
-    man->FillNtupleDColumn(4, 8, absoThickness / cm);
+    man->FillNtupleDColumn(4, 5, config.ThetaMinDeg());
+    man->FillNtupleDColumn(4, 6, config.ThetaMaxDeg());
+    man->FillNtupleDColumn(4, 7, config.RMinCm());
+    man->FillNtupleDColumn(4, 8, config.ThicknessCm());
     man->FillNtupleDColumn(4, 9, NeutronScale);
     man->FillNtupleDColumn(4, 10, InelasticBias);
     man->FillNtupleDColumn(4, 11, PionInelasticXSScale);
@@ -230,6 +244,19 @@ void betaRunAction::BeginOfRunAction(const G4Run *)
     man->FillNtupleSColumn(4, 27, DetectorResponse::THTimingModel);
     man->FillNtupleDColumn(4, 28, ThRmin / mm);
     man->FillNtupleDColumn(4, 29, ThRmax / mm);
+    man->FillNtupleIColumn(4, 30, config.GeometryMode());
+    man->FillNtupleIColumn(4, 31, config.PhotonCounterMode());
+    man->FillNtupleSColumn(4, 32, config.Geometry());
+    man->FillNtupleSColumn(4, 33, config.GeometryModel());
+    man->FillNtupleSColumn(4, 34, config.PhotonCounter());
+    man->FillNtupleIColumn(4, 35, PCNLayers);
+    man->FillNtupleDColumn(4, 36, PCPbThickness / mm);
+    man->FillNtupleDColumn(4, 37, PCScintiThickness / mm);
+    man->FillNtupleDColumn(4, 38, PCZFront / cm);
+    man->FillNtupleDColumn(4, 39, PCDownThetaInner / deg);
+    man->FillNtupleDColumn(4, 40, PCDownThetaOuter / deg);
+    man->FillNtupleDColumn(4, 41, PCUpThetaInner / deg);
+    man->FillNtupleDColumn(4, 42, PCUpThetaOuter / deg);
     man->AddNtupleRow(4);
   }
 

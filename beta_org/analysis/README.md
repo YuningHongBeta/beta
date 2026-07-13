@@ -1,5 +1,20 @@
 # BGO + TH/TLC classifier v2
 
+## BGOegg photon-counter baseline
+
+The focused ROOT macro below reports the historical four-neighbour
+`nCluster==1` fraction and the additional scalar photon-counter veto. It reads
+the segmentation from `runmeta` and uses defaults of 1 MeV per hit, 1 MeV per
+cluster, and 0.5 MeV summed photon-counter plastic energy:
+
+```bash
+root -l -b -q 'analysis/summarize_bgo_pc.C("INPUT.root")'
+```
+
+This is only a reproducible baseline. The BGOegg feasibility program should
+replace the rectangular-neighbour cluster definition with the exact crystal
+adjacency and test hit-pattern/dE classifiers.
+
 ## 目的と統計
 
 `physicsFlag=4`のelectron/π− sampleを各100,000 event使い、BGO threshold

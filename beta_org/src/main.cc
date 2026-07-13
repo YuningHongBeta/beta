@@ -25,8 +25,13 @@ int main(int argc, char **argv)
 #endif
 
   G4cout << "[BETA-CONFIG] primary=" << config.Primary()
-         << " geometry=" << config.NLayer() << "x" << config.NSector()
+         << " geometry=" << config.Geometry()
+         << " cells=" << config.NLayer() << "x" << config.NSector()
          << " segmentation=" << config.Segmentation()
+         << " theta_deg=" << config.ThetaMinDeg() << ".." << config.ThetaMaxDeg()
+         << " r_cm=" << config.RMinCm() << ".."
+         << config.RMinCm() + config.ThicknessCm()
+         << " photon_counter=" << config.PhotonCounter()
          << " output=" << config.Output()
          << " seed=" << config.Seed()
          << " threads=" << config.Threads() << G4endl;
