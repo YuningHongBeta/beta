@@ -1,5 +1,6 @@
 #include "betaRunAction.hh"
 #include "BetaConfig.hh"
+#include "DetectorResponse.hh"
 
 #include "G4AnalysisManager.hh"
 #include "G4Run.hh"
@@ -18,7 +19,9 @@
 betaRunAction::betaRunAction(
     std::vector<double> *dEvec, std::vector<int> *pidVec,
     std::vector<double> *thDE, std::vector<double> *thTime,
-    std::vector<double> *thPath, std::vector<double> *tlcDE,
+    std::vector<double> *thTimeLeft, std::vector<double> *thTimeRight,
+    std::vector<double> *thTimeLeftMinusRight, std::vector<double> *thZReco,
+    std::vector<double> *thPathTruth, std::vector<double> *tlcDE,
     std::vector<double> *tlcCherenkovTime, std::vector<double> *tlcPath,
     std::vector<double> *tlcCherenkovPath,
     std::vector<double> *tlcCherenkovExpectedPhotons)
@@ -30,7 +33,11 @@ betaRunAction::betaRunAction(
       fDummyPID(BetaConfig::Instance().NCells(), 0),
       fTHDEPtr(thDE),
       fTHTimePtr(thTime),
-      fTHPathPtr(thPath),
+      fTHTimeLeftPtr(thTimeLeft),
+      fTHTimeRightPtr(thTimeRight),
+      fTHTimeLeftMinusRightPtr(thTimeLeftMinusRight),
+      fTHZRecoPtr(thZReco),
+      fTHPathTruthPtr(thPathTruth),
       fTLCDEPtr(tlcDE),
       fTLCCherenkovTimePtr(tlcCherenkovTime),
       fTLCPathPtr(tlcPath),
@@ -55,8 +62,16 @@ betaRunAction::betaRunAction(
     fTHDEPtr = &fDummyTH;
   if (!fTHTimePtr)
     fTHTimePtr = &fDummyTH;
-  if (!fTHPathPtr)
-    fTHPathPtr = &fDummyTH;
+  if (!fTHTimeLeftPtr)
+    fTHTimeLeftPtr = &fDummyTH;
+  if (!fTHTimeRightPtr)
+    fTHTimeRightPtr = &fDummyTH;
+  if (!fTHTimeLeftMinusRightPtr)
+    fTHTimeLeftMinusRightPtr = &fDummyTH;
+  if (!fTHZRecoPtr)
+    fTHZRecoPtr = &fDummyTH;
+  if (!fTHPathTruthPtr)
+    fTHPathTruthPtr = &fDummyTH;
   if (!fTLCDEPtr)
     fTLCDEPtr = &fDummyTLC;
   if (!fTLCCherenkovTimePtr)
@@ -132,6 +147,13 @@ betaRunAction::betaRunAction(
   man->CreateNtupleDColumn("tlcLambdaMax_nm");
   man->CreateNtupleSColumn("tlcResponseModel");
   man->CreateNtupleDColumn("tlcCollectionEfficiencyApplied");
+  man->CreateNtupleDColumn("thBarZMin_mm");
+  man->CreateNtupleDColumn("thBarZMax_mm");
+  man->CreateNtupleDColumn("thEffectiveLightSpeed_mm_per_ns");
+  man->CreateNtupleIColumn("thTimingSmearingApplied");
+  man->CreateNtupleSColumn("thTimingModel");
+  man->CreateNtupleDColumn("thRMin_mm");
+  man->CreateNtupleDColumn("thRMax_mm");
   man->FinishNtuple();
 
   // ---- ntuple 5: TH plastic hodoscope event vectors ----
@@ -139,7 +161,12 @@ betaRunAction::betaRunAction(
   man->CreateNtupleIColumn("eventID");
   man->CreateNtupleDColumn("dE_MeV", *fTHDEPtr);
   man->CreateNtupleDColumn("time_ns", *fTHTimePtr);
-  man->CreateNtupleDColumn("chargedPath_mm", *fTHPathPtr);
+  man->CreateNtupleDColumn("timeLeft_ns", *fTHTimeLeftPtr);
+  man->CreateNtupleDColumn("timeRight_ns", *fTHTimeRightPtr);
+  man->CreateNtupleDColumn("timeLeftMinusRight_ns",
+                          *fTHTimeLeftMinusRightPtr);
+  man->CreateNtupleDColumn("zReco_mm", *fTHZRecoPtr);
+  man->CreateNtupleDColumn("chargedPath_truth_mm", *fTHPathTruthPtr);
   man->FinishNtuple();
 
   // ---- ntuple 6: TLC Lucite Cherenkov event vectors ----
@@ -194,6 +221,15 @@ void betaRunAction::BeginOfRunAction(const G4Run *)
     man->FillNtupleDColumn(4, 20, TLCLambdaMax / nm);
     man->FillNtupleSColumn(4, 21, "analytic_frank_tamm_no_transport");
     man->FillNtupleDColumn(4, 22, 0.0);
+    man->FillNtupleDColumn(4, 23, DetectorResponse::THBarZMin / mm);
+    man->FillNtupleDColumn(4, 24, DetectorResponse::THBarZMax / mm);
+    man->FillNtupleDColumn(
+        4, 25, DetectorResponse::THEffectiveLightSpeed / (mm / ns));
+    man->FillNtupleIColumn(
+        4, 26, DetectorResponse::THTimingSmearingApplied ? 1 : 0);
+    man->FillNtupleSColumn(4, 27, DetectorResponse::THTimingModel);
+    man->FillNtupleDColumn(4, 28, ThRmin / mm);
+    man->FillNtupleDColumn(4, 29, ThRmax / mm);
     man->AddNtupleRow(4);
   }
 

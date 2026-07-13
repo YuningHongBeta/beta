@@ -12,8 +12,21 @@ public:
   ~HodoscopeHit() override = default;
 
   void SetCopyNo(G4int value) { fCopyNo = value; }
-  void SetTime(G4double value) { fTime = value; }
-  void SetPDG(G4int value) { fPDG = value; }
+  void UpdateDepositTime(G4double value, G4int pdg)
+  {
+    if (value < fTime)
+    {
+      fTime = value;
+      fPDG = pdg;
+    }
+  }
+  void UpdateTHArrivalTimes(G4double left, G4double right)
+  {
+    if (left < fTHLeftArrivalTime)
+      fTHLeftArrivalTime = left;
+    if (right < fTHRightArrivalTime)
+      fTHRightArrivalTime = right;
+  }
   void UpdateCherenkovTime(G4double value)
   {
     if (value < fCherenkovTime)
@@ -32,16 +45,20 @@ public:
   G4double GetCherenkovPath() const { return fCherenkovPath; }
   G4double GetCherenkovTime() const { return fCherenkovTime; }
   G4double GetCherenkovExpectedPhotons() const { return fCherenkovExpectedPhotons; }
+  G4double GetTHLeftArrivalTime() const { return fTHLeftArrivalTime; }
+  G4double GetTHRightArrivalTime() const { return fTHRightArrivalTime; }
 
 private:
   G4int fCopyNo = -1;
-  G4double fTime = 0.0;
+  G4double fTime = 1.0e30;
   G4int fPDG = 0;
   G4double fEdep = 0.0;
   G4double fChargedPath = 0.0;
   G4double fCherenkovPath = 0.0;
   G4double fCherenkovTime = 1.0e30;
   G4double fCherenkovExpectedPhotons = 0.0;
+  G4double fTHLeftArrivalTime = 1.0e30;
+  G4double fTHRightArrivalTime = 1.0e30;
 };
 
 using HodoscopeHitsCollection = G4THitsCollection<HodoscopeHit>;

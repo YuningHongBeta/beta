@@ -1,6 +1,7 @@
 #include "HodoscopeSD.hh"
 
 #include "Constant.hh"
+#include "DetectorResponse.hh"
 #include "G4HCofThisEvent.hh"
 #include "G4PhysicalConstants.hh"
 #include "G4SDManager.hh"
@@ -12,6 +13,10 @@
 
 #include <algorithm>
 #include <cmath>
+
+static_assert(DetectorResponse::THBarZMax - DetectorResponse::THBarZMin ==
+                  TLength,
+              "TH timing endpoints must match the TH geometry length");
 
 HodoscopeSD::HodoscopeSD(const G4String &name,
                          const G4String &hitsCollectionName,
@@ -99,14 +104,34 @@ G4bool HodoscopeSD::ProcessHits(G4Step *step, G4TouchableHistory *)
   {
     hit = new HodoscopeHit();
     hit->SetCopyNo(copyNo);
-    hit->SetTime(pre->GetGlobalTime());
-    hit->SetPDG(track->GetDefinition()->GetPDGEncoding());
     fHitsCollection->insert(hit);
   }
-  else if (pre->GetGlobalTime() < hit->GetTime())
+
+  if (edep > 0.0)
   {
-    hit->SetTime(pre->GetGlobalTime());
-    hit->SetPDG(track->GetDefinition()->GetPDGEncoding());
+    const G4double depositTime = post
+                                     ? 0.5 * (pre->GetGlobalTime() +
+                                              post->GetGlobalTime())
+                                     : pre->GetGlobalTime();
+    hit->UpdateDepositTime(
+        depositTime, track->GetDefinition()->GetPDGEncoding());
+
+    if (!fCalculateCherenkov)
+    {
+      const G4double depositZ = post
+                                    ? 0.5 * (pre->GetPosition().z() +
+                                             post->GetPosition().z())
+                                    : pre->GetPosition().z();
+      const G4double leftDistance = std::clamp(
+          depositZ - DetectorResponse::THBarZMin,
+          0.0, DetectorResponse::THBarZMax - DetectorResponse::THBarZMin);
+      const G4double rightDistance = std::clamp(
+          DetectorResponse::THBarZMax - depositZ,
+          0.0, DetectorResponse::THBarZMax - DetectorResponse::THBarZMin);
+      hit->UpdateTHArrivalTimes(
+          depositTime + leftDistance / DetectorResponse::THEffectiveLightSpeed,
+          depositTime + rightDistance / DetectorResponse::THEffectiveLightSpeed);
+    }
   }
 
   hit->AddEdep(edep);

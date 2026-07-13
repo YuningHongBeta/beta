@@ -29,7 +29,11 @@ public:
   std::vector<int>&    GetPID()    { return fPID; }
   std::vector<double>& GetTHDE_MeV() { return fTHDE_MeV; }
   std::vector<double>& GetTHTime_ns() { return fTHTime_ns; }
-  std::vector<double>& GetTHPath_mm() { return fTHPath_mm; }
+  std::vector<double>& GetTHTimeLeft_ns() { return fTHTimeLeft_ns; }
+  std::vector<double>& GetTHTimeRight_ns() { return fTHTimeRight_ns; }
+  std::vector<double>& GetTHTimeLeftMinusRight_ns() { return fTHTimeLeftMinusRight_ns; }
+  std::vector<double>& GetTHZReco_mm() { return fTHZReco_mm; }
+  std::vector<double>& GetTHPathTruth_mm() { return fTHPathTruth_mm; }
   std::vector<double>& GetTLCDE_MeV() { return fTLCDE_MeV; }
   std::vector<double>& GetTLCCherenkovTime_ns() { return fTLCCherenkovTime_ns; }
   std::vector<double>& GetTLCPath_mm() { return fTLCPath_mm; }
@@ -45,7 +49,11 @@ private:
   std::vector<int>    fPID;
   std::vector<double> fTHDE_MeV;
   std::vector<double> fTHTime_ns;
-  std::vector<double> fTHPath_mm;
+  std::vector<double> fTHTimeLeft_ns;
+  std::vector<double> fTHTimeRight_ns;
+  std::vector<double> fTHTimeLeftMinusRight_ns;
+  std::vector<double> fTHZReco_mm;
+  std::vector<double> fTHPathTruth_mm;
   std::vector<double> fTLCDE_MeV;
   std::vector<double> fTLCCherenkovTime_ns;
   std::vector<double> fTLCPath_mm;

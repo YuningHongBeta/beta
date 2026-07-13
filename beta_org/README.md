@@ -18,12 +18,42 @@ Upgraded from Cal_src (v10) with configurable π⁻ absorption physics and more 
 - Spherical BGO calorimeter: R_min=30 cm, thickness=20 cm, 15 layers × 15 sectors
 - Beam-hole openings: upstream 5.7° (30.7 msr), downstream 9.7° (89.8 msr)
 - Enriched ⁶Li target (90%, cylindrical, r=1.5 cm, L=30 cm) at center
-- TH hodoscope: plastic scintillator, r=1.5–2.1 cm, 30 segments
+- TH hodoscope: plastic scintillator, r=1.5–2.1 cm, z=-300–+300 mm,
+  30 segments
 - TLC hodoscope: acrylic Cherenkov, r=2.2–2.8 cm, 30 segments
 
 TH and TLC are sensitive detectors. The `th` tree stores per-segment deposited
-energy, earliest deposit time, and charged path. The `tlc` tree stores an
-analytic Frank–Tamm response for Lucite (`n=1.49`, 300–600 nm): earliest
+energy, earliest step-midpoint deposit time, and analytic arrival times at both
+TH ends. The left MPPC is the z=-300 mm end and the right MPPC is the z=+300 mm
+end. Its event-level vectors are `dE_MeV`, `time_ns`, `timeLeft_ns`,
+`timeRight_ns`, `timeLeftMinusRight_ns`, and `zReco_mm`. With the default
+effective light speed `v_eff=150 mm/ns`,
+
+```text
+t_left  = t_deposit + (z_deposit - (-300 mm)) / v_eff
+t_right = t_deposit + ((+300 mm) - z_deposit) / v_eff
+dt_left_minus_right = t_left - t_right
+z_reco = 0.5 * v_eff * dt_left_minus_right
+```
+
+Thus positive `timeLeftMinusRight_ns` gives positive `zReco_mm`. Each endpoint
+time is the earliest analytic arrival over energy-depositing steps in that
+segment. The response model is `analytic_step_midpoint_earliest_no_smearing`:
+there is no timing offset, time walk, attenuation, threshold, photon
+statistics, or smearing. The effective speed is an explicit provisional
+detector-response assumption, not a measured TH calibration.
+Missing endpoint-derived `timeLeftMinusRight_ns` and `zReco_mm` values use the
+out-of-range sentinel `-9999`; endpoint arrival-time sentinels are `-1 ns`.
+The `runmeta` tree records the timing assumptions together with the TH shell
+radii (`thRMin_mm=15`, `thRMax_mm=21`) needed for geometry-driven path length.
+
+For analysis, TH `dE/dx` and the residual `Delta-z` must use the geometric path
+and z intersection of the target-to-leading-BGO-cell line with the TH shell.
+`chargedPath_truth_mm` is retained only as a simulation diagnostic and must not
+be used as a classifier feature.
+
+The `tlc` tree stores an analytic Frank–Tamm response for Lucite (`n=1.49`,
+300–600 nm): earliest
 Cherenkov time, above-threshold path, and produced expected photons. Optical
 transport, collection efficiency, and photon-detection efficiency are not yet
 applied. TLC deposited energy and total charged path are saved only as

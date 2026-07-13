@@ -16,7 +16,11 @@ public:
                          std::vector<int>* pidVec = nullptr,
                          std::vector<double>* thDE = nullptr,
                          std::vector<double>* thTime = nullptr,
-                         std::vector<double>* thPath = nullptr,
+                         std::vector<double>* thTimeLeft = nullptr,
+                         std::vector<double>* thTimeRight = nullptr,
+                         std::vector<double>* thTimeLeftMinusRight = nullptr,
+                         std::vector<double>* thZReco = nullptr,
+                         std::vector<double>* thPathTruth = nullptr,
                          std::vector<double>* tlcDE = nullptr,
                          std::vector<double>* tlcCherenkovTime = nullptr,
                          std::vector<double>* tlcPath = nullptr,
@@ -39,7 +43,11 @@ private:
   std::vector<int>    fDummyPID;
   std::vector<double>* fTHDEPtr = nullptr;
   std::vector<double>* fTHTimePtr = nullptr;
-  std::vector<double>* fTHPathPtr = nullptr;
+  std::vector<double>* fTHTimeLeftPtr = nullptr;
+  std::vector<double>* fTHTimeRightPtr = nullptr;
+  std::vector<double>* fTHTimeLeftMinusRightPtr = nullptr;
+  std::vector<double>* fTHZRecoPtr = nullptr;
+  std::vector<double>* fTHPathTruthPtr = nullptr;
   std::vector<double>* fTLCDEPtr = nullptr;
   std::vector<double>* fTLCCherenkovTimePtr = nullptr;
   std::vector<double>* fTLCPathPtr = nullptr;

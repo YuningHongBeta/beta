@@ -11,6 +11,7 @@
 #include "G4HCofThisEvent.hh"
 
 #include "CalorimeterHit.hh"
+#include "DetectorResponse.hh"
 #include "HodoscopeHit.hh"
 #include "TargetHit.hh"
 #include "Constant.hh"
@@ -28,7 +29,11 @@ betaEventAction::betaEventAction()
       fPID(BetaConfig::Instance().NCells(), 0),
       fTHDE_MeV(nSegTH, 0.0),
       fTHTime_ns(nSegTH, -1.0),
-      fTHPath_mm(nSegTH, 0.0),
+      fTHTimeLeft_ns(nSegTH, -1.0),
+      fTHTimeRight_ns(nSegTH, -1.0),
+      fTHTimeLeftMinusRight_ns(nSegTH, -9999.0),
+      fTHZReco_mm(nSegTH, -9999.0),
+      fTHPathTruth_mm(nSegTH, 0.0),
       fTLCDE_MeV(nSegTLC, 0.0),
       fTLCCherenkovTime_ns(nSegTLC, -1.0),
       fTLCPath_mm(nSegTLC, 0.0),
@@ -79,7 +84,11 @@ void betaEventAction::BeginOfEventAction(const G4Event *evt)
   std::fill(fPID.begin(), fPID.end(), 0);
   std::fill(fTHDE_MeV.begin(), fTHDE_MeV.end(), 0.0);
   std::fill(fTHTime_ns.begin(), fTHTime_ns.end(), -1.0);
-  std::fill(fTHPath_mm.begin(), fTHPath_mm.end(), 0.0);
+  std::fill(fTHTimeLeft_ns.begin(), fTHTimeLeft_ns.end(), -1.0);
+  std::fill(fTHTimeRight_ns.begin(), fTHTimeRight_ns.end(), -1.0);
+  std::fill(fTHTimeLeftMinusRight_ns.begin(), fTHTimeLeftMinusRight_ns.end(), -9999.0);
+  std::fill(fTHZReco_mm.begin(), fTHZReco_mm.end(), -9999.0);
+  std::fill(fTHPathTruth_mm.begin(), fTHPathTruth_mm.end(), 0.0);
   std::fill(fTLCDE_MeV.begin(), fTLCDE_MeV.end(), 0.0);
   std::fill(fTLCCherenkovTime_ns.begin(), fTLCCherenkovTime_ns.end(), -1.0);
   std::fill(fTLCPath_mm.begin(), fTLCPath_mm.end(), 0.0);
@@ -193,8 +202,21 @@ void betaEventAction::EndOfEventAction(const G4Event *evt)
         if (copyNo < 0 || copyNo >= nSegTH)
           continue;
         fTHDE_MeV[copyNo] = hit->GetEdep() / MeV;
-        fTHTime_ns[copyNo] = hit->GetTime() / ns;
-        fTHPath_mm[copyNo] = hit->GetChargedPath() / mm;
+        if (hit->GetTime() < 1.0e29)
+          fTHTime_ns[copyNo] = hit->GetTime() / ns;
+        fTHPathTruth_mm[copyNo] = hit->GetChargedPath() / mm;
+
+        const G4double leftTime = hit->GetTHLeftArrivalTime();
+        const G4double rightTime = hit->GetTHRightArrivalTime();
+        if (leftTime < 1.0e29 && rightTime < 1.0e29)
+        {
+          const G4double timeDifference = leftTime - rightTime;
+          fTHTimeLeft_ns[copyNo] = leftTime / ns;
+          fTHTimeRight_ns[copyNo] = rightTime / ns;
+          fTHTimeLeftMinusRight_ns[copyNo] = timeDifference / ns;
+          fTHZReco_mm[copyNo] =
+              0.5 * DetectorResponse::THEffectiveLightSpeed * timeDifference / mm;
+        }
       }
     }
 
