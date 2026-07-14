@@ -1,0 +1,25 @@
+schema: beta-bgo-th-tlc-pc-offset-v3
+tag: bgoegg_frustum31_zm10_confirm_s7302026
+build_dir: build_bgoegg_frustum
+events: 100000
+seed: 7302026
+threads: 1
+
+# Blind confirmation prepared for the z=-10 cm candidate identified by the
+# superseded spherical-envelope study.  Do not inspect this sample unless the
+# seed-6302026 exact-frustum scan independently selects the same geometry.
+geometries:
+  - name: extended31_zm10
+    n_layer: 31
+    n_sector: 60
+    segmentation: bgoegg_published
+    geometry_mode: bgoegg_frustum
+    photon_counter: none
+    bgo_z_offset_cm: -10
+
+primaries: [e, pim, pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096
