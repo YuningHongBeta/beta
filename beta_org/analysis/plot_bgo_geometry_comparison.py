@@ -18,6 +18,8 @@ from matplotlib.patches import Polygon
 PHI_DEG = 6.0
 FORWARD_B = 1.3
 CRYSTAL_LENGTH_CM = 22.0
+BALL_THETA_MIN_DEG = 5.666
+BALL_THETA_MAX_DEG = 170.302
 
 
 def forward_low_deg(crystal_type: int) -> float:
@@ -60,8 +62,12 @@ def radial_polygon(theta_low: float, theta_high: float,
 
 
 def draw_ball(axis: plt.Axes) -> None:
-    boundaries = [math.degrees(math.acos(1.0 - 2.0 * index / 20.0))
-                  for index in range(21)]
+    cos_min = math.cos(math.radians(BALL_THETA_MIN_DEG))
+    cos_max = math.cos(math.radians(BALL_THETA_MAX_DEG))
+    boundaries = [
+        math.degrees(math.acos(cos_min + (cos_max - cos_min) * index / 20.0))
+        for index in range(21)
+    ]
     for low, high in zip(boundaries[:-1], boundaries[1:]):
         for sign in (-1.0, 1.0):
             axis.add_patch(Polygon(
@@ -71,7 +77,7 @@ def draw_ball(axis: plt.Axes) -> None:
     axis.text(0.02, 0.02,
               "20 rings x 40 sectors = 800 cells\n"
               "equal-solid-angle segmentation\n"
-              "R = 30--50 cm; full polar coverage",
+              "R = 30--50 cm; polar range = 5.666--170.302 deg",
               transform=axis.transAxes, fontsize=9, va="bottom")
     axis.set_title("Current BGO ball (a20x40)")
 
