@@ -178,7 +178,60 @@ class RunManagerTests(unittest.TestCase):
         ]
         with tempfile.TemporaryDirectory() as directory:
             path = self.write_manifest(directory, content)
-            with self.assertRaisesRegex(rm.RunManagerError, "overlap"):
+            with self.assertRaisesRegex(rm.RunManagerError, "pc-design-v5"):
+                rm.load_manifest(path)
+
+    def test_v5_accepts_checked_frustum_endcap_and_exports_parameters(self):
+        content = base_manifest()
+        content["schema"] = rm.SCHEMA_V5
+        content["geometries"] = [{
+            "name": "published31_pc",
+            "n_layer": 31,
+            "n_sector": 60,
+            "segmentation": "bgoegg_published",
+            "geometry_mode": "bgoegg_frustum",
+            "photon_counter": "two_sided",
+            "bgo_z_offset_cm": -10,
+            "pc_n_layers": 8,
+            "pc_pb_thickness_mm": 1,
+            "pc_scinti_thickness_mm": 5,
+            "pc_z_front_cm": 52,
+            "pc_down_theta_inner_deg": 3,
+            "pc_down_theta_outer_deg": 6,
+            "pc_up_theta_inner_deg": 3,
+            "pc_up_theta_outer_deg": 12,
+        }]
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = rm.load_manifest(self.write_manifest(directory, content))
+            jobs = rm.expand_jobs(manifest, Path(directory) / "state.json")
+        command = rm.bsub_command(manifest, jobs[0])
+        self.assertIn("BETA_PC_N_LAYERS=8", command)
+        self.assertIn("BETA_PC_Z_FRONT_CM=52.0", command)
+        self.assertEqual(command[-1], "-10.0")
+
+    def test_v5_rejects_endcap_inside_frustum_extent(self):
+        content = base_manifest()
+        content["schema"] = rm.SCHEMA_V5
+        content["geometries"] = [{
+            "name": "published31_pc",
+            "n_layer": 31,
+            "n_sector": 60,
+            "segmentation": "bgoegg_published",
+            "geometry_mode": "bgoegg_frustum",
+            "photon_counter": "two_sided",
+            "bgo_z_offset_cm": -10,
+            "pc_n_layers": 8,
+            "pc_pb_thickness_mm": 1,
+            "pc_scinti_thickness_mm": 5,
+            "pc_z_front_cm": 51,
+            "pc_down_theta_inner_deg": 3,
+            "pc_down_theta_outer_deg": 6,
+            "pc_up_theta_inner_deg": 3,
+            "pc_up_theta_outer_deg": 12,
+        }]
+        with tempfile.TemporaryDirectory() as directory:
+            path = self.write_manifest(directory, content)
+            with self.assertRaisesRegex(rm.RunManagerError, "intersects BGOegg"):
                 rm.load_manifest(path)
 
     def test_v4_coverage_manifest_and_command(self):

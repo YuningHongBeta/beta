@@ -92,6 +92,19 @@ def validate(path, expect_rows=None, expect_physics=4):
     if np.any(data[:, col["matchedExpectedPhotons"]] >
               data[:, col["tlcExpectedTotal"]] + 1e-3):
         raise ValueError("matched expected photons exceeds total")
+    pc_names = ("pcSumE_MeV", "pcDownE_MeV", "pcUpE_MeV")
+    if any(name in col for name in pc_names):
+        if not all(name in col for name in pc_names):
+            raise ValueError("incomplete photon-counter feature set")
+        for name in pc_names:
+            if np.any(data[:, col[name]] < 0):
+                raise ValueError(f"negative photon-counter energy: {name}")
+        if not np.allclose(
+            data[:, col["pcSumE_MeV"]],
+            data[:, col["pcDownE_MeV"]] + data[:, col["pcUpE_MeV"]],
+            rtol=1e-6, atol=1e-6,
+        ):
+            raise ValueError("photon-counter sum differs from side energies")
     valid = data[:, col["cherenkovDtValid"]]
     if np.any((valid != 0) & (valid != 1)):
         raise ValueError("cherenkovDtValid is not binary")
@@ -199,6 +212,8 @@ def validate(path, expect_rows=None, expect_physics=4):
             "thMatchedDEdx_MeV_per_mm", "absDeltaZ_mm",
             "absDeltaZValid", "absDeltaZLt90",
         ]
+    if all(name in col for name in pc_names):
+        summary_names += list(pc_names)
     summary = {
         name: {
             "min": float(np.min(data[:, col[name]])),

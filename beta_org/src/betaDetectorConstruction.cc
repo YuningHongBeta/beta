@@ -19,6 +19,7 @@
 #include "G4PhysicalConstants.hh"
 
 #include "G4Box.hh"
+#include "G4Cons.hh"
 #include "G4GenericTrap.hh"
 #include "G4Sphere.hh"
 #include "G4TwoVector.hh"
@@ -366,78 +367,107 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
         nSegTLC,     // number of replica
         dPhiTLC);    // width of replica
 
-    if (config.HasDownstreamPhotonCounter())
+    if (config.PhotonCounterMode() != 0)
     {
-      // Provisional downstream (+z) photon-veto collar. Fixed annular radii
-      // keep the central scattered-particle cone clear through all layers.
-      // This is an envelope study, not an engineering detector model.
-      const G4double pcLayerThickness = PCPbThickness + PCScintiThickness;
-      const G4double pcZBack = PCZFront + PCNLayers * pcLayerThickness;
-      const G4double pcRInner = pcZBack * std::tan(PCDownThetaInner);
-      const G4double pcROuter = pcZBack * std::tan(PCDownThetaOuter);
-      auto pcPbS = new G4Tubs("PCLeadS", pcRInner, pcROuter,
-                              PCPbThickness / 2., 0.*deg, 360.*deg);
-      auto pcScintiS = new G4Tubs("PCScintiS", pcRInner, pcROuter,
-                                  PCScintiThickness / 2., 0.*deg, 360.*deg);
-      auto pcPbLV = new G4LogicalVolume(pcPbS,
-                                        G4Material::GetMaterial("G4_Pb"),
-                                        "PCLeadLV");
-      auto pcScintiLV = new G4LogicalVolume(pcScintiS, ScintiMaterial,
-                                            "PCScintiLV");
-      for (G4int layer = 0; layer < PCNLayers; ++layer)
-      {
-        const G4double layerFront = PCZFront + layer * pcLayerThickness;
-        new G4PVPlacement(0,
-                          G4ThreeVector(0., 0., layerFront + PCPbThickness / 2.),
-                          pcPbLV, "PCLead", worldLV, false, layer,
-                          false); // all 32 collar placements checked in smoke test
-        new G4PVPlacement(
-            0,
-            G4ThreeVector(0., 0., layerFront + PCPbThickness
-                                      + PCScintiThickness / 2.),
-            pcScintiLV, "PCScinti", worldLV, false, layer, false);
-      }
-
+      // Pb/plastic endcap annuli.  For the exact BGOegg they are required by
+      // BetaConfig to start beyond the outermost frustum in z; their angular
+      // range is held constant through the stack with conical boundaries.
+      const G4int pcNLayers = config.PCNLayers();
+      const G4double pcPbThickness = config.PCPbThicknessMm() * mm;
+      const G4double pcScintiThickness = config.PCScintiThicknessMm() * mm;
+      const G4double pcZFront = config.PCZFrontCm() * cm;
+      const G4double pcLayerThickness = pcPbThickness + pcScintiThickness;
+      const G4double pcZBack = pcZFront + pcNLayers * pcLayerThickness;
       auto pcPbVis = new G4VisAttributes(G4Colour::Gray());
       pcPbVis->SetVisibility(true);
-      pcPbLV->SetVisAttributes(pcPbVis);
       fVisAttributes.push_back(pcPbVis);
       auto pcScintiVis = new G4VisAttributes(G4Colour::Yellow());
       pcScintiVis->SetVisibility(true);
-      pcScintiLV->SetVisAttributes(pcScintiVis);
       fVisAttributes.push_back(pcScintiVis);
+
+      if (config.HasDownstreamPhotonCounter())
+      {
+        const G4double tanInner =
+            std::tan(config.PCDownThetaInnerDeg() * deg);
+        const G4double tanOuter =
+            std::tan(config.PCDownThetaOuterDeg() * deg);
+        for (G4int layer = 0; layer < pcNLayers; ++layer)
+        {
+          const G4double leadFront = pcZFront + layer * pcLayerThickness;
+          const G4double leadBack = leadFront + pcPbThickness;
+          const G4double scintiBack = leadBack + pcScintiThickness;
+          const auto suffix = std::to_string(layer);
+          auto pcPbS = new G4Cons(
+              "PCLeadS_" + suffix,
+              leadFront * tanInner, leadFront * tanOuter,
+              leadBack * tanInner, leadBack * tanOuter,
+              pcPbThickness / 2., 0.*deg, 360.*deg);
+          auto pcScintiS = new G4Cons(
+              "PCScintiS_" + suffix,
+              leadBack * tanInner, leadBack * tanOuter,
+              scintiBack * tanInner, scintiBack * tanOuter,
+              pcScintiThickness / 2., 0.*deg, 360.*deg);
+          auto pcPbLV = new G4LogicalVolume(
+              pcPbS, G4Material::GetMaterial("G4_Pb"),
+              "PCLeadLV_" + suffix);
+          auto pcScintiLV = new G4LogicalVolume(
+              pcScintiS, ScintiMaterial, "PCScintiLV_" + suffix);
+          pcPbLV->SetVisAttributes(pcPbVis);
+          pcScintiLV->SetVisAttributes(pcScintiVis);
+          new G4PVPlacement(
+              0, G4ThreeVector(0., 0., 0.5 * (leadFront + leadBack)),
+              pcPbLV, "PCLead", worldLV, false, layer, fCheckOverlaps);
+          new G4PVPlacement(
+              0, G4ThreeVector(0., 0., 0.5 * (leadBack + scintiBack)),
+              pcScintiLV, "PCScinti", worldLV, false, layer,
+              fCheckOverlaps);
+        }
+      }
 
       if (config.HasUpstreamPhotonCounter())
       {
-        // Upstream (-z) companion collar. Both enabled plastic stacks are
-        // intentionally summed into the scalar EdepPC_MeV event output.
-        const G4double pcUpRInner = pcZBack * std::tan(PCUpThetaInner);
-        const G4double pcUpROuter = pcZBack * std::tan(PCUpThetaOuter);
-        auto pcUpPbS = new G4Tubs("PCUpLeadS", pcUpRInner, pcUpROuter,
-                                  PCPbThickness / 2., 0.*deg, 360.*deg);
-        auto pcUpScintiS = new G4Tubs("PCUpScintiS", pcUpRInner, pcUpROuter,
-                                      PCScintiThickness / 2., 0.*deg, 360.*deg);
-        auto pcUpPbLV = new G4LogicalVolume(
-            pcUpPbS, G4Material::GetMaterial("G4_Pb"), "PCUpLeadLV");
-        auto pcUpScintiLV = new G4LogicalVolume(pcUpScintiS, ScintiMaterial,
-                                                "PCUpScintiLV");
-        for (G4int layer = 0; layer < PCNLayers; ++layer)
+        const G4double tanInner = std::tan(config.PCUpThetaInnerDeg() * deg);
+        const G4double tanOuter = std::tan(config.PCUpThetaOuterDeg() * deg);
+        for (G4int layer = 0; layer < pcNLayers; ++layer)
         {
-          const G4double layerFront = PCZFront + layer * pcLayerThickness;
+          const G4double leadNear = pcZFront + layer * pcLayerThickness;
+          const G4double leadFar = leadNear + pcPbThickness;
+          const G4double scintiFar = leadFar + pcScintiThickness;
+          const auto suffix = std::to_string(layer);
+          // Local -z is the far face for a volume placed on global -z.
+          auto pcUpPbS = new G4Cons(
+              "PCUpLeadS_" + suffix,
+              leadFar * tanInner, leadFar * tanOuter,
+              leadNear * tanInner, leadNear * tanOuter,
+              pcPbThickness / 2., 0.*deg, 360.*deg);
+          auto pcUpScintiS = new G4Cons(
+              "PCUpScintiS_" + suffix,
+              scintiFar * tanInner, scintiFar * tanOuter,
+              leadFar * tanInner, leadFar * tanOuter,
+              pcScintiThickness / 2., 0.*deg, 360.*deg);
+          auto pcUpPbLV = new G4LogicalVolume(
+              pcUpPbS, G4Material::GetMaterial("G4_Pb"),
+              "PCUpLeadLV_" + suffix);
+          auto pcUpScintiLV = new G4LogicalVolume(
+              pcUpScintiS, ScintiMaterial, "PCUpScintiLV_" + suffix);
+          pcUpPbLV->SetVisAttributes(pcPbVis);
+          pcUpScintiLV->SetVisAttributes(pcScintiVis);
           new G4PVPlacement(
-              0, G4ThreeVector(0., 0., -(layerFront + PCPbThickness / 2.)),
-              pcUpPbLV, "PCUpLead", worldLV, false, layer, false);
+              0, G4ThreeVector(0., 0., -0.5 * (leadNear + leadFar)),
+              pcUpPbLV, "PCUpLead", worldLV, false, layer, fCheckOverlaps);
           new G4PVPlacement(
-              0,
-              G4ThreeVector(0., 0.,
-                            -(layerFront + PCPbThickness
-                              + PCScintiThickness / 2.)),
+              0, G4ThreeVector(0., 0., -0.5 * (leadFar + scintiFar)),
               pcUpScintiLV, "PCUpScinti", worldLV, false, layer,
-              false);
+              fCheckOverlaps);
         }
-        pcUpPbLV->SetVisAttributes(pcPbVis);
-        pcUpScintiLV->SetVisAttributes(pcScintiVis);
       }
+      G4cout << "PhotonCounterGeometrySummary mode=" << config.PhotonCounter()
+             << " layers=" << pcNLayers
+             << " z_cm=" << pcZFront / cm << "--" << pcZBack / cm
+             << " down_theta_deg=" << config.PCDownThetaInnerDeg()
+             << "--" << config.PCDownThetaOuterDeg()
+             << " up_theta_deg=" << config.PCUpThetaInnerDeg()
+             << "--" << config.PCUpThetaOuterDeg() << G4endl;
     }
   }
 

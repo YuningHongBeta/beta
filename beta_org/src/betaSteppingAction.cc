@@ -70,8 +70,12 @@ void betaSteppingAction::UserSteppingAction(const G4Step *step)
   {
     fEvent->AddEdepTarget(edep);
   }
-  else if (name == "PCScinti" || name == "PCUpScinti")
+  else if (name == "PCScinti")
   {
-    fEvent->AddEdepPC(edep);
+    fEvent->AddEdepPCDown(edep);
+  }
+  else if (name == "PCUpScinti")
+  {
+    fEvent->AddEdepPCUp(edep);
   }
 }

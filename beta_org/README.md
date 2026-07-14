@@ -29,12 +29,15 @@ coverage only. It does **not** model the exact BGOegg trapezoidal crystals,
 forward prolate-spheroid inner face, support, gaps, PMTs, or services, and must
 not be used as an engineering geometry.
 
-`BETA_PHOTON_COUNTER=downstream|two_sided` adds provisional unsegmented collars
-for acceptance studies. Each collar is `8 x (1 mm Pb + 5 mm plastic)` beginning
-at `|z|=52 cm`. The downstream (+z) collar covers 9.698–24 degrees and the
-optional upstream (-z) collar covers 5.666–36 degrees. `evt.EdepPC_MeV` is the
-sum of energy deposited in all enabled plastic layers. Optical response,
-threshold, segmentation, timing, pile-up, supports, and readout are absent.
+`BETA_PHOTON_COUNTER=downstream|upstream|two_sided` adds unsegmented conical
+Pb/plastic endcap annuli. The default is `8 x (1 mm Pb + 5 mm plastic)` starting
+at `|z|=52 cm`; layer count, thickness, z, and the two angular ranges are
+environment-configurable. For exact BGOegg frusta the configuration rejects an
+endcap whose front face is not beyond the outermost BGO vertex. The v5
+runmanager schema requires every design parameter explicitly. The `evt` tree
+stores the plastic deposits as `EdepPCDown_MeV`, `EdepPCUp_MeV`, and their sum
+`EdepPC_MeV`. Optical response, electronics threshold, segmentation, timing,
+pile-up, supports, PMTs, services, and real background are absent.
 
 TH and TLC are sensitive detectors. The `th` tree stores per-segment deposited
 energy, earliest step-midpoint deposit time, and analytic arrival times at both

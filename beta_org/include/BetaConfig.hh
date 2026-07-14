@@ -3,6 +3,7 @@
 
 #include "BGOeggGeometry.hh"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <stdexcept>
@@ -52,10 +53,26 @@ public:
   {
     if (fPhotonCounter == "downstream")
       return 1;
-    return fPhotonCounter == "two_sided" ? 2 : 0;
+    if (fPhotonCounter == "two_sided")
+      return 2;
+    return fPhotonCounter == "upstream" ? 3 : 0;
   }
-  bool HasDownstreamPhotonCounter() const { return PhotonCounterMode() >= 1; }
-  bool HasUpstreamPhotonCounter() const { return PhotonCounterMode() == 2; }
+  bool HasDownstreamPhotonCounter() const
+  {
+    return PhotonCounterMode() == 1 || PhotonCounterMode() == 2;
+  }
+  bool HasUpstreamPhotonCounter() const
+  {
+    return PhotonCounterMode() == 2 || PhotonCounterMode() == 3;
+  }
+  int PCNLayers() const { return fPCNLayers; }
+  double PCPbThicknessMm() const { return fPCPbThicknessMm; }
+  double PCScintiThicknessMm() const { return fPCScintiThicknessMm; }
+  double PCZFrontCm() const { return fPCZFrontCm; }
+  double PCDownThetaInnerDeg() const { return fPCDownThetaInnerDeg; }
+  double PCDownThetaOuterDeg() const { return fPCDownThetaOuterDeg; }
+  double PCUpThetaInnerDeg() const { return fPCUpThetaInnerDeg; }
+  double PCUpThetaOuterDeg() const { return fPCUpThetaOuterDeg; }
   bool BgoZOffsetConfigured() const { return fBgoZOffsetConfigured; }
   double BgoZOffsetCm() const { return fBgoZOffsetCm; }
   double RMinCm() const { return BGOeggGeometry() ? 20.0 : 30.0; }
@@ -130,6 +147,19 @@ private:
   BetaConfig()
       : fGeometry(ReadString("BETA_GEOMETRY", "current")),
         fPhotonCounter(ReadString("BETA_PHOTON_COUNTER", "none")),
+        fPCNLayers(ReadInt("BETA_PC_N_LAYERS", 8, 1, 64)),
+        fPCPbThicknessMm(ReadDouble("BETA_PC_PB_THICKNESS_MM", 1.0, 0.01, 20.0)),
+        fPCScintiThicknessMm(ReadDouble(
+            "BETA_PC_SCINTI_THICKNESS_MM", 5.0, 0.1, 100.0)),
+        fPCZFrontCm(ReadDouble("BETA_PC_Z_FRONT_CM", 52.0, 1.0, 89.0)),
+        fPCDownThetaInnerDeg(ReadDouble(
+            "BETA_PC_DOWN_THETA_INNER_DEG", 9.698, 0.01, 80.0)),
+        fPCDownThetaOuterDeg(ReadDouble(
+            "BETA_PC_DOWN_THETA_OUTER_DEG", 24.0, 0.02, 85.0)),
+        fPCUpThetaInnerDeg(ReadDouble(
+            "BETA_PC_UP_THETA_INNER_DEG", 5.666, 0.01, 80.0)),
+        fPCUpThetaOuterDeg(ReadDouble(
+            "BETA_PC_UP_THETA_OUTER_DEG", 36.0, 0.02, 85.0)),
         fBgoZOffsetConfigured(std::getenv("BETA_BGO_Z_OFFSET_CM") != nullptr),
         fBgoZOffsetCm(ReadDouble("BETA_BGO_Z_OFFSET_CM", 0.0, -10.0, 10.0)),
         fThetaMinConfigured(std::getenv("BETA_BGO_THETA_MIN_DEG") != nullptr),
@@ -160,15 +190,56 @@ private:
       throw std::runtime_error(
           "BETA_GEOMETRY must be current, bgoegg_envelope, or bgoegg_frustum");
     if (fPhotonCounter != "none" && fPhotonCounter != "downstream" &&
-        fPhotonCounter != "two_sided")
-      throw std::runtime_error("BETA_PHOTON_COUNTER must be none, downstream, or two_sided");
+        fPhotonCounter != "upstream" && fPhotonCounter != "two_sided")
+      throw std::runtime_error(
+          "BETA_PHOTON_COUNTER must be none, downstream, upstream, or two_sided");
     if (!BGOeggGeometry() && fPhotonCounter != "none")
       throw std::runtime_error(
           "BETA_PHOTON_COUNTER collars require a BGOegg geometry");
-    if (BGOeggFrustum() && fPhotonCounter != "none")
+    if (fPCPbThicknessMm == 0.0 && fPCScintiThicknessMm == 0.0)
+      throw std::runtime_error("Photon counter requires non-zero layer thickness");
+    if (fPCDownThetaInnerDeg >= fPCDownThetaOuterDeg ||
+        fPCUpThetaInnerDeg >= fPCUpThetaOuterDeg)
       throw std::runtime_error(
-          "BETA_PHOTON_COUNTER collars overlap the published BGOegg frusta; "
-          "use none until the collars are redesigned");
+          "Photon-counter inner angles must be smaller than outer angles");
+    const double pcBackCm = fPCZFrontCm +
+        0.1 * fPCNLayers * (fPCPbThicknessMm + fPCScintiThicknessMm);
+    if (pcBackCm >= 90.0)
+      throw std::runtime_error("Photon counter exceeds the world z boundary");
+    const double pcMaxRadiusCm = pcBackCm * std::tan(
+        std::max(fPCDownThetaOuterDeg, fPCUpThetaOuterDeg) *
+        BGOeggGeometry::Pi() / 180.0);
+    if (pcMaxRadiusCm >= 90.0)
+      throw std::runtime_error("Photon counter exceeds the world radial boundary");
+    if (BGOeggFrustum() && fPhotonCounter != "none")
+    {
+      double downstreamMaxCm = -1.0e9;
+      double upstreamExtentCm = -1.0e9;
+      for (const auto &ring : BGOeggGeometry::BuildRings(fNLayer))
+      {
+        for (const double radiusMm : {
+                 ring.frontRadiusMm,
+                 ring.frontRadiusMm + BGOeggGeometry::kCrystalLengthMm})
+        {
+          for (const double thetaDeg : {ring.thetaLowDeg, ring.thetaHighDeg})
+          {
+            const double zCm = fBgoZOffsetCm + 0.1 * radiusMm * std::cos(
+                thetaDeg * BGOeggGeometry::Pi() / 180.0);
+            downstreamMaxCm = std::max(downstreamMaxCm, zCm);
+            upstreamExtentCm = std::max(upstreamExtentCm, -zCm);
+          }
+        }
+      }
+      constexpr double clearanceCm = 0.05;
+      if (HasDownstreamPhotonCounter() &&
+          fPCZFrontCm <= downstreamMaxCm + clearanceCm)
+        throw std::runtime_error(
+            "Downstream photon counter intersects the published BGOegg frusta");
+      if (HasUpstreamPhotonCounter() &&
+          fPCZFrontCm <= upstreamExtentCm + clearanceCm)
+        throw std::runtime_error(
+            "Upstream photon counter intersects the published BGOegg frusta");
+    }
     if (!BGOeggGeometry() && fBgoZOffsetCm != 0.0)
       throw std::runtime_error(
           "BETA_BGO_Z_OFFSET_CM requires a BGOegg geometry");
@@ -202,6 +273,14 @@ private:
 
   std::string fGeometry;
   std::string fPhotonCounter;
+  int fPCNLayers;
+  double fPCPbThicknessMm;
+  double fPCScintiThicknessMm;
+  double fPCZFrontCm;
+  double fPCDownThetaInnerDeg;
+  double fPCDownThetaOuterDeg;
+  double fPCUpThetaInnerDeg;
+  double fPCUpThetaOuterDeg;
   bool fBgoZOffsetConfigured;
   double fBgoZOffsetCm;
   bool fThetaMinConfigured;

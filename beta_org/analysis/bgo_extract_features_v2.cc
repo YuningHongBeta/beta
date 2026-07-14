@@ -93,6 +93,9 @@ enum Feature : int {
   kAbsDeltaZLt90SigT05,
   kAbsDeltaZSigT10,
   kAbsDeltaZLt90SigT10,
+  kPCSumE,
+  kPCDownE,
+  kPCUpE,
   kPoissonFeatureStart,
   kNFeature =
       kPoissonFeatureStart + kNEfficiency * kNPoissonFeaturePerEfficiency
@@ -117,7 +120,8 @@ const std::vector<std::string> kFeatureNames = [] {
       "absDeltaZValid", "absDeltaZLt90", "absDeltaZ_sigT0p2ns_mm",
       "absDeltaZLt90_sigT0p2ns", "absDeltaZ_sigT0p5ns_mm",
       "absDeltaZLt90_sigT0p5ns", "absDeltaZ_sigT1p0ns_mm",
-      "absDeltaZLt90_sigT1p0ns"};
+      "absDeltaZLt90_sigT1p0ns", "pcSumE_MeV", "pcDownE_MeV",
+      "pcUpE_MeV"};
   for (int ieff = 0; ieff < kNEfficiency; ++ieff) {
     const std::string tag(kEfficiencyTags[ieff]);
     names.push_back("tlcNpeTotal_" + tag);
@@ -819,7 +823,9 @@ void writeManifest(const std::string &path, const std::string &input,
   } else {
     out << "null,\n";
   }
-  out << "  \"classifierInputs\": [\"calarr.dE_MeV\", \"th.dE_MeV\", "
+  out << "  \"classifierInputs\": [\"calarr.dE_MeV\", "
+         "\"evt.EdepPC_MeV\", \"evt.EdepPCDown_MeV\", "
+         "\"evt.EdepPCUp_MeV\", \"th.dE_MeV\", "
          "\"th.time_ns\", ";
   if (m.finalReadoutMetadata) out << "\"th.zReco_mm\", ";
   out << "\"tlc.cherenkovExpectedPhotons\", "
@@ -837,16 +843,18 @@ bool extract(const std::string &input, const std::string &output,
   TFile file(input.c_str(), "READ");
   if (file.IsZombie()) throw std::runtime_error("cannot open " + input);
   auto *cal = dynamic_cast<TTree *>(file.Get("calarr"));
+  auto *evt = dynamic_cast<TTree *>(file.Get("evt"));
   auto *metaTree = dynamic_cast<TTree *>(file.Get("runmeta"));
   auto *th = dynamic_cast<TTree *>(file.Get("th"));
   auto *tlc = dynamic_cast<TTree *>(file.Get("tlc"));
-  if (!cal || !metaTree || !th || !tlc)
-    throw std::runtime_error("required tree missing (calarr/runmeta/th/tlc)");
+  if (!cal || !evt || !metaTree || !th || !tlc)
+    throw std::runtime_error("required tree missing (calarr/evt/runmeta/th/tlc)");
   const Meta meta = readMeta(metaTree, allowLegacyHodo);
   if (meta.physicsFlag != 4 && !allowNonFlag4)
     throw std::runtime_error("physicsFlag is not 4");
   const Geometry geometry(meta);
 
+  const auto evtIndex = buildEventIndex(evt);
   const auto thIndex = buildEventIndex(th);
   const auto tlcIndex = buildEventIndex(tlc);
 
@@ -859,6 +867,21 @@ bool extract(const std::string &input, const std::string &output,
   std::vector<double> *calE = nullptr;
   cal->SetBranchAddress("eventID", &calEventID);
   cal->SetBranchAddress("dE_MeV", &calE);
+
+  requireBranch(evt, "EdepPC_MeV");
+  requireBranch(evt, "EdepPCDown_MeV");
+  requireBranch(evt, "EdepPCUp_MeV");
+  evt->SetBranchStatus("*", 0);
+  evt->SetBranchStatus("eventID", 1);
+  evt->SetBranchStatus("EdepPC_MeV", 1);
+  evt->SetBranchStatus("EdepPCDown_MeV", 1);
+  evt->SetBranchStatus("EdepPCUp_MeV", 1);
+  int evtEventID = -1;
+  double pcSumE = 0.0, pcDownE = 0.0, pcUpE = 0.0;
+  evt->SetBranchAddress("eventID", &evtEventID);
+  evt->SetBranchAddress("EdepPC_MeV", &pcSumE);
+  evt->SetBranchAddress("EdepPCDown_MeV", &pcDownE);
+  evt->SetBranchAddress("EdepPCUp_MeV", &pcUpE);
 
   requireBranch(th, "dE_MeV");
   requireBranch(th, "time_ns");
@@ -909,6 +932,22 @@ bool extract(const std::string &input, const std::string &output,
                                std::to_string(calEventID));
     auto f = makeBgoFeatures(geometry, *calE, calEventID, threshold);
 
+    const auto eit = evtIndex.find(calEventID);
+    if (eit == evtIndex.end())
+      throw std::runtime_error("evt eventID is missing from calarr join: " +
+                               std::to_string(calEventID));
+    evt->GetEntry(eit->second);
+    if (evtEventID != calEventID || !std::isfinite(pcSumE) ||
+        !std::isfinite(pcDownE) || !std::isfinite(pcUpE) ||
+        pcSumE < 0.0 || pcDownE < 0.0 || pcUpE < 0.0 ||
+        std::abs(pcSumE - pcDownE - pcUpE) >
+            1.0e-8 * std::max(1.0, pcSumE))
+      throw std::runtime_error("evt PC join/value mismatch for event " +
+                               std::to_string(calEventID));
+    f[kPCSumE] = static_cast<float>(pcSumE);
+    f[kPCDownE] = static_cast<float>(pcDownE);
+    f[kPCUpE] = static_cast<float>(pcUpE);
+
     const std::vector<double> *thisTHE = nullptr, *thisTHTime = nullptr;
     const std::vector<double> *thisTHZReco = nullptr;
     const std::vector<double> *thisTLCExpected = nullptr, *thisTLCTime = nullptr;
@@ -947,6 +986,10 @@ bool extract(const std::string &input, const std::string &output,
     all.insert(all.end(), f.begin(), f.end());
   }
   std::size_t extraTH = 0, extraTLC = 0;
+  for (const auto &item : evtIndex)
+    if (calIDs.count(item.first) == 0)
+      throw std::runtime_error("evt contains eventID absent from calarr: " +
+                               std::to_string(item.first));
   for (const auto &item : thIndex)
     if (calIDs.count(item.first) == 0) ++extraTH;
   for (const auto &item : tlcIndex)

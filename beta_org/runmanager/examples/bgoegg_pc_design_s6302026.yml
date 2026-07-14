@@ -1,0 +1,60 @@
+schema: beta-bgo-th-tlc-pc-design-v5
+tag: bgoegg_pc_design_s6302026
+build_dir: build_bgoegg_frustum
+events: 100000
+seed: 6302026
+threads: 1
+
+# Exact BGOegg is fixed at the selected 31x60, z=-10 cm design.  The central
+# beam clearances remain 9.698 deg downstream and 5.666 deg upstream.  All PC
+# candidates start beyond the ideal BGO vertex extents (-510.822,+508.416 mm).
+geometries:
+  - &up4_o12_pb1
+    name: up4_o12_pb1
+    n_layer: 31
+    n_sector: 60
+    segmentation: bgoegg_published
+    geometry_mode: bgoegg_frustum
+    photon_counter: upstream
+    bgo_z_offset_cm: -10
+    pc_n_layers: 4
+    pc_pb_thickness_mm: 1
+    pc_scinti_thickness_mm: 5
+    pc_z_front_cm: 52
+    pc_down_theta_inner_deg: 9.698
+    pc_down_theta_outer_deg: 24
+    pc_up_theta_inner_deg: 5.666
+    pc_up_theta_outer_deg: 12
+  - <<: *up4_o12_pb1
+    name: up8_o11p5_pb1
+    pc_n_layers: 8
+    pc_up_theta_outer_deg: 11.5
+  - <<: *up4_o12_pb1
+    name: up8_o12_pb1
+    pc_n_layers: 8
+  - <<: *up4_o12_pb1
+    name: up8_o13_pb1
+    pc_n_layers: 8
+    pc_up_theta_outer_deg: 13
+  - <<: *up4_o12_pb1
+    name: up12_o12_pb1
+    pc_n_layers: 12
+  - <<: *up4_o12_pb1
+    name: up8_o12_pb2
+    pc_n_layers: 8
+    pc_pb_thickness_mm: 2
+  - <<: *up4_o12_pb1
+    name: two8_o12_pb1
+    pc_n_layers: 8
+    photon_counter: two_sided
+  - <<: *up4_o12_pb1
+    name: down8_leak_pb1
+    pc_n_layers: 8
+    photon_counter: downstream
+
+primaries: [e, pim, pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096

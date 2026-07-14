@@ -1,6 +1,6 @@
 # BGO + TH/TLC classifier v2
 
-## BGOegg photon-counter baseline
+## BGOegg photon-counter baseline and exact-frustum design scan
 
 The focused ROOT macro below reports the historical four-neighbour
 `nCluster==1` fraction and the additional scalar photon-counter veto. It reads
@@ -14,6 +14,14 @@ root -l -b -q 'analysis/summarize_bgo_pc.C("INPUT.root")'
 This is only a reproducible baseline. The BGOegg feasibility program should
 replace the rectangular-neighbour cluster definition with the exact crystal
 adjacency and test hit-pattern/dE classifiers.
+
+The exact-frustum Photon Counter study uses runmanager schema
+`beta-bgo-th-tlc-pc-design-v5`. It fixes BGOegg to 31x60, z=-10 cm and the BGO
+per-segment threshold to 3 MeV. The endcap itself is a conical annulus, so its
+inner and outer polar angles are constant through every Pb/plastic layer. The
+extractor joins `evt` by `eventID` and adds `pcSumE_MeV`, `pcDownE_MeV`, and
+`pcUpE_MeV`; BGO-only features and the frozen score definition are unchanged.
+The PC analysis threshold is scanned separately and is not the BGO threshold.
 
 ## 目的と統計
 

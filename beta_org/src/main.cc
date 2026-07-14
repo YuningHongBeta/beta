@@ -33,6 +33,8 @@ int main(int argc, char **argv)
          << config.RMinCm() + config.ThicknessCm()
          << " bgo_z_offset_cm=" << config.BgoZOffsetCm()
          << " photon_counter=" << config.PhotonCounter()
+         << " pc_layers=" << config.PCNLayers()
+         << " pc_z_front_cm=" << config.PCZFrontCm()
          << " output=" << config.Output()
          << " seed=" << config.Seed()
          << " threads=" << config.Threads() << G4endl;

@@ -25,7 +25,8 @@ RUNNER = PROJECT_DIR / "scripts" / "run_bgo_sample.sh"
 SCHEMA_V2 = "beta-bgo-th-tlc-pc-v2"
 SCHEMA_V3 = "beta-bgo-th-tlc-pc-offset-v3"
 SCHEMA_V4 = "beta-bgo-th-tlc-pc-coverage-v4"
-SUPPORTED_SCHEMAS = {SCHEMA_V2, SCHEMA_V3, SCHEMA_V4}
+SCHEMA_V5 = "beta-bgo-th-tlc-pc-design-v5"
+SUPPORTED_SCHEMAS = {SCHEMA_V2, SCHEMA_V3, SCHEMA_V4, SCHEMA_V5}
 # Backward-compatible name used by the v2 tests and external helpers.
 EXPECTED_SCHEMA = SCHEMA_V2
 SUPPORTED_EVENTS = 100_000
@@ -34,7 +35,10 @@ RETRYABLE_VALIDATION = {"failed", "missing"}
 SAFE_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 
 EXPECTED_BRANCHES = {
-    "evt": {"eventID", "EdepCell_MeV", "EdepTarget_MeV", "EdepPC_MeV"},
+    "evt": {
+        "eventID", "EdepCell_MeV", "EdepTarget_MeV", "EdepPC_MeV",
+        "EdepPCDown_MeV", "EdepPCUp_MeV",
+    },
     "calhit": {
         "eventID", "copyNo", "t_ns", "dE_MeV", "pdg", "px_MeV",
         "py_MeV", "pz_MeV", "creator", "originType",
@@ -101,6 +105,43 @@ def bgoegg_frustum_theta_range(n_layer: int) -> tuple[float, float]:
         1.3 * math.tan((last_forward_type + 1) * delta / 1.3)
     )
     return math.degrees(theta_min), 144.0 + 6.0 * backward_extra
+
+
+def bgoegg_frustum_z_extents_cm(
+    n_layer: int, z_offset_cm: float
+) -> tuple[float, float]:
+    """Return positive downstream and upstream world-z extents of all vertices."""
+    if n_layer not in {22, 31}:
+        raise RunManagerError("bgoegg_frustum supports n_layer=22 or 31")
+    forward_count = 13 + (5 if n_layer == 31 else 0)
+    backward_count = 9 + (4 if n_layer == 31 else 0)
+    delta = math.radians(6.0)
+
+    def forward_low(type_index: int) -> float:
+        return math.pi / 2.0 - math.atan(
+            1.3 * math.tan((type_index + 1) * delta / 1.3)
+        )
+
+    rings: list[tuple[float, float, float]] = []
+    for type_index in range(forward_count - 1, -1, -1):
+        low = forward_low(type_index)
+        high = math.pi / 2.0 if type_index == 0 else forward_low(type_index - 1)
+        middle = 0.5 * (low + high)
+        radius_mm = 200.0 / math.sqrt(
+            0.25 * math.cos(middle) ** 2 + math.sin(middle) ** 2
+        )
+        rings.append((low, high, radius_mm))
+    for type_index in range(backward_count):
+        low = math.pi / 2.0 + type_index * delta
+        rings.append((low, low + delta, 200.0))
+
+    z_values = [
+        z_offset_cm + 0.1 * radius_mm * math.cos(theta)
+        for low, high, front_radius_mm in rings
+        for radius_mm in (front_radius_mm, front_radius_mm + 220.0)
+        for theta in (low, high)
+    ]
+    return max(z_values), -min(z_values)
 
 
 def now_iso() -> str:
@@ -239,6 +280,10 @@ def load_manifest(path: Path) -> dict[str, Any]:
                 "name", "n_layer", "n_sector", "segmentation",
                 "geometry_mode", "photon_counter", "bgo_z_offset_cm",
                 "theta_min_deg", "theta_max_deg",
+                "pc_n_layers", "pc_pb_thickness_mm",
+                "pc_scinti_thickness_mm", "pc_z_front_cm",
+                "pc_down_theta_inner_deg", "pc_down_theta_outer_deg",
+                "pc_up_theta_inner_deg", "pc_up_theta_outer_deg",
             }
         )
         if unknown_geometry:
@@ -251,10 +296,20 @@ def load_manifest(path: Path) -> dict[str, Any]:
                 "geometry_mode", "photon_counter",
             } - set(item)
         )
-        if schema in {SCHEMA_V3, SCHEMA_V4} and "bgo_z_offset_cm" not in item:
+        if schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5} and "bgo_z_offset_cm" not in item:
             missing_geometry.append("bgo_z_offset_cm")
         if schema == SCHEMA_V4:
             for field in ("theta_min_deg", "theta_max_deg"):
+                if field not in item:
+                    missing_geometry.append(field)
+        pc_fields = (
+            "pc_n_layers", "pc_pb_thickness_mm", "pc_scinti_thickness_mm",
+            "pc_z_front_cm", "pc_down_theta_inner_deg",
+            "pc_down_theta_outer_deg", "pc_up_theta_inner_deg",
+            "pc_up_theta_outer_deg",
+        )
+        if schema == SCHEMA_V5:
+            for field in pc_fields:
                 if field not in item:
                     missing_geometry.append(field)
         if missing_geometry:
@@ -297,19 +352,20 @@ def load_manifest(path: Path) -> dict[str, Any]:
                 f"{name}.bgoegg_published requires geometry_mode=bgoegg_frustum"
             )
         photon_counter = item["photon_counter"]
-        if photon_counter not in {"none", "downstream", "two_sided"}:
+        if photon_counter not in {"none", "downstream", "upstream", "two_sided"}:
             raise RunManagerError(
-                f"{name}.photon_counter must be none, downstream, or two_sided"
+                f"{name}.photon_counter must be none, downstream, upstream, or two_sided"
             )
         egg_geometry = geometry_mode in {"bgoegg_envelope", "bgoegg_frustum"}
         if not egg_geometry and photon_counter != "none":
             raise RunManagerError(
                 f"{name}.photon_counter collars require a BGOegg geometry"
             )
-        if geometry_mode == "bgoegg_frustum" and photon_counter != "none":
+        if (geometry_mode == "bgoegg_frustum" and photon_counter != "none"
+                and schema != SCHEMA_V5):
             raise RunManagerError(
-                f"{name}.photon_counter collars overlap the published BGOegg "
-                "frusta; use none until the collars are redesigned"
+                f"{name}.photon_counter with published BGOegg requires schema "
+                f"{SCHEMA_V5} and an explicitly checked endcap design"
             )
         if schema == SCHEMA_V2 and "bgo_z_offset_cm" in item:
             raise RunManagerError(
@@ -325,6 +381,82 @@ def load_manifest(path: Path) -> dict[str, Any]:
             raise RunManagerError(
                 f"{name}.bgo_z_offset_cm requires a BGOegg geometry"
             )
+        if schema != SCHEMA_V5 and any(field in item for field in pc_fields):
+            raise RunManagerError(
+                f"{name}.pc_* design fields require schema {SCHEMA_V5}"
+            )
+        pc_n_layers = require_int(
+            item.get("pc_n_layers", 8), f"{name}.pc_n_layers", 1, 64
+        )
+        pc_pb_thickness_mm = require_float(
+            item.get("pc_pb_thickness_mm", 1.0),
+            f"{name}.pc_pb_thickness_mm", 0.01, 20.0,
+        )
+        pc_scinti_thickness_mm = require_float(
+            item.get("pc_scinti_thickness_mm", 5.0),
+            f"{name}.pc_scinti_thickness_mm", 0.1, 100.0,
+        )
+        pc_z_front_cm = require_float(
+            item.get("pc_z_front_cm", 52.0),
+            f"{name}.pc_z_front_cm", 1.0, 89.0,
+        )
+        pc_down_theta_inner_deg = require_float(
+            item.get("pc_down_theta_inner_deg", 9.698),
+            f"{name}.pc_down_theta_inner_deg", 0.01, 80.0,
+        )
+        pc_down_theta_outer_deg = require_float(
+            item.get("pc_down_theta_outer_deg", 24.0),
+            f"{name}.pc_down_theta_outer_deg", 0.02, 85.0,
+        )
+        pc_up_theta_inner_deg = require_float(
+            item.get("pc_up_theta_inner_deg", 5.666),
+            f"{name}.pc_up_theta_inner_deg", 0.01, 80.0,
+        )
+        pc_up_theta_outer_deg = require_float(
+            item.get("pc_up_theta_outer_deg", 36.0),
+            f"{name}.pc_up_theta_outer_deg", 0.02, 85.0,
+        )
+        if pc_down_theta_inner_deg >= pc_down_theta_outer_deg:
+            raise RunManagerError(
+                f"{name}.pc_down_theta_inner_deg must be less than outer"
+            )
+        if pc_up_theta_inner_deg >= pc_up_theta_outer_deg:
+            raise RunManagerError(
+                f"{name}.pc_up_theta_inner_deg must be less than outer"
+            )
+        pc_back_cm = pc_z_front_cm + 0.1 * pc_n_layers * (
+            pc_pb_thickness_mm + pc_scinti_thickness_mm
+        )
+        if pc_back_cm >= 90.0:
+            raise RunManagerError(f"{name}.photon_counter exceeds the world z boundary")
+        pc_max_radius_cm = pc_back_cm * math.tan(math.radians(max(
+            pc_down_theta_outer_deg, pc_up_theta_outer_deg
+        )))
+        if pc_max_radius_cm >= 90.0:
+            raise RunManagerError(
+                f"{name}.photon_counter exceeds the world radial boundary"
+            )
+        if schema == SCHEMA_V5:
+            if geometry_mode != "bgoegg_frustum":
+                raise RunManagerError(
+                    f"{name}: schema {SCHEMA_V5} requires geometry_mode=bgoegg_frustum"
+                )
+            downstream_extent_cm, upstream_extent_cm = bgoegg_frustum_z_extents_cm(
+                n_layer, bgo_z_offset_cm
+            )
+            clearance_cm = 0.05
+            if (photon_counter in {"downstream", "two_sided"}
+                    and pc_z_front_cm <= downstream_extent_cm + clearance_cm):
+                raise RunManagerError(
+                    f"{name}.downstream photon counter intersects BGOegg: "
+                    f"z_front={pc_z_front_cm}, extent={downstream_extent_cm} cm"
+                )
+            if (photon_counter in {"upstream", "two_sided"}
+                    and pc_z_front_cm <= upstream_extent_cm + clearance_cm):
+                raise RunManagerError(
+                    f"{name}.upstream photon counter intersects BGOegg: "
+                    f"z_front={pc_z_front_cm}, extent={upstream_extent_cm} cm"
+                )
         if schema != SCHEMA_V4 and (
             "theta_min_deg" in item or "theta_max_deg" in item
         ):
@@ -362,6 +494,14 @@ def load_manifest(path: Path) -> dict[str, Any]:
                 "bgo_z_offset_cm": bgo_z_offset_cm,
                 "theta_min_deg": theta_min_deg,
                 "theta_max_deg": theta_max_deg,
+                "pc_n_layers": pc_n_layers,
+                "pc_pb_thickness_mm": pc_pb_thickness_mm,
+                "pc_scinti_thickness_mm": pc_scinti_thickness_mm,
+                "pc_z_front_cm": pc_z_front_cm,
+                "pc_down_theta_inner_deg": pc_down_theta_inner_deg,
+                "pc_down_theta_outer_deg": pc_down_theta_outer_deg,
+                "pc_up_theta_inner_deg": pc_up_theta_inner_deg,
+                "pc_up_theta_outer_deg": pc_up_theta_outer_deg,
             }
         )
 
@@ -533,6 +673,18 @@ def bsub_command(manifest: dict[str, Any], job: dict[str, Any]) -> list[str]:
             f"BETA_BUILD_DIR={manifest['build_dir']}",
             f"BETA_THREADS={job['threads']}",
             f"BETA_SEED={job['seed']}",
+            *(
+                [
+                    f"BETA_PC_N_LAYERS={geometry['pc_n_layers']}",
+                    f"BETA_PC_PB_THICKNESS_MM={geometry['pc_pb_thickness_mm']}",
+                    f"BETA_PC_SCINTI_THICKNESS_MM={geometry['pc_scinti_thickness_mm']}",
+                    f"BETA_PC_Z_FRONT_CM={geometry['pc_z_front_cm']}",
+                    f"BETA_PC_DOWN_THETA_INNER_DEG={geometry['pc_down_theta_inner_deg']}",
+                    f"BETA_PC_DOWN_THETA_OUTER_DEG={geometry['pc_down_theta_outer_deg']}",
+                    f"BETA_PC_UP_THETA_INNER_DEG={geometry['pc_up_theta_inner_deg']}",
+                    f"BETA_PC_UP_THETA_OUTER_DEG={geometry['pc_up_theta_outer_deg']}",
+                ] if manifest["schema"] == SCHEMA_V5 else []
+            ),
             str(RUNNER),
             job["run_tag"],
             str(geometry["n_layer"]),
@@ -543,7 +695,7 @@ def bsub_command(manifest: dict[str, Any], job: dict[str, Any]) -> list[str]:
             geometry["photon_counter"],
         ]
     )
-    if manifest["schema"] in {SCHEMA_V3, SCHEMA_V4}:
+    if manifest["schema"] in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5}:
         command.append(str(geometry["bgo_z_offset_cm"]))
     if manifest["schema"] == SCHEMA_V4:
         command.extend(
@@ -873,7 +1025,7 @@ def validate_inspection(
     schema_branches = {
         tree: set(branches) for tree, branches in EXPECTED_BRANCHES.items()
     }
-    if schema in {SCHEMA_V3, SCHEMA_V4}:
+    if schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5}:
         schema_branches["runmeta"].add("bgoZOffset_cm")
     for tree, expected_branches in schema_branches.items():
         entry_raw = inspection["trees"].get(tree)
@@ -915,7 +1067,7 @@ def validate_inspection(
             "current": "0", "bgoegg_envelope": "1", "bgoegg_frustum": "2",
         }[geometry["geometry_mode"]],
         "photonCounterMode": {
-            "none": "0", "downstream": "1", "two_sided": "2",
+            "none": "0", "downstream": "1", "two_sided": "2", "upstream": "3",
         }[geometry["photon_counter"]],
         "geometry": geometry["geometry_mode"],
         "geometryModel": (
@@ -928,7 +1080,7 @@ def validate_inspection(
             )
         ),
         "photonCounter": geometry["photon_counter"],
-        "pcNLayers": "8",
+        "pcNLayers": str(geometry.get("pc_n_layers", 8)),
     }
     for key, expected in expected_meta.items():
         if meta.get(key) != expected:
@@ -957,16 +1109,16 @@ def validate_inspection(
         ),
         "rMin_cm": 20.0 if egg_geometry else 30.0,
         "thickness_cm": 22.0 if egg_geometry else 20.0,
-        "pcPbThickness_mm": 1.0,
-        "pcScintiThickness_mm": 5.0,
-        "pcZFront_cm": 52.0,
-        "pcDownThetaInner_deg": 9.698,
-        "pcDownThetaOuter_deg": 24.0,
-        "pcUpThetaInner_deg": 5.666,
-        "pcUpThetaOuter_deg": 36.0,
+        "pcPbThickness_mm": geometry.get("pc_pb_thickness_mm", 1.0),
+        "pcScintiThickness_mm": geometry.get("pc_scinti_thickness_mm", 5.0),
+        "pcZFront_cm": geometry.get("pc_z_front_cm", 52.0),
+        "pcDownThetaInner_deg": geometry.get("pc_down_theta_inner_deg", 9.698),
+        "pcDownThetaOuter_deg": geometry.get("pc_down_theta_outer_deg", 24.0),
+        "pcUpThetaInner_deg": geometry.get("pc_up_theta_inner_deg", 5.666),
+        "pcUpThetaOuter_deg": geometry.get("pc_up_theta_outer_deg", 36.0),
         **(
             {"bgoZOffset_cm": geometry["bgo_z_offset_cm"]}
-            if schema in {SCHEMA_V3, SCHEMA_V4} else {}
+            if schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5} else {}
         ),
     }.items():
         if not float_equal(meta.get(key), expected):

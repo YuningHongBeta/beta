@@ -89,6 +89,8 @@ betaRunAction::betaRunAction(
   man->CreateNtupleDColumn("EdepCell_MeV");   // col1
   man->CreateNtupleDColumn("EdepTarget_MeV"); // col2
   man->CreateNtupleDColumn("EdepPC_MeV");     // col3
+  man->CreateNtupleDColumn("EdepPCDown_MeV"); // col4
+  man->CreateNtupleDColumn("EdepPCUp_MeV");   // col5
   man->FinishNtuple();
 
   // ---- ntuple 1: calhit (per segment hit list) ----
@@ -251,14 +253,14 @@ void betaRunAction::BeginOfRunAction(const G4Run *)
     man->FillNtupleSColumn(4, 32, config.Geometry());
     man->FillNtupleSColumn(4, 33, config.GeometryModel());
     man->FillNtupleSColumn(4, 34, config.PhotonCounter());
-    man->FillNtupleIColumn(4, 35, PCNLayers);
-    man->FillNtupleDColumn(4, 36, PCPbThickness / mm);
-    man->FillNtupleDColumn(4, 37, PCScintiThickness / mm);
-    man->FillNtupleDColumn(4, 38, PCZFront / cm);
-    man->FillNtupleDColumn(4, 39, PCDownThetaInner / deg);
-    man->FillNtupleDColumn(4, 40, PCDownThetaOuter / deg);
-    man->FillNtupleDColumn(4, 41, PCUpThetaInner / deg);
-    man->FillNtupleDColumn(4, 42, PCUpThetaOuter / deg);
+    man->FillNtupleIColumn(4, 35, config.PCNLayers());
+    man->FillNtupleDColumn(4, 36, config.PCPbThicknessMm());
+    man->FillNtupleDColumn(4, 37, config.PCScintiThicknessMm());
+    man->FillNtupleDColumn(4, 38, config.PCZFrontCm());
+    man->FillNtupleDColumn(4, 39, config.PCDownThetaInnerDeg());
+    man->FillNtupleDColumn(4, 40, config.PCDownThetaOuterDeg());
+    man->FillNtupleDColumn(4, 41, config.PCUpThetaInnerDeg());
+    man->FillNtupleDColumn(4, 42, config.PCUpThetaOuterDeg());
     if (config.BgoZOffsetConfigured())
       man->FillNtupleDColumn(4, 43, config.BgoZOffsetCm());
     man->AddNtupleRow(4);
