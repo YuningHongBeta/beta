@@ -91,6 +91,13 @@ betaRunAction::betaRunAction(
   man->CreateNtupleDColumn("EdepPC_MeV");     // col3
   man->CreateNtupleDColumn("EdepPCDown_MeV"); // col4
   man->CreateNtupleDColumn("EdepPCUp_MeV");   // col5
+  man->CreateNtupleIColumn("PCGammaN");        // col6
+  man->CreateNtupleIColumn("PCGammaDownN");    // col7
+  man->CreateNtupleIColumn("PCGammaUpN");      // col8
+  man->CreateNtupleDColumn("PCGammaEnergy_MeV");     // col9
+  man->CreateNtupleDColumn("PCGammaDownEnergy_MeV"); // col10
+  man->CreateNtupleDColumn("PCGammaUpEnergy_MeV");   // col11
+  man->CreateNtupleDColumn("PCGammaMaxEnergy_MeV");  // col12
   man->FinishNtuple();
 
   // ---- ntuple 1: calhit (per segment hit list) ----

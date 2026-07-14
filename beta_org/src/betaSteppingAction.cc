@@ -27,6 +27,21 @@ void betaSteppingAction::UserSteppingAction(const G4Step *step)
   if (!prePV || !postPV)
     return;
 
+  // Record unique gamma tracks crossing into the first Pb converter layer.
+  // This adds no transport bias and consumes no random numbers.
+  const auto &postName = postPV->GetName();
+  if ((postName == "PCLead" || postName == "PCUpLead") &&
+      prePV->GetName() != postName &&
+      trk->GetDefinition()->GetPDGEncoding() == 22)
+  {
+    const auto touchable = post->GetTouchableHandle();
+    const int copyNo = touchable ? touchable->GetCopyNumber() : -1;
+    if (copyNo == 0)
+      fEvent->RecordPCGammaEntrance(
+          postName == "PCUpLead", trk->GetTrackID(),
+          post->GetKineticEnergy());
+  }
+
   if (postPV->GetName() == "cellPhysical" && prePV->GetName() != "cellPhysical")
   {
 

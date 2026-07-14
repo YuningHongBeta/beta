@@ -79,8 +79,17 @@ class RunManagerTests(unittest.TestCase):
         content["events"] = 10
         with tempfile.TemporaryDirectory() as directory:
             path = self.write_manifest(directory, content)
-            with self.assertRaisesRegex(rm.RunManagerError, "events must be 100000"):
+            with self.assertRaisesRegex(rm.RunManagerError, "events must be one of"):
                 rm.load_manifest(path)
+
+    def test_accepts_2m_events_and_exports_event_count(self):
+        content = base_manifest()
+        content["events"] = 2000000
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = rm.load_manifest(self.write_manifest(directory, content))
+            jobs = rm.expand_jobs(manifest, Path(directory) / "state.json")
+        self.assertEqual(jobs[0]["events"], 2000000)
+        self.assertIn("BETA_EVENTS=2000000", rm.bsub_command(manifest, jobs[0]))
 
     def test_rejects_duplicate_geometry_name(self):
         content = base_manifest()
@@ -323,6 +332,12 @@ class RunManagerTests(unittest.TestCase):
             inspection["trees"][name] = "100000"
         inspection["trees"]["runmeta"] = "1"
         self.assertEqual(rm.validate_inspection(job, inspection), [])
+        inspection["branches"]["evt"].update(rm.OPTIONAL_PC_GAMMA_BRANCHES)
+        self.assertEqual(rm.validate_inspection(job, inspection), [])
+        inspection["branches"]["evt"].remove("PCGammaN")
+        errors = rm.validate_inspection(job, inspection)
+        self.assertTrue(any("incomplete optional" in error for error in errors))
+        inspection["branches"]["evt"] = set(rm.EXPECTED_BRANCHES["evt"])
         inspection["meta"]["physicsFlag"] = "3"
         errors = rm.validate_inspection(job, inspection)
         self.assertTrue(any("physicsFlag" in error for error in errors))

@@ -105,6 +105,33 @@ def validate(path, expect_rows=None, expect_physics=4):
             rtol=1e-6, atol=1e-6,
         ):
             raise ValueError("photon-counter sum differs from side energies")
+    pc_gamma_names = (
+        "pcGammaN", "pcGammaDownN", "pcGammaUpN",
+        "pcGammaEnergy_MeV", "pcGammaDownEnergy_MeV",
+        "pcGammaUpEnergy_MeV", "pcGammaMaxEnergy_MeV",
+    )
+    if any(name in col for name in pc_gamma_names):
+        if not all(name in col for name in pc_gamma_names):
+            raise ValueError("incomplete photon-counter gamma-entrance feature set")
+        for name in pc_gamma_names:
+            if np.any(data[:, col[name]] < 0):
+                raise ValueError(f"negative photon-counter gamma value: {name}")
+        for name in ("pcGammaN", "pcGammaDownN", "pcGammaUpN"):
+            if np.any(data[:, col[name]] != np.rint(data[:, col[name]])):
+                raise ValueError(f"non-integral photon-counter gamma count: {name}")
+        if not np.allclose(
+            data[:, col["pcGammaN"]],
+            data[:, col["pcGammaDownN"]] + data[:, col["pcGammaUpN"]],
+            rtol=0, atol=0,
+        ):
+            raise ValueError("photon-counter gamma count differs from side counts")
+        if not np.allclose(
+            data[:, col["pcGammaEnergy_MeV"]],
+            data[:, col["pcGammaDownEnergy_MeV"]]
+            + data[:, col["pcGammaUpEnergy_MeV"]],
+            rtol=1e-6, atol=1e-6,
+        ):
+            raise ValueError("photon-counter gamma energy differs from side energies")
     valid = data[:, col["cherenkovDtValid"]]
     if np.any((valid != 0) & (valid != 1)):
         raise ValueError("cherenkovDtValid is not binary")
@@ -214,6 +241,8 @@ def validate(path, expect_rows=None, expect_physics=4):
         ]
     if all(name in col for name in pc_names):
         summary_names += list(pc_names)
+    if all(name in col for name in pc_gamma_names):
+        summary_names += list(pc_gamma_names)
     summary = {
         name: {
             "min": float(np.min(data[:, col[name]])),

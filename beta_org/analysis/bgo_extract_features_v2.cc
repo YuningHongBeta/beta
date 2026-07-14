@@ -96,6 +96,13 @@ enum Feature : int {
   kPCSumE,
   kPCDownE,
   kPCUpE,
+  kPCGammaN,
+  kPCGammaDownN,
+  kPCGammaUpN,
+  kPCGammaEnergy,
+  kPCGammaDownEnergy,
+  kPCGammaUpEnergy,
+  kPCGammaMaxEnergy,
   kPoissonFeatureStart,
   kNFeature =
       kPoissonFeatureStart + kNEfficiency * kNPoissonFeaturePerEfficiency
@@ -121,7 +128,9 @@ const std::vector<std::string> kFeatureNames = [] {
       "absDeltaZLt90_sigT0p2ns", "absDeltaZ_sigT0p5ns_mm",
       "absDeltaZLt90_sigT0p5ns", "absDeltaZ_sigT1p0ns_mm",
       "absDeltaZLt90_sigT1p0ns", "pcSumE_MeV", "pcDownE_MeV",
-      "pcUpE_MeV"};
+      "pcUpE_MeV", "pcGammaN", "pcGammaDownN", "pcGammaUpN",
+      "pcGammaEnergy_MeV", "pcGammaDownEnergy_MeV",
+      "pcGammaUpEnergy_MeV", "pcGammaMaxEnergy_MeV"};
   for (int ieff = 0; ieff < kNEfficiency; ++ieff) {
     const std::string tag(kEfficiencyTags[ieff]);
     names.push_back("tlcNpeTotal_" + tag);
@@ -825,7 +834,11 @@ void writeManifest(const std::string &path, const std::string &input,
   }
   out << "  \"classifierInputs\": [\"calarr.dE_MeV\", "
          "\"evt.EdepPC_MeV\", \"evt.EdepPCDown_MeV\", "
-         "\"evt.EdepPCUp_MeV\", \"th.dE_MeV\", "
+         "\"evt.EdepPCUp_MeV\", \"evt.PCGammaN\", "
+         "\"evt.PCGammaDownN\", \"evt.PCGammaUpN\", "
+         "\"evt.PCGammaEnergy_MeV\", \"evt.PCGammaDownEnergy_MeV\", "
+         "\"evt.PCGammaUpEnergy_MeV\", \"evt.PCGammaMaxEnergy_MeV\", "
+         "\"th.dE_MeV\", "
          "\"th.time_ns\", ";
   if (m.finalReadoutMetadata) out << "\"th.zReco_mm\", ";
   out << "\"tlc.cherenkovExpectedPhotons\", "
@@ -871,17 +884,38 @@ bool extract(const std::string &input, const std::string &output,
   requireBranch(evt, "EdepPC_MeV");
   requireBranch(evt, "EdepPCDown_MeV");
   requireBranch(evt, "EdepPCUp_MeV");
+  const char *pcGammaBranches[] = {
+      "PCGammaN", "PCGammaDownN", "PCGammaUpN", "PCGammaEnergy_MeV",
+      "PCGammaDownEnergy_MeV", "PCGammaUpEnergy_MeV",
+      "PCGammaMaxEnergy_MeV"};
+  bool hasPCGammaBranches = true;
+  for (const char *name : pcGammaBranches)
+    hasPCGammaBranches = hasPCGammaBranches && evt->GetBranch(name);
   evt->SetBranchStatus("*", 0);
   evt->SetBranchStatus("eventID", 1);
   evt->SetBranchStatus("EdepPC_MeV", 1);
   evt->SetBranchStatus("EdepPCDown_MeV", 1);
   evt->SetBranchStatus("EdepPCUp_MeV", 1);
+  if (hasPCGammaBranches)
+    for (const char *name : pcGammaBranches) evt->SetBranchStatus(name, 1);
   int evtEventID = -1;
+  int pcGammaN = 0, pcGammaDownN = 0, pcGammaUpN = 0;
   double pcSumE = 0.0, pcDownE = 0.0, pcUpE = 0.0;
+  double pcGammaEnergy = 0.0, pcGammaDownEnergy = 0.0;
+  double pcGammaUpEnergy = 0.0, pcGammaMaxEnergy = 0.0;
   evt->SetBranchAddress("eventID", &evtEventID);
   evt->SetBranchAddress("EdepPC_MeV", &pcSumE);
   evt->SetBranchAddress("EdepPCDown_MeV", &pcDownE);
   evt->SetBranchAddress("EdepPCUp_MeV", &pcUpE);
+  if (hasPCGammaBranches) {
+    evt->SetBranchAddress("PCGammaN", &pcGammaN);
+    evt->SetBranchAddress("PCGammaDownN", &pcGammaDownN);
+    evt->SetBranchAddress("PCGammaUpN", &pcGammaUpN);
+    evt->SetBranchAddress("PCGammaEnergy_MeV", &pcGammaEnergy);
+    evt->SetBranchAddress("PCGammaDownEnergy_MeV", &pcGammaDownEnergy);
+    evt->SetBranchAddress("PCGammaUpEnergy_MeV", &pcGammaUpEnergy);
+    evt->SetBranchAddress("PCGammaMaxEnergy_MeV", &pcGammaMaxEnergy);
+  }
 
   requireBranch(th, "dE_MeV");
   requireBranch(th, "time_ns");
@@ -947,6 +981,25 @@ bool extract(const std::string &input, const std::string &output,
     f[kPCSumE] = static_cast<float>(pcSumE);
     f[kPCDownE] = static_cast<float>(pcDownE);
     f[kPCUpE] = static_cast<float>(pcUpE);
+    if (pcGammaN < 0 || pcGammaDownN < 0 || pcGammaUpN < 0 ||
+        pcGammaN != pcGammaDownN + pcGammaUpN ||
+        !std::isfinite(pcGammaEnergy) ||
+        !std::isfinite(pcGammaDownEnergy) ||
+        !std::isfinite(pcGammaUpEnergy) ||
+        !std::isfinite(pcGammaMaxEnergy) || pcGammaEnergy < 0.0 ||
+        pcGammaDownEnergy < 0.0 || pcGammaUpEnergy < 0.0 ||
+        pcGammaMaxEnergy < 0.0 ||
+        std::abs(pcGammaEnergy - pcGammaDownEnergy - pcGammaUpEnergy) >
+            1.0e-8 * std::max(1.0, pcGammaEnergy))
+      throw std::runtime_error("evt PC gamma join/value mismatch for event " +
+                               std::to_string(calEventID));
+    f[kPCGammaN] = static_cast<float>(pcGammaN);
+    f[kPCGammaDownN] = static_cast<float>(pcGammaDownN);
+    f[kPCGammaUpN] = static_cast<float>(pcGammaUpN);
+    f[kPCGammaEnergy] = static_cast<float>(pcGammaEnergy);
+    f[kPCGammaDownEnergy] = static_cast<float>(pcGammaDownEnergy);
+    f[kPCGammaUpEnergy] = static_cast<float>(pcGammaUpEnergy);
+    f[kPCGammaMaxEnergy] = static_cast<float>(pcGammaMaxEnergy);
 
     const std::vector<double> *thisTHE = nullptr, *thisTHTime = nullptr;
     const std::vector<double> *thisTHZReco = nullptr;

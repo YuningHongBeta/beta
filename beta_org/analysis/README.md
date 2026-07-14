@@ -17,11 +17,23 @@ adjacency and test hit-pattern/dE classifiers.
 
 The exact-frustum Photon Counter study uses runmanager schema
 `beta-bgo-th-tlc-pc-design-v5`. It fixes BGOegg to 31x60, z=-10 cm and the BGO
-per-segment threshold to 3 MeV. The endcap itself is a conical annulus, so its
-inner and outer polar angles are constant through every Pb/plastic layer. The
+per-segment threshold to 3 MeV. The endcap is a conical annulus or disk with
+configurable inner/outer polar angles held constant through every Pb/plastic layer. The
 extractor joins `evt` by `eventID` and adds `pcSumE_MeV`, `pcDownE_MeV`, and
-`pcUpE_MeV`; BGO-only features and the frozen score definition are unchanged.
+`pcUpE_MeV`. New ROOT files also provide unique gamma-entry count and energy
+branches for the first Pb layer, allowing geometry and intrinsic response to be
+separated. BGO-only features and the frozen score definition are unchanged.
 The PC analysis threshold is scanned separately and is not the BGO threshold.
+
+Photon Counter (PC) は BGO score と結合した分類器にはせず、独立した
+hard-hit veto として評価する。`bgoegg_pc_detector_evaluate.py` は修論と同じ
+固定 cut で BGO、TH、TLC、delta-z、PC を順に評価する。
+`bgoegg_pc_aperture_evaluate.py` は PC について、gamma が Pb 第1層へ入る
+幾何学的入射率、入射事象に対する plastic hit 率、両者を含む実効 PC veto
+率を分離する。全生成、BGO `Ncluster=1` 後、全 pre-PC cut 後の分母を混ぜない。
+BGO threshold は常に 3 MeV で、PC plastic threshold は独立に走査する。
+独立seedの200万π0確認は`bgoegg_pc_confirm_evaluate.py`でgeometryとPC cutを
+固定したまま集計する。
 
 ## 目的と統計
 

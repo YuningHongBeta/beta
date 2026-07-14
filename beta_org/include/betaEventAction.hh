@@ -5,6 +5,7 @@
 #include "globals.hh"
 
 #include <memory>
+#include <unordered_set>
 #include <vector>
 
 class G4Event;
@@ -32,6 +33,7 @@ public:
     fEvtEdepPC += edep;
     fEvtEdepPCUp += edep;
   }
+  void RecordPCGammaEntrance(bool upstream, int trackID, double energy);
   void SetWatchEvtID(int evtID)   { fWatchEvtID = evtID; }
 
   // ---- calarr 用（RunAction が vector column を作る時に参照）----
@@ -56,6 +58,15 @@ private:
   double fEvtEdepPC     = 0.0; // enabled photon-counter plastic layers
   double fEvtEdepPCDown = 0.0;
   double fEvtEdepPCUp   = 0.0;
+  int fPCGammaN = 0;
+  int fPCGammaDownN = 0;
+  int fPCGammaUpN = 0;
+  double fPCGammaEnergy = 0.0;
+  double fPCGammaDownEnergy = 0.0;
+  double fPCGammaUpEnergy = 0.0;
+  double fPCGammaMaxEnergy = 0.0;
+  std::unordered_set<int> fPCGammaDownTrackIDs;
+  std::unordered_set<int> fPCGammaUpTrackIDs;
   int fWatchEvtID = -1;
 
   std::vector<double> fDE_MeV;

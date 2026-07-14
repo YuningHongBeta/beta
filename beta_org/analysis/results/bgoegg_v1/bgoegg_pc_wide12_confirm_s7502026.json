@@ -1,0 +1,1137 @@
+{
+  "status": "complete",
+  "analysis": "bgoegg_pc_confirm_evaluate",
+  "confirmation_policy": "geometry and PC threshold frozen from seed-650 screening; stand-alone hard PC hit veto; no BGO+PC classifier",
+  "tag": "bgoegg_pc_wide12_confirm_s7502026",
+  "seed": 7502026,
+  "events": 2000000,
+  "bgo_threshold_MeV": 3.0,
+  "frozen_geometry": {
+    "name": "two_wide_12_pb2",
+    "n_layer": 31,
+    "n_sector": 60,
+    "segmentation": "bgoegg_published",
+    "geometry_mode": "bgoegg_frustum",
+    "photon_counter": "two_sided",
+    "bgo_z_offset_cm": -10,
+    "pc_n_layers": 12,
+    "pc_pb_thickness_mm": 2,
+    "pc_scinti_thickness_mm": 5,
+    "pc_z_front_cm": 52,
+    "pc_down_theta_inner_deg": 0.01,
+    "pc_down_theta_outer_deg": 24,
+    "pc_up_theta_inner_deg": 0.01,
+    "pc_up_theta_outer_deg": 12
+  },
+  "frozen_pc_plastic_threshold_MeV": 0.5,
+  "selection_counts": {
+    "all_generated": 2000000,
+    "given_bgo_ncluster1": 21608,
+    "given_full_pre_pc": 119
+  },
+  "fixed_point": {
+    "pc_plastic_threshold_MeV": 0.5,
+    "conditions": {
+      "all_generated": {
+        "gamma_intercept": {
+          "value": 0.0470675,
+          "numerator": 94135,
+          "denominator": 2000000,
+          "wilson_95ci": [
+            0.04677485771773078,
+            0.04736188220047459
+          ]
+        },
+        "effective_pc_hit": {
+          "value": 0.023824,
+          "numerator": 47648,
+          "denominator": 2000000,
+          "wilson_95ci": [
+            0.023613561735378458,
+            0.024036267471603534
+          ]
+        },
+        "response_given_gamma_intercept": {
+          "value": 0.48955223880597015,
+          "numerator": 46084,
+          "denominator": 94135,
+          "wilson_95ci": [
+            0.48635937160036374,
+            0.49274595868075693
+          ]
+        },
+        "hit_without_recorded_gamma_intercept": {
+          "value": 0.000782,
+          "numerator": 1564,
+          "denominator": 2000000,
+          "wilson_95ci": [
+            0.0007442064111472563,
+            0.0008217113105588685
+          ]
+        }
+      },
+      "given_bgo_ncluster1": {
+        "gamma_intercept": {
+          "value": 0.9496945575712699,
+          "numerator": 20521,
+          "denominator": 21608,
+          "wilson_95ci": [
+            0.946699447959089,
+            0.9525298026824928
+          ]
+        },
+        "effective_pc_hit": {
+          "value": 0.8768048870788597,
+          "numerator": 18946,
+          "denominator": 21608,
+          "wilson_95ci": [
+            0.8723556204162041,
+            0.8811202012081408
+          ]
+        },
+        "response_given_gamma_intercept": {
+          "value": 0.9126748209151601,
+          "numerator": 18729,
+          "denominator": 20521,
+          "wilson_95ci": [
+            0.9087346011870279,
+            0.9164605670183374
+          ]
+        },
+        "hit_without_recorded_gamma_intercept": {
+          "value": 0.01004257682339874,
+          "numerator": 217,
+          "denominator": 21608,
+          "wilson_95ci": [
+            0.008797485296011386,
+            0.011461846129076074
+          ]
+        }
+      },
+      "given_full_pre_pc": {
+        "gamma_intercept": {
+          "value": 0.9663865546218487,
+          "numerator": 115,
+          "denominator": 119,
+          "wilson_95ci": [
+            0.9167514797298497,
+            0.9868522471032992
+          ]
+        },
+        "effective_pc_hit": {
+          "value": 0.865546218487395,
+          "numerator": 103,
+          "denominator": 119,
+          "wilson_95ci": [
+            0.7927150943383466,
+            0.9155148537200674
+          ]
+        },
+        "response_given_gamma_intercept": {
+          "value": 0.8956521739130435,
+          "numerator": 103,
+          "denominator": 115,
+          "wilson_95ci": [
+            0.8264310773606731,
+            0.9392949655794358
+          ]
+        },
+        "hit_without_recorded_gamma_intercept": {
+          "value": 0.0,
+          "numerator": 0,
+          "denominator": 119,
+          "wilson_95ci": [
+            0.0,
+            0.031271680241939506
+          ]
+        }
+      }
+    }
+  },
+  "operating_points": [
+    {
+      "pc_plastic_threshold_MeV": 0.0,
+      "conditions": {
+        "all_generated": {
+          "gamma_intercept": {
+            "value": 0.0470675,
+            "numerator": 94135,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.04677485771773078,
+              0.04736188220047459
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.030441,
+            "numerator": 60882,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.030203805745415188,
+              0.030679998042682607
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.5889414139268072,
+            "numerator": 55440,
+            "denominator": 94135,
+            "wilson_95ci": [
+              0.5857947303914841,
+              0.5920808387201753
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.002721,
+            "numerator": 5442,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.0026497541239326027,
+              0.0027941561491991746
+            ]
+          }
+        },
+        "given_bgo_ncluster1": {
+          "gamma_intercept": {
+            "value": 0.9496945575712699,
+            "numerator": 20521,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.946699447959089,
+              0.9525298026824928
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.8811551277304702,
+            "numerator": 19040,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.8767724641133556,
+              0.8854022923221767
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.9145753130939038,
+            "numerator": 18768,
+            "denominator": 20521,
+            "wilson_95ci": [
+              0.9106730061931998,
+              0.918322434971959
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.012587930396149574,
+            "numerator": 272,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.011185668437038278,
+              0.01416346527119079
+            ]
+          }
+        },
+        "given_full_pre_pc": {
+          "gamma_intercept": {
+            "value": 0.9663865546218487,
+            "numerator": 115,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.9167514797298497,
+              0.9868522471032992
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.8739495798319328,
+            "numerator": 104,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.8024083075931692,
+              0.9221027886964728
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.9043478260869565,
+            "numerator": 104,
+            "denominator": 115,
+            "wilson_95ci": [
+              0.8368077057238427,
+              0.9457474810171477
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.0,
+            "numerator": 0,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.0,
+              0.031271680241939506
+            ]
+          }
+        }
+      }
+    },
+    {
+      "pc_plastic_threshold_MeV": 0.1,
+      "conditions": {
+        "all_generated": {
+          "gamma_intercept": {
+            "value": 0.0470675,
+            "numerator": 94135,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.04677485771773078,
+              0.04736188220047459
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.0279405,
+            "numerator": 55881,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.027713004850938146,
+              0.02816980854270898
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.5615870823816859,
+            "numerator": 52865,
+            "denominator": 94135,
+            "wilson_95ci": [
+              0.558414899391361,
+              0.5647542390887638
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.001508,
+            "numerator": 3016,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.0014551708205152163,
+              0.0015627441122971614
+            ]
+          }
+        },
+        "given_bgo_ncluster1": {
+          "gamma_intercept": {
+            "value": 0.9496945575712699,
+            "numerator": 20521,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.946699447959089,
+              0.9525298026824928
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.8795816364309516,
+            "numerator": 19006,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.8751746721202358,
+              0.8838536610857182
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.9140880074070464,
+            "numerator": 18758,
+            "denominator": 20521,
+            "wilson_95ci": [
+              0.9101759260564768,
+              0.9178450861446323
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.011477230655312847,
+            "numerator": 248,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.010141327991029748,
+              0.01298680108455571
+            ]
+          }
+        },
+        "given_full_pre_pc": {
+          "gamma_intercept": {
+            "value": 0.9663865546218487,
+            "numerator": 115,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.9167514797298497,
+              0.9868522471032992
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.8739495798319328,
+            "numerator": 104,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.8024083075931692,
+              0.9221027886964728
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.9043478260869565,
+            "numerator": 104,
+            "denominator": 115,
+            "wilson_95ci": [
+              0.8368077057238427,
+              0.9457474810171477
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.0,
+            "numerator": 0,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.0,
+              0.031271680241939506
+            ]
+          }
+        }
+      }
+    },
+    {
+      "pc_plastic_threshold_MeV": 0.5,
+      "conditions": {
+        "all_generated": {
+          "gamma_intercept": {
+            "value": 0.0470675,
+            "numerator": 94135,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.04677485771773078,
+              0.04736188220047459
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.023824,
+            "numerator": 47648,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.023613561735378458,
+              0.024036267471603534
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.48955223880597015,
+            "numerator": 46084,
+            "denominator": 94135,
+            "wilson_95ci": [
+              0.48635937160036374,
+              0.49274595868075693
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.000782,
+            "numerator": 1564,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.0007442064111472563,
+              0.0008217113105588685
+            ]
+          }
+        },
+        "given_bgo_ncluster1": {
+          "gamma_intercept": {
+            "value": 0.9496945575712699,
+            "numerator": 20521,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.946699447959089,
+              0.9525298026824928
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.8768048870788597,
+            "numerator": 18946,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.8723556204162041,
+              0.8811202012081408
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.9126748209151601,
+            "numerator": 18729,
+            "denominator": 20521,
+            "wilson_95ci": [
+              0.9087346011870279,
+              0.9164605670183374
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.01004257682339874,
+            "numerator": 217,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.008797485296011386,
+              0.011461846129076074
+            ]
+          }
+        },
+        "given_full_pre_pc": {
+          "gamma_intercept": {
+            "value": 0.9663865546218487,
+            "numerator": 115,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.9167514797298497,
+              0.9868522471032992
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.865546218487395,
+            "numerator": 103,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.7927150943383466,
+              0.9155148537200674
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.8956521739130435,
+            "numerator": 103,
+            "denominator": 115,
+            "wilson_95ci": [
+              0.8264310773606731,
+              0.9392949655794358
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.0,
+            "numerator": 0,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.0,
+              0.031271680241939506
+            ]
+          }
+        }
+      }
+    },
+    {
+      "pc_plastic_threshold_MeV": 1.0,
+      "conditions": {
+        "all_generated": {
+          "gamma_intercept": {
+            "value": 0.0470675,
+            "numerator": 94135,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.04677485771773078,
+              0.04736188220047459
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.021278,
+            "numerator": 42556,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.021078918412448203,
+              0.021478920574869158
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.44135550007967284,
+            "numerator": 41547,
+            "denominator": 94135,
+            "wilson_95ci": [
+              0.43818594685321904,
+              0.44452983943750474
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.0005045,
+            "numerator": 1009,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.00047432359935200067,
+              0.0005365951883568994
+            ]
+          }
+        },
+        "given_bgo_ncluster1": {
+          "gamma_intercept": {
+            "value": 0.9496945575712699,
+            "numerator": 20521,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.946699447959089,
+              0.9525298026824928
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.8721306923361718,
+            "numerator": 18845,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.8676118403849837,
+              0.8765172534103192
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.9085814531455582,
+            "numerator": 18645,
+            "denominator": 20521,
+            "wilson_95ci": [
+              0.904561418000993,
+              0.912448546906356
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.009255831173639394,
+            "numerator": 200,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.00806337814414208,
+              0.01062274166615616
+            ]
+          }
+        },
+        "given_full_pre_pc": {
+          "gamma_intercept": {
+            "value": 0.9663865546218487,
+            "numerator": 115,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.9167514797298497,
+              0.9868522471032992
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.8571428571428571,
+            "numerator": 102,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.7830941981595465,
+              0.9088546016676395
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.8869565217391304,
+            "numerator": 102,
+            "denominator": 115,
+            "wilson_95ci": [
+              0.8161609755177398,
+              0.9327359236214875
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.0,
+            "numerator": 0,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.0,
+              0.031271680241939506
+            ]
+          }
+        }
+      }
+    },
+    {
+      "pc_plastic_threshold_MeV": 2.0,
+      "conditions": {
+        "all_generated": {
+          "gamma_intercept": {
+            "value": 0.0470675,
+            "numerator": 94135,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.04677485771773078,
+              0.04736188220047459
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.0184225,
+            "numerator": 36845,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.018237055579114623,
+              0.018609794377467338
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.3842460296382854,
+            "numerator": 36171,
+            "denominator": 94135,
+            "wilson_95ci": [
+              0.381143529772856,
+              0.38735797648869114
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.000337,
+            "numerator": 674,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.0003125041172307354,
+              0.00036341531392128124
+            ]
+          }
+        },
+        "given_bgo_ncluster1": {
+          "gamma_intercept": {
+            "value": 0.9496945575712699,
+            "numerator": 20521,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.946699447959089,
+              0.9525298026824928
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.8555627545353572,
+            "numerator": 18487,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.8508124216037204,
+              0.8601866864213153
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.8915257541055505,
+            "numerator": 18295,
+            "denominator": 20521,
+            "wilson_95ci": [
+              0.8871974432558113,
+              0.8957075079098035
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.008885597926693817,
+            "numerator": 192,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.007718706444626089,
+              0.01022707848812428
+            ]
+          }
+        },
+        "given_full_pre_pc": {
+          "gamma_intercept": {
+            "value": 0.9663865546218487,
+            "numerator": 115,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.9167514797298497,
+              0.9868522471032992
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.8487394957983193,
+            "numerator": 101,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.7735406236582529,
+              0.9021270279377052
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.8782608695652174,
+            "numerator": 101,
+            "denominator": 115,
+            "wilson_95ci": [
+              0.8059875238548942,
+              0.9260802314834516
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.0,
+            "numerator": 0,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.0,
+              0.031271680241939506
+            ]
+          }
+        }
+      }
+    },
+    {
+      "pc_plastic_threshold_MeV": 3.0,
+      "conditions": {
+        "all_generated": {
+          "gamma_intercept": {
+            "value": 0.0470675,
+            "numerator": 94135,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.04677485771773078,
+              0.04736188220047459
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.016815,
+            "numerator": 33630,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.016637729327921656,
+              0.016994126803793492
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.3511658787910979,
+            "numerator": 33057,
+            "denominator": 94135,
+            "wilson_95ci": [
+              0.3481227408408302,
+              0.35422116348417393
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.0002865,
+            "numerator": 573,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.00026398532638454125,
+              0.0003109342987607733
+            ]
+          }
+        },
+        "given_bgo_ncluster1": {
+          "gamma_intercept": {
+            "value": 0.9496945575712699,
+            "numerator": 20521,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.946699447959089,
+              0.9525298026824928
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.8345520177711958,
+            "numerator": 18033,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.8295381533903237,
+              0.8394469503338704
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.8698406510403976,
+            "numerator": 17850,
+            "denominator": 20521,
+            "wilson_95ci": [
+              0.8651676484588449,
+              0.8743752138065648
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.008469085523880045,
+            "numerator": 183,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.007331608738093368,
+              0.009781299457415647
+            ]
+          }
+        },
+        "given_full_pre_pc": {
+          "gamma_intercept": {
+            "value": 0.9663865546218487,
+            "numerator": 115,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.9167514797298497,
+              0.9868522471032992
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.8151260504201681,
+            "numerator": 97,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.7359201390242527,
+              0.8746229196467938
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.8434782608695652,
+            "numerator": 97,
+            "denominator": 115,
+            "wilson_95ci": [
+              0.7661124698334693,
+              0.8986387103013506
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.0,
+            "numerator": 0,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.0,
+              0.031271680241939506
+            ]
+          }
+        }
+      }
+    },
+    {
+      "pc_plastic_threshold_MeV": 5.0,
+      "conditions": {
+        "all_generated": {
+          "gamma_intercept": {
+            "value": 0.0470675,
+            "numerator": 94135,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.04677485771773078,
+              0.04736188220047459
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.014395,
+            "numerator": 28790,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.014230851789730084,
+              0.014561013638297553
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.30124820736176766,
+            "numerator": 28358,
+            "denominator": 94135,
+            "wilson_95ci": [
+              0.29832549845928796,
+              0.3041871369190829
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.000216,
+            "numerator": 432,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.00019657101366833034,
+              0.00023734888229931072
+            ]
+          }
+        },
+        "given_bgo_ncluster1": {
+          "gamma_intercept": {
+            "value": 0.9496945575712699,
+            "numerator": 20521,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.946699447959089,
+              0.9525298026824928
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.770455386893743,
+            "numerator": 16648,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.7648003797093412,
+              0.7760142483393779
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.8037132693338531,
+            "numerator": 16493,
+            "denominator": 20521,
+            "wilson_95ci": [
+              0.798222321401361,
+              0.8090905304425241
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.007173269159570529,
+            "numerator": 155,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.006132346579741745,
+              0.008389389544349722
+            ]
+          }
+        },
+        "given_full_pre_pc": {
+          "gamma_intercept": {
+            "value": 0.9663865546218487,
+            "numerator": 115,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.9167514797298497,
+              0.9868522471032992
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.7563025210084033,
+            "numerator": 90,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.6719468721936614,
+              0.8246281488587897
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.782608695652174,
+            "numerator": 90,
+            "denominator": 115,
+            "wilson_95ci": [
+              0.6987551361026209,
+              0.8481920374260282
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.0,
+            "numerator": 0,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.0,
+              0.031271680241939506
+            ]
+          }
+        }
+      }
+    },
+    {
+      "pc_plastic_threshold_MeV": 10.0,
+      "conditions": {
+        "all_generated": {
+          "gamma_intercept": {
+            "value": 0.0470675,
+            "numerator": 94135,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.04677485771773078,
+              0.04736188220047459
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.0087455,
+            "numerator": 17491,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              0.008617402126984601,
+              0.00887548500332296
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.18369363148669465,
+            "numerator": 17292,
+            "denominator": 94135,
+            "wilson_95ci": [
+              0.18123286047385714,
+              0.1861802170914804
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 9.95e-05,
+            "numerator": 199,
+            "denominator": 2000000,
+            "wilson_95ci": [
+              8.660321958072815e-05,
+              0.00011431712391600602
+            ]
+          }
+        },
+        "given_bgo_ncluster1": {
+          "gamma_intercept": {
+            "value": 0.9496945575712699,
+            "numerator": 20521,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.946699447959089,
+              0.9525298026824928
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.5138374676045909,
+            "numerator": 11103,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.507171454949007,
+              0.5204985610993447
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.5367672140733882,
+            "numerator": 11015,
+            "denominator": 20521,
+            "wilson_95ci": [
+              0.5299385003257999,
+              0.543582165011739
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.004072565716401333,
+            "numerator": 88,
+            "denominator": 21608,
+            "wilson_95ci": [
+              0.0033070693311134896,
+              0.005014362193514566
+            ]
+          }
+        },
+        "given_full_pre_pc": {
+          "gamma_intercept": {
+            "value": 0.9663865546218487,
+            "numerator": 115,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.9167514797298497,
+              0.9868522471032992
+            ]
+          },
+          "effective_pc_hit": {
+            "value": 0.5378151260504201,
+            "numerator": 64,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.44845888861933086,
+              0.6248062784211947
+            ]
+          },
+          "response_given_gamma_intercept": {
+            "value": 0.5565217391304348,
+            "numerator": 64,
+            "denominator": 115,
+            "wilson_95ci": [
+              0.46535755026879766,
+              0.6440318844369322
+            ]
+          },
+          "hit_without_recorded_gamma_intercept": {
+            "value": 0.0,
+            "numerator": 0,
+            "denominator": 119,
+            "wilson_95ci": [
+              0.0,
+              0.031271680241939506
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "gamma_intercept_sides_all_generated": {
+    "any": {
+      "value": 0.0470675,
+      "numerator": 94135,
+      "denominator": 2000000,
+      "wilson_95ci": [
+        0.04677485771773078,
+        0.04736188220047459
+      ]
+    },
+    "upstream": {
+      "value": 0.025399,
+      "numerator": 50798,
+      "denominator": 2000000,
+      "wilson_95ci": [
+        0.025181860516137022,
+        0.025617962640558947
+      ]
+    },
+    "downstream": {
+      "value": 0.0219275,
+      "numerator": 43855,
+      "denominator": 2000000,
+      "wilson_95ci": [
+        0.021725455091370992,
+        0.022131381400923654
+      ]
+    }
+  },
+  "source_root": "/gpfs/home/had/yhong/geant4/beta/beta_org/build_bgoegg_frustum/output/scan/bgoegg_pc_wide12_confirm_s7502026_two_wide_12_pb2_pi0.root",
+  "source_features": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgoegg_pc_wide12_confirm_s7502026/two_wide_12_pb2/pi0.bgo2",
+  "scan_json": "/gpfs/home/had/yhong/geant4/beta/beta_org/analysis/results/bgoegg_v1/bgoegg_pc_wide_aperture_s6502026.json"
+}

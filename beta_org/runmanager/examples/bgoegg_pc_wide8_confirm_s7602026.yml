@@ -1,0 +1,32 @@
+schema: beta-bgo-th-tlc-pc-design-v5
+tag: bgoegg_pc_wide8_confirm_s7602026
+build_dir: build_bgoegg_frustum
+events: 2000000
+seed: 7602026
+threads: 8
+
+# Independent confirmation of the minimum tested wide-aperture point that
+# exceeded the thesis 70% PC-veto target in the seed-650 screen.
+geometries:
+  - name: two_wide_8_pb2
+    n_layer: 31
+    n_sector: 60
+    segmentation: bgoegg_published
+    geometry_mode: bgoegg_frustum
+    photon_counter: two_sided
+    bgo_z_offset_cm: -10
+    pc_n_layers: 8
+    pc_pb_thickness_mm: 2
+    pc_scinti_thickness_mm: 5
+    pc_z_front_cm: 52
+    pc_down_theta_inner_deg: 0.01
+    pc_down_theta_outer_deg: 24
+    pc_up_theta_inner_deg: 0.01
+    pc_up_theta_outer_deg: 12
+
+primaries: [pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096

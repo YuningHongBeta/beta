@@ -65,6 +65,27 @@ betaEventAction::~betaEventAction() {
     // G4cout << "DEBUG: ~betaEventAction" << G4endl;
 }
 
+void betaEventAction::RecordPCGammaEntrance(
+    bool upstream, int trackID, double energy)
+{
+  auto &seen = upstream ? fPCGammaUpTrackIDs : fPCGammaDownTrackIDs;
+  if (!seen.insert(trackID).second)
+    return;
+  ++fPCGammaN;
+  fPCGammaEnergy += energy;
+  fPCGammaMaxEnergy = std::max(fPCGammaMaxEnergy, energy);
+  if (upstream)
+  {
+    ++fPCGammaUpN;
+    fPCGammaUpEnergy += energy;
+  }
+  else
+  {
+    ++fPCGammaDownN;
+    fPCGammaDownEnergy += energy;
+  }
+}
+
 void betaEventAction::BeginOfEventAction(const G4Event *evt)
 {
   const int eid = evt->GetEventID();
@@ -82,6 +103,15 @@ void betaEventAction::BeginOfEventAction(const G4Event *evt)
   fEvtEdepPC = 0.;
   fEvtEdepPCDown = 0.;
   fEvtEdepPCUp = 0.;
+  fPCGammaN = 0;
+  fPCGammaDownN = 0;
+  fPCGammaUpN = 0;
+  fPCGammaEnergy = 0.;
+  fPCGammaDownEnergy = 0.;
+  fPCGammaUpEnergy = 0.;
+  fPCGammaMaxEnergy = 0.;
+  fPCGammaDownTrackIDs.clear();
+  fPCGammaUpTrackIDs.clear();
 
   std::fill(fDE_MeV.begin(), fDE_MeV.end(), 0.0);
   std::fill(fPID.begin(), fPID.end(), 0);
@@ -254,6 +284,13 @@ void betaEventAction::EndOfEventAction(const G4Event *evt)
   ana->FillNtupleDColumn(0, 3, fEvtEdepPC / MeV);
   ana->FillNtupleDColumn(0, 4, fEvtEdepPCDown / MeV);
   ana->FillNtupleDColumn(0, 5, fEvtEdepPCUp / MeV);
+  ana->FillNtupleIColumn(0, 6, fPCGammaN);
+  ana->FillNtupleIColumn(0, 7, fPCGammaDownN);
+  ana->FillNtupleIColumn(0, 8, fPCGammaUpN);
+  ana->FillNtupleDColumn(0, 9, fPCGammaEnergy / MeV);
+  ana->FillNtupleDColumn(0, 10, fPCGammaDownEnergy / MeV);
+  ana->FillNtupleDColumn(0, 11, fPCGammaUpEnergy / MeV);
+  ana->FillNtupleDColumn(0, 12, fPCGammaMaxEnergy / MeV);
   ana->AddNtupleRow(0);
 
   // --------------------------

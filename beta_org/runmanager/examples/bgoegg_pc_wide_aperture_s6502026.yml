@@ -1,0 +1,54 @@
+schema: beta-bgo-th-tlc-pc-design-v5
+tag: bgoegg_pc_wide_aperture_s6502026
+build_dir: build_bgoegg_frustum
+events: 100000
+seed: 6502026
+threads: 1
+
+# Diagnostic upper bounds extending the endcap behind the BGOegg as well as
+# across its central holes.  Central charged-particle corridors are blocked,
+# so these are not installable final layouts.  The exact 31-ring BGOegg and
+# its 3 MeV analysis threshold stay fixed.
+geometries:
+  - &base
+    name: up_wide_8_pb2
+    n_layer: 31
+    n_sector: 60
+    segmentation: bgoegg_published
+    geometry_mode: bgoegg_frustum
+    photon_counter: upstream
+    bgo_z_offset_cm: -10
+    pc_n_layers: 8
+    pc_pb_thickness_mm: 2
+    pc_scinti_thickness_mm: 5
+    pc_z_front_cm: 52
+    pc_down_theta_inner_deg: 0.01
+    pc_down_theta_outer_deg: 24
+    pc_up_theta_inner_deg: 0.01
+    pc_up_theta_outer_deg: 12
+  - <<: *base
+    name: down_wide_8_pb2
+    photon_counter: downstream
+  - <<: *base
+    name: two_wide_4_pb3
+    photon_counter: two_sided
+    pc_n_layers: 4
+    pc_pb_thickness_mm: 3
+  - <<: *base
+    name: two_wide_8_pb2
+    photon_counter: two_sided
+  - <<: *base
+    name: two_wide_8_pb3
+    photon_counter: two_sided
+    pc_pb_thickness_mm: 3
+  - <<: *base
+    name: two_wide_12_pb2
+    photon_counter: two_sided
+    pc_n_layers: 12
+
+primaries: [e, pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 60
+  memory_mb: 4096

@@ -1,0 +1,34 @@
+schema: beta-bgo-th-tlc-pc-design-v5
+tag: bgoegg_pc_wide12_confirm_s7502026
+build_dir: build_bgoegg_frustum
+events: 2000000
+seed: 7502026
+threads: 8
+
+# Independent high-statistics confirmation of the screening-selected ideal
+# upper bound.  Only pi0 is needed because the 100k seed-650 electron sample
+# already constrains false veto below one percent.  The layout blocks the
+# charged-particle corridors and is not an installable final design.
+geometries:
+  - name: two_wide_12_pb2
+    n_layer: 31
+    n_sector: 60
+    segmentation: bgoegg_published
+    geometry_mode: bgoegg_frustum
+    photon_counter: two_sided
+    bgo_z_offset_cm: -10
+    pc_n_layers: 12
+    pc_pb_thickness_mm: 2
+    pc_scinti_thickness_mm: 5
+    pc_z_front_cm: 52
+    pc_down_theta_inner_deg: 0.01
+    pc_down_theta_outer_deg: 24
+    pc_up_theta_inner_deg: 0.01
+    pc_up_theta_outer_deg: 12
+
+primaries: [pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096

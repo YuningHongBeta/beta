@@ -29,7 +29,7 @@ SCHEMA_V5 = "beta-bgo-th-tlc-pc-design-v5"
 SUPPORTED_SCHEMAS = {SCHEMA_V2, SCHEMA_V3, SCHEMA_V4, SCHEMA_V5}
 # Backward-compatible name used by the v2 tests and external helpers.
 EXPECTED_SCHEMA = SCHEMA_V2
-SUPPORTED_EVENTS = 100_000
+SUPPORTED_EVENTS = {100_000, 2_000_000}
 ACTIVE_LSF_STATES = {"PEND", "RUN", "PROV", "WAIT", "SSUSP", "USUSP", "PSUSP"}
 RETRYABLE_VALIDATION = {"failed", "missing"}
 SAFE_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
@@ -67,6 +67,11 @@ EXPECTED_BRANCHES = {
         "eventID", "dE_truth_MeV", "cherenkovTime_ns", "chargedPath_truth_mm",
         "cherenkovPath_mm", "cherenkovExpectedPhotons",
     },
+}
+
+OPTIONAL_PC_GAMMA_BRANCHES = {
+    "PCGammaN", "PCGammaDownN", "PCGammaUpN", "PCGammaEnergy_MeV",
+    "PCGammaDownEnergy_MeV", "PCGammaUpEnergy_MeV", "PCGammaMaxEnergy_MeV",
 }
 
 EXPECTED_VECTOR_SIZES = {
@@ -240,9 +245,10 @@ def load_manifest(path: Path) -> dict[str, Any]:
     schema = raw["schema"]
     tag = require_name(raw["tag"], "tag")
     events = require_int(raw["events"], "events", 1, 2_000_000_000)
-    if events != SUPPORTED_EVENTS:
+    if events not in SUPPORTED_EVENTS:
         raise RunManagerError(
-            f"events must be {SUPPORTED_EVENTS}; scripts/run_bgo_sample.sh uses the fixed 100k macro"
+            f"events must be one of {sorted(SUPPORTED_EVENTS)}; "
+            "scripts/run_bgo_sample.sh provides only validated fixed macros"
         )
     seed = require_int(raw["seed"], "seed", 1, 2_147_483_647)
     threads = require_int(raw["threads"], "threads", 1, 256)
@@ -673,6 +679,7 @@ def bsub_command(manifest: dict[str, Any], job: dict[str, Any]) -> list[str]:
             f"BETA_BUILD_DIR={manifest['build_dir']}",
             f"BETA_THREADS={job['threads']}",
             f"BETA_SEED={job['seed']}",
+            f"BETA_EVENTS={job['events']}",
             *(
                 [
                     f"BETA_PC_N_LAYERS={geometry['pc_n_layers']}",
@@ -1033,10 +1040,17 @@ def validate_inspection(
             errors.append(f"missing tree: {tree}")
             continue
         actual_branches = inspection["branches"].get(tree, set())
-        if actual_branches != expected_branches:
-            missing = sorted(expected_branches - actual_branches)
-            extra = sorted(actual_branches - expected_branches)
+        optional = OPTIONAL_PC_GAMMA_BRANCHES if tree == "evt" else set()
+        missing = sorted(expected_branches - actual_branches)
+        extra = sorted(actual_branches - expected_branches - optional)
+        optional_present = actual_branches & optional
+        incomplete_optional = bool(optional_present and optional_present != optional)
+        if missing or extra or incomplete_optional:
             errors.append(f"schema mismatch in {tree}: missing={missing}, extra={extra}")
+            if incomplete_optional:
+                errors.append(
+                    "incomplete optional PC gamma-entrance branch set in evt"
+                )
 
     for tree in ("evt", "calarr", "th", "tlc"):
         raw = inspection["trees"].get(tree)

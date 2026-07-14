@@ -1,0 +1,93 @@
+schema: beta-bgo-th-tlc-pc-design-v5
+tag: bgoegg_pc_aperture_s6402026
+build_dir: build_bgoegg_frustum
+events: 100000
+seed: 6402026
+threads: 1
+
+# Ideal full-aperture upper bounds.  The axisymmetric disks deliberately cover
+# the charged-particle corridors and are not installable designs by themselves;
+# a later engineering model must cut beam/scattered-particle slots from the best
+# point.  They answer whether the narrow annular acceptance, converter response,
+# or both prevent the thesis-like conditional pi0 veto.
+geometries:
+  - &base
+    name: up_annulus8_pb2
+    n_layer: 31
+    n_sector: 60
+    segmentation: bgoegg_published
+    geometry_mode: bgoegg_frustum
+    photon_counter: upstream
+    bgo_z_offset_cm: -10
+    pc_n_layers: 8
+    pc_pb_thickness_mm: 2
+    pc_scinti_thickness_mm: 5
+    pc_z_front_cm: 52
+    pc_down_theta_inner_deg: 9.698
+    pc_down_theta_outer_deg: 24
+    pc_up_theta_inner_deg: 5.666
+    pc_up_theta_outer_deg: 12
+  - <<: *base
+    name: down_full_2_pb3
+    photon_counter: downstream
+    pc_n_layers: 2
+    pc_pb_thickness_mm: 3
+    pc_down_theta_inner_deg: 0.01
+    pc_down_theta_outer_deg: 9.698
+  - <<: *base
+    name: down_full_2_pb5
+    photon_counter: downstream
+    pc_n_layers: 2
+    pc_pb_thickness_mm: 5
+    pc_down_theta_inner_deg: 0.01
+    pc_down_theta_outer_deg: 9.698
+  - <<: *base
+    name: down_full_1_pb10
+    photon_counter: downstream
+    pc_n_layers: 1
+    pc_pb_thickness_mm: 10
+    pc_down_theta_inner_deg: 0.01
+    pc_down_theta_outer_deg: 9.698
+  - <<: *base
+    name: two_full_2_pb3
+    photon_counter: two_sided
+    pc_n_layers: 2
+    pc_pb_thickness_mm: 3
+    pc_down_theta_inner_deg: 0.01
+    pc_down_theta_outer_deg: 9.698
+    pc_up_theta_inner_deg: 0.01
+    pc_up_theta_outer_deg: 5.666
+  - <<: *base
+    name: two_full_2_pb5
+    photon_counter: two_sided
+    pc_n_layers: 2
+    pc_pb_thickness_mm: 5
+    pc_down_theta_inner_deg: 0.01
+    pc_down_theta_outer_deg: 9.698
+    pc_up_theta_inner_deg: 0.01
+    pc_up_theta_outer_deg: 5.666
+  - <<: *base
+    name: two_full_1_pb10
+    photon_counter: two_sided
+    pc_n_layers: 1
+    pc_pb_thickness_mm: 10
+    pc_down_theta_inner_deg: 0.01
+    pc_down_theta_outer_deg: 9.698
+    pc_up_theta_inner_deg: 0.01
+    pc_up_theta_outer_deg: 5.666
+  - <<: *base
+    name: two_full_4_pb3
+    photon_counter: two_sided
+    pc_n_layers: 4
+    pc_pb_thickness_mm: 3
+    pc_down_theta_inner_deg: 0.01
+    pc_down_theta_outer_deg: 9.698
+    pc_up_theta_inner_deg: 0.01
+    pc_up_theta_outer_deg: 5.666
+
+primaries: [e, pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 60
+  memory_mb: 4096

@@ -47,6 +47,15 @@ export BETA_OUTPUT="output/scan/${tag}_${primary}"
 export BETA_WRITE_CALHIT=0
 export BETA_THREADS="${BETA_THREADS:-8}"
 export BETA_SEED="${BETA_SEED:-6302026}"
+events="${BETA_EVENTS:-100000}"
+case "$events" in
+  100000) run_macro="macros/run.mac" ;;
+  2000000) run_macro="macros/run_2m.mac" ;;
+  *)
+    echo "unsupported BETA_EVENTS=$events (expected 100000 or 2000000)" >&2
+    exit 4
+    ;;
+esac
 
 cd "$build_dir"
-exec ./beta macros/run.mac
+exec ./beta "$run_macro"
