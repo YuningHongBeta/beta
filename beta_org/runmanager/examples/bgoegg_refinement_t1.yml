@@ -1,0 +1,35 @@
+schema: beta-bgo-th-tlc-pc-coverage-v4
+tag: bgoegg_refinement_t1
+build_dir: build_prod_t1
+events: 100000
+seed: 6302026
+threads: 1
+
+# Refine the smallest end-ring expansion after the centered production scan.
+# The BGO mother moves upstream by 10 cm; target, TH, and TLC remain fixed.
+geometries:
+  - name: both3_28_zm10cm
+    n_layer: 28
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+    bgo_z_offset_cm: -10
+    theta_min_deg: 6
+    theta_max_deg: 162
+  - name: front3_back4_29_zm10cm
+    n_layer: 29
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+    bgo_z_offset_cm: -10
+    theta_min_deg: 6
+    theta_max_deg: 168
+
+primaries: [e, pim, pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096
