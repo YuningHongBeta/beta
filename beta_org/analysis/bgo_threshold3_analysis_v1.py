@@ -68,6 +68,10 @@ HURDLE_FEATURE_SETS = {
 }
 
 ADDITIONAL_STANDARD_GEOMETRIES = (
+    "egg22_zm10cm",
+    "egg22_zm5cm",
+    "egg22_zp5cm",
+    "egg22_zp10cm",
     "both3_28",
     "both3_28_zm10cm",
     "front3_back4_29",
