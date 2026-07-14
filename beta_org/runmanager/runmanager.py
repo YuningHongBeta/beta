@@ -21,7 +21,11 @@ import yaml
 RUNMANAGER_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = RUNMANAGER_DIR.parent
 RUNNER = PROJECT_DIR / "scripts" / "run_bgo_sample.sh"
-EXPECTED_SCHEMA = "beta-bgo-th-tlc-pc-v2"
+SCHEMA_V2 = "beta-bgo-th-tlc-pc-v2"
+SCHEMA_V3 = "beta-bgo-th-tlc-pc-offset-v3"
+SUPPORTED_SCHEMAS = {SCHEMA_V2, SCHEMA_V3}
+# Backward-compatible name used by the v2 tests and external helpers.
+EXPECTED_SCHEMA = SCHEMA_V2
 SUPPORTED_EVENTS = 100_000
 ACTIVE_LSF_STATES = {"PEND", "RUN", "PROV", "WAIT", "SSUSP", "USUSP", "PSUSP"}
 RETRYABLE_VALIDATION = {"failed", "missing"}
@@ -96,6 +100,15 @@ def require_int(value: Any, name: str, minimum: int, maximum: int) -> int:
     return value
 
 
+def require_float(value: Any, name: str, minimum: float, maximum: float) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise RunManagerError(f"{name} must be a number")
+    result = float(value)
+    if not minimum <= result <= maximum:
+        raise RunManagerError(f"{name} must be in [{minimum}, {maximum}]")
+    return result
+
+
 def require_name(value: Any, name: str) -> str:
     if not isinstance(value, str) or not SAFE_NAME.fullmatch(value):
         raise RunManagerError(
@@ -163,10 +176,12 @@ def load_manifest(path: Path) -> dict[str, Any]:
     if missing:
         raise RunManagerError(f"missing manifest fields: {', '.join(missing)}")
 
-    if raw["schema"] != EXPECTED_SCHEMA:
+    if raw["schema"] not in SUPPORTED_SCHEMAS:
         raise RunManagerError(
-            f"schema mismatch: expected {EXPECTED_SCHEMA!r}, got {raw['schema']!r}"
+            f"schema mismatch: unsupported {raw['schema']!r}; expected one of "
+            f"{sorted(SUPPORTED_SCHEMAS)!r}"
         )
+    schema = raw["schema"]
     tag = require_name(raw["tag"], "tag")
     events = require_int(raw["events"], "events", 1, 2_000_000_000)
     if events != SUPPORTED_EVENTS:
@@ -207,7 +222,7 @@ def load_manifest(path: Path) -> dict[str, Any]:
         unknown_geometry = sorted(
             set(item) - {
                 "name", "n_layer", "n_sector", "segmentation",
-                "geometry_mode", "photon_counter",
+                "geometry_mode", "photon_counter", "bgo_z_offset_cm",
             }
         )
         if unknown_geometry:
@@ -220,6 +235,8 @@ def load_manifest(path: Path) -> dict[str, Any]:
                 "geometry_mode", "photon_counter",
             } - set(item)
         )
+        if schema == SCHEMA_V3 and "bgo_z_offset_cm" not in item:
+            missing_geometry.append("bgo_z_offset_cm")
         if missing_geometry:
             raise RunManagerError(
                 f"missing fields in geometries[{index}]: {', '.join(missing_geometry)}"
@@ -251,6 +268,20 @@ def load_manifest(path: Path) -> dict[str, Any]:
             raise RunManagerError(
                 f"{name}.photon_counter collars require geometry_mode=bgoegg_envelope"
             )
+        if schema == SCHEMA_V2 and "bgo_z_offset_cm" in item:
+            raise RunManagerError(
+                f"{name}.bgo_z_offset_cm requires schema {SCHEMA_V3}"
+            )
+        bgo_z_offset_cm = require_float(
+            item.get("bgo_z_offset_cm", 0.0),
+            f"{name}.bgo_z_offset_cm",
+            -10.0,
+            10.0,
+        )
+        if geometry_mode != "bgoegg_envelope" and bgo_z_offset_cm != 0.0:
+            raise RunManagerError(
+                f"{name}.bgo_z_offset_cm requires geometry_mode=bgoegg_envelope"
+            )
         geometries.append(
             {
                 "name": name,
@@ -259,6 +290,7 @@ def load_manifest(path: Path) -> dict[str, Any]:
                 "segmentation": segmentation,
                 "geometry_mode": geometry_mode,
                 "photon_counter": photon_counter,
+                "bgo_z_offset_cm": bgo_z_offset_cm,
             }
         )
 
@@ -285,7 +317,7 @@ def load_manifest(path: Path) -> dict[str, Any]:
     return {
         "path": str(path),
         "digest": manifest_digest(path),
-        "schema": EXPECTED_SCHEMA,
+        "schema": schema,
         "tag": tag,
         "build_dir": str(build_dir),
         "events": events,
@@ -374,9 +406,10 @@ def make_state(manifest: dict[str, Any], jobs: list[dict[str, Any]]) -> dict[str
 
 
 def ensure_state_identity(manifest: dict[str, Any], state: dict[str, Any]) -> None:
-    if state.get("schema") != EXPECTED_SCHEMA:
+    if state.get("schema") != manifest["schema"]:
         raise RunManagerError(
-            f"state schema mismatch: expected {EXPECTED_SCHEMA!r}, got {state.get('schema')!r}"
+            f"state schema mismatch: expected {manifest['schema']!r}, "
+            f"got {state.get('schema')!r}"
         )
     if state.get("tag") != manifest["tag"]:
         raise RunManagerError("state tag does not match manifest")
@@ -439,6 +472,8 @@ def bsub_command(manifest: dict[str, Any], job: dict[str, Any]) -> list[str]:
             geometry["photon_counter"],
         ]
     )
+    if manifest["schema"] == SCHEMA_V3:
+        command.append(str(geometry["bgo_z_offset_cm"]))
     return command
 
 
@@ -609,7 +644,7 @@ TTree *meta = dynamic_cast<TTree *>(f->Get("runmeta"));
 if (meta && meta->GetEntries() == 1) {
   int nLayer=-1,nSector=-1,segmentationMode=-1,physicsFlag=-1,writeCalHit=-1,nSegTH=-1,nSegTLC=-1;
   double neutronScale=-1,inelasticBias=-1,pionInelasticXSScale=-1,seed=-1;
-  double thetaMin=-1,thetaMax=-1,rMin=-1,thickness=-1;
+  double thetaMin=-1,thetaMax=-1,rMin=-1,thickness=-1,bgoZOffset=-1;
   double pcPb=-1,pcScinti=-1,pcZFront=-1,pcDownInner=-1,pcDownOuter=-1,pcUpInner=-1,pcUpOuter=-1;
   int geometryMode=-1,photonCounterMode=-1,pcNLayers=-1;
   char segmentation[128]={0},primary[128]={0},output[1024]={0};
@@ -638,6 +673,7 @@ if (meta && meta->GetEntries() == 1) {
   if(meta->GetBranch("thetaMax_deg")) meta->SetBranchAddress("thetaMax_deg",&thetaMax);
   if(meta->GetBranch("rMin_cm")) meta->SetBranchAddress("rMin_cm",&rMin);
   if(meta->GetBranch("thickness_cm")) meta->SetBranchAddress("thickness_cm",&thickness);
+  if(meta->GetBranch("bgoZOffset_cm")) meta->SetBranchAddress("bgoZOffset_cm",&bgoZOffset);
   if(meta->GetBranch("pcPbThickness_mm")) meta->SetBranchAddress("pcPbThickness_mm",&pcPb);
   if(meta->GetBranch("pcScintiThickness_mm")) meta->SetBranchAddress("pcScintiThickness_mm",&pcScinti);
   if(meta->GetBranch("pcZFront_cm")) meta->SetBranchAddress("pcZFront_cm",&pcZFront);
@@ -671,6 +707,7 @@ if (meta && meta->GetEntries() == 1) {
   std::cout << "META\tthetaMax_deg\t" << thetaMax << std::endl;
   std::cout << "META\trMin_cm\t" << rMin << std::endl;
   std::cout << "META\tthickness_cm\t" << thickness << std::endl;
+  if(meta->GetBranch("bgoZOffset_cm")) std::cout << "META\tbgoZOffset_cm\t" << bgoZOffset << std::endl;
   std::cout << "META\tpcPbThickness_mm\t" << pcPb << std::endl;
   std::cout << "META\tpcScintiThickness_mm\t" << pcScinti << std::endl;
   std::cout << "META\tpcZFront_cm\t" << pcZFront << std::endl;
@@ -749,14 +786,21 @@ def float_equal(raw: str | None, expected: float, tolerance: float = 1e-12) -> b
         return False
 
 
-def validate_inspection(job: dict[str, Any], inspection: dict[str, Any]) -> list[str]:
+def validate_inspection(
+    job: dict[str, Any], inspection: dict[str, Any], schema: str = SCHEMA_V2
+) -> list[str]:
     errors: list[str] = []
     if inspection["file"].get("zombie") != "0":
         errors.append("ROOT file is zombie")
     if inspection["file"].get("recovered") != "0":
         errors.append("ROOT file has the recovered bit")
 
-    for tree, expected_branches in EXPECTED_BRANCHES.items():
+    schema_branches = {
+        tree: set(branches) for tree, branches in EXPECTED_BRANCHES.items()
+    }
+    if schema == SCHEMA_V3:
+        schema_branches["runmeta"].add("bgoZOffset_cm")
+    for tree, expected_branches in schema_branches.items():
         entry_raw = inspection["trees"].get(tree)
         if entry_raw in {None, "MISSING"}:
             errors.append(f"missing tree: {tree}")
@@ -820,6 +864,10 @@ def validate_inspection(job: dict[str, Any], inspection: dict[str, Any]) -> list
         "pcDownThetaOuter_deg": 24.0,
         "pcUpThetaInner_deg": 5.666,
         "pcUpThetaOuter_deg": 36.0,
+        **(
+            {"bgoZOffset_cm": geometry["bgo_z_offset_cm"]}
+            if schema == SCHEMA_V3 else {}
+        ),
     }.items():
         if not float_equal(meta.get(key), expected):
             errors.append(f"runmeta {key}={meta.get(key)!r}, expected={expected}")
@@ -869,7 +917,7 @@ def validate(args: argparse.Namespace) -> int:
         else:
             try:
                 inspection = inspect_root(path, args.root_command)
-                errors = validate_inspection(job, inspection)
+                errors = validate_inspection(job, inspection, manifest["schema"])
             except RunManagerError as exc:
                 errors = [str(exc)]
             status_name = "failed" if errors else "valid"

@@ -31,6 +31,7 @@ int main(int argc, char **argv)
          << " theta_deg=" << config.ThetaMinDeg() << ".." << config.ThetaMaxDeg()
          << " r_cm=" << config.RMinCm() << ".."
          << config.RMinCm() + config.ThicknessCm()
+         << " bgo_z_offset_cm=" << config.BgoZOffsetCm()
          << " photon_counter=" << config.PhotonCounter()
          << " output=" << config.Output()
          << " seed=" << config.Seed()

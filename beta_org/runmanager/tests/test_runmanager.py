@@ -110,6 +110,33 @@ class RunManagerTests(unittest.TestCase):
             with self.assertRaisesRegex(rm.RunManagerError, "bgoegg_envelope"):
                 rm.load_manifest(path)
 
+    def test_v3_offset_manifest_and_command(self):
+        content = base_manifest()
+        content["schema"] = rm.SCHEMA_V3
+        content["geometries"][0]["bgo_z_offset_cm"] = 0
+        content["geometries"][1]["bgo_z_offset_cm"] = -5
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = rm.load_manifest(self.write_manifest(directory, content))
+            jobs = rm.expand_jobs(manifest, Path(directory) / "state.json")
+        egg_job = next(job for job in jobs if job["key"] == "a10x20:e")
+        command = rm.bsub_command(manifest, egg_job)
+        self.assertEqual(command[-1], "-5.0")
+        self.assertEqual(egg_job["geometry"]["bgo_z_offset_cm"], -5.0)
+
+    def test_v3_requires_offset_and_current_nonzero_is_rejected(self):
+        content = base_manifest()
+        content["schema"] = rm.SCHEMA_V3
+        with tempfile.TemporaryDirectory() as directory:
+            path = self.write_manifest(directory, content)
+            with self.assertRaisesRegex(rm.RunManagerError, "bgo_z_offset_cm"):
+                rm.load_manifest(path)
+        content["geometries"][0]["bgo_z_offset_cm"] = 1
+        content["geometries"][1]["bgo_z_offset_cm"] = 0
+        with tempfile.TemporaryDirectory() as directory:
+            path = self.write_manifest(directory, content)
+            with self.assertRaisesRegex(rm.RunManagerError, "bgoegg_envelope"):
+                rm.load_manifest(path)
+
     def test_schema_and_runmeta_validation(self):
         job = {
             "events": 100000,

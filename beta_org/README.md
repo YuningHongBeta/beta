@@ -105,6 +105,8 @@ Geometry/readout scan controls are environment variables:
 - `BETA_GEOMETRY`: `current` (default) or the provisional
   `bgoegg_envelope`. The latter defaults to 22x60 cells.
 - `BETA_PHOTON_COUNTER`: `none` (default), `downstream`, or `two_sided`.
+- `BETA_BGO_Z_OFFSET_CM`: optional BGOegg-only beam-axis translation in
+  `[-10,10]` cm. The target, TH, TLC, and photon counters remain fixed.
 - `BETA_N_LAYER`, `BETA_N_SECTOR`: BGO theta/phi segmentation (default 15x15).
 - `BETA_SEGMENTATION`: `uniform_theta` or `equal_solid_angle`.
 - `BETA_PRIMARY`: `e`, `pim`, or `pi0`.

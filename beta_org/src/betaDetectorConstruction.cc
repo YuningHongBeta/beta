@@ -240,7 +240,7 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
 
     new G4PVPlacement(
         0,               // no rotation
-        G4ThreeVector(), // at (0,0,0)
+        G4ThreeVector(0., 0., config.BgoZOffsetCm() * cm),
         calorLV,         // its logical volume
         "Calorimeter",   // its name
         worldLV,         // its mother  volume

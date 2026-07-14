@@ -1,6 +1,7 @@
 #ifndef BetaConfig_h
 #define BetaConfig_h 1
 
+#include <cmath>
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
@@ -38,6 +39,8 @@ public:
   }
   bool HasDownstreamPhotonCounter() const { return PhotonCounterMode() >= 1; }
   bool HasUpstreamPhotonCounter() const { return PhotonCounterMode() == 2; }
+  bool BgoZOffsetConfigured() const { return fBgoZOffsetConfigured; }
+  double BgoZOffsetCm() const { return fBgoZOffsetCm; }
   double RMinCm() const { return BGOeggEnvelope() ? 20.0 : 30.0; }
   double ThicknessCm() const { return BGOeggEnvelope() ? 22.0 : 20.0; }
   double ThetaMinDeg() const { return BGOeggEnvelope() ? 24.0 : 5.666; }
@@ -62,6 +65,20 @@ private:
     return static_cast<int>(value);
   }
 
+  static double ReadDouble(const char *name, double fallback,
+                           double minimum, double maximum)
+  {
+    const char *raw = std::getenv(name);
+    if (!raw || !*raw)
+      return fallback;
+    char *end = nullptr;
+    const double value = std::strtod(raw, &end);
+    if (!end || *end != 0 || !std::isfinite(value) ||
+        value < minimum || value > maximum)
+      throw std::runtime_error(std::string("Invalid ") + name + "=" + raw);
+    return value;
+  }
+
   static bool ReadBool(const char *name, bool fallback)
   {
     const char *raw = std::getenv(name);
@@ -84,6 +101,8 @@ private:
   BetaConfig()
       : fGeometry(ReadString("BETA_GEOMETRY", "current")),
         fPhotonCounter(ReadString("BETA_PHOTON_COUNTER", "none")),
+        fBgoZOffsetConfigured(std::getenv("BETA_BGO_Z_OFFSET_CM") != nullptr),
+        fBgoZOffsetCm(ReadDouble("BETA_BGO_Z_OFFSET_CM", 0.0, -10.0, 10.0)),
         fNLayer(ReadInt("BETA_N_LAYER", fGeometry == "bgoegg_envelope" ? 22 : 15, 1, 200)),
         fNSector(ReadInt("BETA_N_SECTOR", fGeometry == "bgoegg_envelope" ? 60 : 15, 1, 360)),
         fSegmentation(ReadString("BETA_SEGMENTATION", "uniform_theta")),
@@ -101,6 +120,9 @@ private:
     if (fGeometry != "bgoegg_envelope" && fPhotonCounter != "none")
       throw std::runtime_error(
           "BETA_PHOTON_COUNTER collars require BETA_GEOMETRY=bgoegg_envelope");
+    if (fGeometry != "bgoegg_envelope" && fBgoZOffsetCm != 0.0)
+      throw std::runtime_error(
+          "BETA_BGO_Z_OFFSET_CM requires BETA_GEOMETRY=bgoegg_envelope");
     if (fSegmentation != "uniform_theta" &&
         fSegmentation != "equal_solid_angle")
       throw std::runtime_error("BETA_SEGMENTATION must be uniform_theta or equal_solid_angle");
@@ -112,6 +134,8 @@ private:
 
   std::string fGeometry;
   std::string fPhotonCounter;
+  bool fBgoZOffsetConfigured;
+  double fBgoZOffsetCm;
   int fNLayer;
   int fNSector;
   std::string fSegmentation;

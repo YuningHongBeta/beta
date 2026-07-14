@@ -1,0 +1,54 @@
+schema: beta-bgo-th-tlc-pc-offset-v3
+tag: bgoegg_zoffset
+build_dir: build_offset
+events: 100000
+seed: 6302026
+threads: 8
+
+# Minimal placement scan of the provisional spherical BGOegg envelope.  Only
+# the BGO mother volume moves along the beam axis; target, TH, TLC, and photon
+# counters remain at their nominal positions.  No photon counter is used so
+# that the placement effect is isolated.
+geometries:
+  - name: zm10cm
+    n_layer: 22
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+    bgo_z_offset_cm: -10
+  - name: zm5cm
+    n_layer: 22
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+    bgo_z_offset_cm: -5
+  - name: z0cm
+    n_layer: 22
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+    bgo_z_offset_cm: 0
+  - name: zp5cm
+    n_layer: 22
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+    bgo_z_offset_cm: 5
+  - name: zp10cm
+    n_layer: 22
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+    bgo_z_offset_cm: 10
+
+primaries: [e, pim, pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096

@@ -168,6 +168,8 @@ betaRunAction::betaRunAction(
   man->CreateNtupleDColumn("pcDownThetaOuter_deg");
   man->CreateNtupleDColumn("pcUpThetaInner_deg");
   man->CreateNtupleDColumn("pcUpThetaOuter_deg");
+  if (BetaConfig::Instance().BgoZOffsetConfigured())
+    man->CreateNtupleDColumn("bgoZOffset_cm");
   man->FinishNtuple();
 
   // ---- ntuple 5: TH plastic hodoscope event vectors ----
@@ -257,6 +259,8 @@ void betaRunAction::BeginOfRunAction(const G4Run *)
     man->FillNtupleDColumn(4, 40, PCDownThetaOuter / deg);
     man->FillNtupleDColumn(4, 41, PCUpThetaInner / deg);
     man->FillNtupleDColumn(4, 42, PCUpThetaOuter / deg);
+    if (config.BgoZOffsetConfigured())
+      man->FillNtupleDColumn(4, 43, config.BgoZOffsetCm());
     man->AddNtupleRow(4);
   }
 
