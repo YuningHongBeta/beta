@@ -23,7 +23,8 @@ PROJECT_DIR = RUNMANAGER_DIR.parent
 RUNNER = PROJECT_DIR / "scripts" / "run_bgo_sample.sh"
 SCHEMA_V2 = "beta-bgo-th-tlc-pc-v2"
 SCHEMA_V3 = "beta-bgo-th-tlc-pc-offset-v3"
-SUPPORTED_SCHEMAS = {SCHEMA_V2, SCHEMA_V3}
+SCHEMA_V4 = "beta-bgo-th-tlc-pc-coverage-v4"
+SUPPORTED_SCHEMAS = {SCHEMA_V2, SCHEMA_V3, SCHEMA_V4}
 # Backward-compatible name used by the v2 tests and external helpers.
 EXPECTED_SCHEMA = SCHEMA_V2
 SUPPORTED_EVENTS = 100_000
@@ -223,6 +224,7 @@ def load_manifest(path: Path) -> dict[str, Any]:
             set(item) - {
                 "name", "n_layer", "n_sector", "segmentation",
                 "geometry_mode", "photon_counter", "bgo_z_offset_cm",
+                "theta_min_deg", "theta_max_deg",
             }
         )
         if unknown_geometry:
@@ -235,8 +237,12 @@ def load_manifest(path: Path) -> dict[str, Any]:
                 "geometry_mode", "photon_counter",
             } - set(item)
         )
-        if schema == SCHEMA_V3 and "bgo_z_offset_cm" not in item:
+        if schema in {SCHEMA_V3, SCHEMA_V4} and "bgo_z_offset_cm" not in item:
             missing_geometry.append("bgo_z_offset_cm")
+        if schema == SCHEMA_V4:
+            for field in ("theta_min_deg", "theta_max_deg"):
+                if field not in item:
+                    missing_geometry.append(field)
         if missing_geometry:
             raise RunManagerError(
                 f"missing fields in geometries[{index}]: {', '.join(missing_geometry)}"
@@ -282,6 +288,26 @@ def load_manifest(path: Path) -> dict[str, Any]:
             raise RunManagerError(
                 f"{name}.bgo_z_offset_cm requires geometry_mode=bgoegg_envelope"
             )
+        if schema != SCHEMA_V4 and (
+            "theta_min_deg" in item or "theta_max_deg" in item
+        ):
+            raise RunManagerError(
+                f"{name}.theta_min_deg/theta_max_deg require schema {SCHEMA_V4}"
+            )
+        theta_min_deg = require_float(
+            item.get("theta_min_deg", 24.0 if geometry_mode == "bgoegg_envelope" else 5.666),
+            f"{name}.theta_min_deg", 0.1, 179.8,
+        )
+        theta_max_deg = require_float(
+            item.get("theta_max_deg", 144.0 if geometry_mode == "bgoegg_envelope" else 170.302),
+            f"{name}.theta_max_deg", 0.2, 179.9,
+        )
+        if theta_min_deg >= theta_max_deg:
+            raise RunManagerError(f"{name}.theta_min_deg must be less than theta_max_deg")
+        if schema == SCHEMA_V4 and geometry_mode != "bgoegg_envelope":
+            raise RunManagerError(
+                f"{name}.theta coverage overrides require geometry_mode=bgoegg_envelope"
+            )
         geometries.append(
             {
                 "name": name,
@@ -291,6 +317,8 @@ def load_manifest(path: Path) -> dict[str, Any]:
                 "geometry_mode": geometry_mode,
                 "photon_counter": photon_counter,
                 "bgo_z_offset_cm": bgo_z_offset_cm,
+                "theta_min_deg": theta_min_deg,
+                "theta_max_deg": theta_max_deg,
             }
         )
 
@@ -472,8 +500,12 @@ def bsub_command(manifest: dict[str, Any], job: dict[str, Any]) -> list[str]:
             geometry["photon_counter"],
         ]
     )
-    if manifest["schema"] == SCHEMA_V3:
+    if manifest["schema"] in {SCHEMA_V3, SCHEMA_V4}:
         command.append(str(geometry["bgo_z_offset_cm"]))
+    if manifest["schema"] == SCHEMA_V4:
+        command.extend(
+            [str(geometry["theta_min_deg"]), str(geometry["theta_max_deg"])]
+        )
     return command
 
 
@@ -798,7 +830,7 @@ def validate_inspection(
     schema_branches = {
         tree: set(branches) for tree, branches in EXPECTED_BRANCHES.items()
     }
-    if schema == SCHEMA_V3:
+    if schema in {SCHEMA_V3, SCHEMA_V4}:
         schema_branches["runmeta"].add("bgoZOffset_cm")
     for tree, expected_branches in schema_branches.items():
         entry_raw = inspection["trees"].get(tree)
@@ -853,8 +885,14 @@ def validate_inspection(
         "inelasticBias": 3.0,
         "pionInelasticXSScale": 1.65,
         "seed": float(job["seed"]),
-        "thetaMin_deg": 24.0 if geometry["geometry_mode"] == "bgoegg_envelope" else 5.666,
-        "thetaMax_deg": 144.0 if geometry["geometry_mode"] == "bgoegg_envelope" else 170.302,
+        "thetaMin_deg": geometry.get(
+            "theta_min_deg",
+            24.0 if geometry["geometry_mode"] == "bgoegg_envelope" else 5.666,
+        ),
+        "thetaMax_deg": geometry.get(
+            "theta_max_deg",
+            144.0 if geometry["geometry_mode"] == "bgoegg_envelope" else 170.302,
+        ),
         "rMin_cm": 20.0 if geometry["geometry_mode"] == "bgoegg_envelope" else 30.0,
         "thickness_cm": 22.0 if geometry["geometry_mode"] == "bgoegg_envelope" else 20.0,
         "pcPbThickness_mm": 1.0,
@@ -866,7 +904,7 @@ def validate_inspection(
         "pcUpThetaOuter_deg": 36.0,
         **(
             {"bgoZOffset_cm": geometry["bgo_z_offset_cm"]}
-            if schema == SCHEMA_V3 else {}
+            if schema in {SCHEMA_V3, SCHEMA_V4} else {}
         ),
     }.items():
         if not float_equal(meta.get(key), expected):

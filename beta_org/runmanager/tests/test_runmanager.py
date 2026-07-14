@@ -137,6 +137,32 @@ class RunManagerTests(unittest.TestCase):
             with self.assertRaisesRegex(rm.RunManagerError, "bgoegg_envelope"):
                 rm.load_manifest(path)
 
+    def test_v4_coverage_manifest_and_command(self):
+        content = base_manifest()
+        content["schema"] = rm.SCHEMA_V4
+        content["geometries"] = [content["geometries"][1]]
+        content["geometries"][0].update(
+            bgo_z_offset_cm=0, theta_min_deg=18, theta_max_deg=150,
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = rm.load_manifest(self.write_manifest(directory, content))
+            jobs = rm.expand_jobs(manifest, Path(directory) / "state.json")
+        command = rm.bsub_command(manifest, jobs[0])
+        self.assertEqual(command[-3:], ["0.0", "18.0", "150.0"])
+        self.assertEqual(jobs[0]["geometry"]["theta_min_deg"], 18.0)
+
+    def test_v4_requires_ordered_egg_theta_range(self):
+        content = base_manifest()
+        content["schema"] = rm.SCHEMA_V4
+        content["geometries"] = [content["geometries"][1]]
+        content["geometries"][0].update(
+            bgo_z_offset_cm=0, theta_min_deg=150, theta_max_deg=18,
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = self.write_manifest(directory, content)
+            with self.assertRaisesRegex(rm.RunManagerError, "less than"):
+                rm.load_manifest(path)
+
     def test_schema_and_runmeta_validation(self):
         job = {
             "events": 100000,

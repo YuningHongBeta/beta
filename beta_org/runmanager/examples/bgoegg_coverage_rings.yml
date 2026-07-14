@@ -1,0 +1,63 @@
+schema: beta-bgo-th-tlc-pc-coverage-v4
+tag: bgoegg_coverage_rings
+build_dir: build_coverage
+events: 100000
+seed: 6302026
+threads: 8
+
+# Approximate end-ring additions to the provisional spherical BGOegg envelope.
+# The azimuthal pitch remains 60 sectors.  Extra theta layers extend the active
+# envelope rather than merely subdividing the original 24--144 degree range.
+geometries:
+  - name: base22
+    n_layer: 22
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+    bgo_z_offset_cm: 0
+    theta_min_deg: 24
+    theta_max_deg: 144
+  - name: back1_23
+    n_layer: 23
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+    bgo_z_offset_cm: 0
+    theta_min_deg: 24
+    theta_max_deg: 150
+  - name: both1_24
+    n_layer: 24
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+    bgo_z_offset_cm: 0
+    theta_min_deg: 18
+    theta_max_deg: 150
+  - name: front1_back2_25
+    n_layer: 25
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+    bgo_z_offset_cm: 0
+    theta_min_deg: 18
+    theta_max_deg: 156
+  - name: both2_26
+    n_layer: 26
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+    bgo_z_offset_cm: 0
+    theta_min_deg: 12
+    theta_max_deg: 156
+
+primaries: [e, pim, pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096

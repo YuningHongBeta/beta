@@ -126,3 +126,7 @@ BETA_GEOMETRY=bgoegg_envelope BETA_PHOTON_COUNTER=downstream \
   BETA_PRIMARY=pi0 BETA_OUTPUT=output/egg_down_pi0 \
   ./beta macros/run.mac
 ```
+BGOegg envelope coverage scans may override the active polar-angle range with
+`BETA_BGO_THETA_MIN_DEG` and `BETA_BGO_THETA_MAX_DEG`.  These options are for
+the provisional spherical envelope only; they do not model exact BGOegg
+trapezoids, supports, services, or readout clearances.

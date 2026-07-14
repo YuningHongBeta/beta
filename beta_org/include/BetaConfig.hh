@@ -43,8 +43,8 @@ public:
   double BgoZOffsetCm() const { return fBgoZOffsetCm; }
   double RMinCm() const { return BGOeggEnvelope() ? 20.0 : 30.0; }
   double ThicknessCm() const { return BGOeggEnvelope() ? 22.0 : 20.0; }
-  double ThetaMinDeg() const { return BGOeggEnvelope() ? 24.0 : 5.666; }
-  double ThetaMaxDeg() const { return BGOeggEnvelope() ? 144.0 : 170.302; }
+  double ThetaMinDeg() const { return fThetaMinDeg; }
+  double ThetaMaxDeg() const { return fThetaMaxDeg; }
   const char *GeometryModel() const
   {
     return BGOeggEnvelope()
@@ -103,6 +103,14 @@ private:
         fPhotonCounter(ReadString("BETA_PHOTON_COUNTER", "none")),
         fBgoZOffsetConfigured(std::getenv("BETA_BGO_Z_OFFSET_CM") != nullptr),
         fBgoZOffsetCm(ReadDouble("BETA_BGO_Z_OFFSET_CM", 0.0, -10.0, 10.0)),
+        fThetaMinConfigured(std::getenv("BETA_BGO_THETA_MIN_DEG") != nullptr),
+        fThetaMaxConfigured(std::getenv("BETA_BGO_THETA_MAX_DEG") != nullptr),
+        fThetaMinDeg(ReadDouble("BETA_BGO_THETA_MIN_DEG",
+                               fGeometry == "bgoegg_envelope" ? 24.0 : 5.666,
+                               0.1, 179.8)),
+        fThetaMaxDeg(ReadDouble("BETA_BGO_THETA_MAX_DEG",
+                               fGeometry == "bgoegg_envelope" ? 144.0 : 170.302,
+                               0.2, 179.9)),
         fNLayer(ReadInt("BETA_N_LAYER", fGeometry == "bgoegg_envelope" ? 22 : 15, 1, 200)),
         fNSector(ReadInt("BETA_N_SECTOR", fGeometry == "bgoegg_envelope" ? 60 : 15, 1, 360)),
         fSegmentation(ReadString("BETA_SEGMENTATION", "uniform_theta")),
@@ -123,6 +131,13 @@ private:
     if (fGeometry != "bgoegg_envelope" && fBgoZOffsetCm != 0.0)
       throw std::runtime_error(
           "BETA_BGO_Z_OFFSET_CM requires BETA_GEOMETRY=bgoegg_envelope");
+    if (fGeometry != "bgoegg_envelope" &&
+        (fThetaMinConfigured || fThetaMaxConfigured))
+      throw std::runtime_error(
+          "BGO theta overrides require BETA_GEOMETRY=bgoegg_envelope");
+    if (fThetaMinDeg >= fThetaMaxDeg)
+      throw std::runtime_error(
+          "BETA_BGO_THETA_MIN_DEG must be less than BETA_BGO_THETA_MAX_DEG");
     if (fSegmentation != "uniform_theta" &&
         fSegmentation != "equal_solid_angle")
       throw std::runtime_error("BETA_SEGMENTATION must be uniform_theta or equal_solid_angle");
@@ -136,6 +151,10 @@ private:
   std::string fPhotonCounter;
   bool fBgoZOffsetConfigured;
   double fBgoZOffsetCm;
+  bool fThetaMinConfigured;
+  bool fThetaMaxConfigured;
+  double fThetaMinDeg;
+  double fThetaMaxDeg;
   int fNLayer;
   int fNSector;
   std::string fSegmentation;

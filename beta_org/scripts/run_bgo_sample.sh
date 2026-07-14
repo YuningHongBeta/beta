@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -ne 5 && $# -ne 7 && $# -ne 8 ]]; then
-  echo "usage: $0 TAG N_LAYER N_SECTOR SEGMENTATION PRIMARY [GEOMETRY PHOTON_COUNTER [BGO_Z_OFFSET_CM]]" >&2
+if [[ $# -ne 5 && $# -ne 7 && $# -ne 8 && $# -ne 10 ]]; then
+  echo "usage: $0 TAG N_LAYER N_SECTOR SEGMENTATION PRIMARY [GEOMETRY PHOTON_COUNTER [BGO_Z_OFFSET_CM [THETA_MIN_DEG THETA_MAX_DEG]]]" >&2
   exit 2
 fi
 
@@ -14,12 +14,21 @@ primary=$5
 geometry=${6:-current}
 photon_counter=${7:-none}
 bgo_z_offset_cm=${8:-}
+theta_min_deg=${9:-}
+theta_max_deg=${10:-}
 
 project_dir=$(cd "$(dirname "$0")/.." && pwd)
 build_dir=${BETA_BUILD_DIR:-"$project_dir/build_opt"}
 if [[ ! -x "$build_dir/beta" ]]; then
   echo "beta executable not found: $build_dir/beta" >&2
   exit 3
+fi
+if [[ -n "$theta_min_deg" && -n "$theta_max_deg" ]]; then
+  export BETA_BGO_THETA_MIN_DEG="$theta_min_deg"
+  export BETA_BGO_THETA_MAX_DEG="$theta_max_deg"
+else
+  unset BETA_BGO_THETA_MIN_DEG
+  unset BETA_BGO_THETA_MAX_DEG
 fi
 mkdir -p "$build_dir/output/scan"
 
