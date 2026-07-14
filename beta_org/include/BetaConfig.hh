@@ -165,6 +165,10 @@ private:
     if (!BGOeggGeometry() && fPhotonCounter != "none")
       throw std::runtime_error(
           "BETA_PHOTON_COUNTER collars require a BGOegg geometry");
+    if (BGOeggFrustum() && fPhotonCounter != "none")
+      throw std::runtime_error(
+          "BETA_PHOTON_COUNTER collars overlap the published BGOegg frusta; "
+          "use none until the collars are redesigned");
     if (!BGOeggGeometry() && fBgoZOffsetCm != 0.0)
       throw std::runtime_error(
           "BETA_BGO_Z_OFFSET_CM requires a BGOegg geometry");

@@ -306,6 +306,11 @@ def load_manifest(path: Path) -> dict[str, Any]:
             raise RunManagerError(
                 f"{name}.photon_counter collars require a BGOegg geometry"
             )
+        if geometry_mode == "bgoegg_frustum" and photon_counter != "none":
+            raise RunManagerError(
+                f"{name}.photon_counter collars overlap the published BGOegg "
+                "frusta; use none until the collars are redesigned"
+            )
         if schema == SCHEMA_V2 and "bgo_z_offset_cm" in item:
             raise RunManagerError(
                 f"{name}.bgo_z_offset_cm requires schema {SCHEMA_V3}"

@@ -162,6 +162,25 @@ class RunManagerTests(unittest.TestCase):
             "bgoegg_published", "e", "bgoegg_frustum", "none", "-10.0",
         ])
 
+    def test_published_bgoegg_frustum_rejects_photon_counter(self):
+        content = base_manifest()
+        content["schema"] = rm.SCHEMA_V3
+        content["geometries"] = [
+            {
+                "name": "published31",
+                "n_layer": 31,
+                "n_sector": 60,
+                "segmentation": "bgoegg_published",
+                "geometry_mode": "bgoegg_frustum",
+                "photon_counter": "downstream",
+                "bgo_z_offset_cm": 0,
+            }
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            path = self.write_manifest(directory, content)
+            with self.assertRaisesRegex(rm.RunManagerError, "overlap"):
+                rm.load_manifest(path)
+
     def test_v4_coverage_manifest_and_command(self):
         content = base_manifest()
         content["schema"] = rm.SCHEMA_V4
