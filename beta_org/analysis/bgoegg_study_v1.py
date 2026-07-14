@@ -283,7 +283,11 @@ def main() -> None:
             "target_pi0_reject": target[1],
             "threshold_selection": "validation only",
             "method_selection": "maximum validation electron retention",
-            "final_measurement": "odd eventID test subset",
+            "candidate_evaluation": "odd eventID subset",
+            "study_wide_blind_holdout": (
+                "none; odd subset was used to compare feature, threshold, "
+                "placement, and ring candidates"
+            ),
         },
         "truth_usage": "species sample label only; no event truth classifier input",
         "extractors": {
