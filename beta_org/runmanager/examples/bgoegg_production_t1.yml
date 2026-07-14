@@ -1,13 +1,13 @@
 schema: beta-bgo-th-tlc-pc-coverage-v4
-tag: bgoegg_prod_t4
-build_dir: build_prod_t4
+tag: bgoegg_prod_t1
+build_dir: build_prod_t1
 events: 100000
 seed: 6302026
-threads: 4
+threads: 1
 
 # Consolidated production scan.  Baseline conditions shared by the PC,
-# placement, and coverage scans occur only once.  Four threads reduce the
-# single-host slot requirement while leaving all physics settings unchanged.
+# placement, and coverage scans occur only once.  Single-thread jobs avoid
+# host-level slot fragmentation while all physics settings remain unchanged.
 geometries:
   - name: egg_none
     n_layer: 22
