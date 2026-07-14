@@ -1,0 +1,22 @@
+schema: beta-bgo-th-tlc-pc-v2
+tag: bgo_t3_confirm_ball_s7302026
+build_dir: build_prod_t1
+events: 100000
+seed: 7302026
+threads: 1
+
+# Independent confirmation sample for the frozen 3 MeV analysis.
+geometries:
+  - name: a20x40
+    n_layer: 20
+    n_sector: 40
+    segmentation: equal_solid_angle
+    geometry_mode: current
+    photon_counter: none
+
+primaries: [e, pim, pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096
