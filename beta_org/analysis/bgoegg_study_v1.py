@@ -16,6 +16,7 @@ from bgo_compare_v1 import (
     cluster_baseline,
     load_geometry,
 )
+import numpy as np
 
 
 PROJECT = Path(__file__).resolve().parent.parent
@@ -124,6 +125,28 @@ def load_triplet(
     )
 
 
+def combine_geometries(label: str, standard: dict, pattern: dict) -> dict:
+    """Join summary and cell-pattern inputs by eventID for one ablation."""
+    samples = {}
+    for species in ("electron", "pim", "pi0"):
+        first = standard["samples"][species]
+        second = pattern["samples"][species]
+        if not np.array_equal(first["event_id"], second["event_id"]):
+            raise RuntimeError(f"{label}: standard/pattern eventID mismatch for {species}")
+        combined = dict(first)
+        combined["x"] = np.column_stack([first["x"], second["x"]])
+        combined["classifier_inputs"] = (
+            first["classifier_inputs"] + second["classifier_inputs"]
+        )
+        samples[species] = combined
+    return {
+        "label": label,
+        "samples": samples,
+        "metadata": {"combined_standard_and_pattern": True},
+        "feature_names": standard["feature_names"] + pattern["feature_names"],
+    }
+
+
 def source_manifest(roots: dict[str, dict[str, Path]]) -> dict:
     return {
         label: {
@@ -212,6 +235,22 @@ def main() -> None:
             geometry, targets, pattern_methods
         )
 
+    combined_baseline = {}
+    for label in ("ball:a20x40", "production:egg_none"):
+        standard_geometry = load_triplet(
+            standard_files[label], label + ":standard", FEATURE_GROUPS["bgo"]
+        )
+        pattern_geometry = load_triplet(
+            pattern_files[label], label + ":pattern", None
+        )
+        combined_baseline[label] = analyze_geometry(
+            combine_geometries(
+                label + ":combined", standard_geometry, pattern_geometry
+            ),
+            targets,
+            pattern_methods,
+        )
+
     threshold_scan = {}
     baseline_label = "production:egg_none"
     for threshold in THRESHOLDS:
@@ -270,6 +309,7 @@ def main() -> None:
         "threshold_scan": threshold_scan,
         "standard_bgo_hardware": standard_hardware,
         "pattern_bgo_hardware": pattern_hardware,
+        "combined_standard_pattern_baseline": combined_baseline,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
