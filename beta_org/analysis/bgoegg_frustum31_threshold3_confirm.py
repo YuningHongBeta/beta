@@ -30,6 +30,7 @@ from bgo_threshold3_analysis_v1 import (
     hurdle_feature_values,
     hurdle_scores,
 )
+from bgoegg_frustum31_threshold3_scan import ROBUST_TARGET
 
 
 def paths(directory: Path) -> dict[str, Path]:
@@ -95,10 +96,9 @@ def hurdle_train_apply(
     training_directory: Path,
     confirmation_directory: Path,
     feature_set: str,
-    guarded: bool,
+    target: tuple[float, float],
 ) -> dict:
     features = HURDLE_FEATURE_SETS[feature_set]
-    target = GUARDED_TARGET if guarded else TARGET
     training = hurdle_feature_values(training_directory, "training", features)
     model = fit_hurdle(training)
     validation_scores = {
@@ -138,12 +138,17 @@ def main() -> None:
 
     scan = json.loads(args.scan_json.read_text(encoding="utf-8"))
     selected = scan["selected"]
-    if selected["family"] in {"hurdle", "hurdle_guarded"}:
+    if selected["family"] in {"hurdle", "hurdle_guarded", "hurdle_robust"}:
+        target = {
+            "hurdle": TARGET,
+            "hurdle_guarded": GUARDED_TARGET,
+            "hurdle_robust": ROBUST_TARGET,
+        }[selected["family"]]
         result = hurdle_train_apply(
             args.training,
             args.confirmation,
             selected["feature_set"],
-            selected["family"] == "hurdle_guarded",
+            target,
         )
     else:
         features = (

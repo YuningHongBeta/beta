@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Select a 3 MeV analysis and z position for the exact 31-ring BGOegg.
 
-The geometry/method choice uses only eventID mod 4 == 2.  Odd event IDs are
-reported as a candidate evaluation and must not be used to revise the choice.
+The geometry/model/feature choice uses only eventID mod 4 == 2.  Odd event IDs
+diagnose whether that discovery cut needs a fixed safety margin before the
+independent seed is read; they never revise the geometry, model, or features.
 """
 
 from __future__ import annotations
@@ -13,7 +14,9 @@ from pathlib import Path
 
 from bgo_compare_v1 import FEATURE_GROUPS, METHODS, analyze_geometry
 from bgo_threshold3_analysis_v1 import (
+    HURDLE_FEATURE_SETS,
     TARGET,
+    analyze_hurdle,
     compact_scan,
     hurdle_scan,
     load_triplet,
@@ -45,6 +48,9 @@ REFERENCE = {
     "pim_reject": TARGET[0],
     "pi0_reject": TARGET[1],
 }
+# Fixed after the exact-target discovery candidate missed the seed-6302026 odd
+# background rates, and before any seed-7302026 confirmation output was read.
+ROBUST_TARGET = (0.927, 0.9901)
 
 
 def candidate_rows(label: str, result: dict) -> list[dict]:
@@ -86,6 +92,16 @@ def candidate_rows(label: str, result: dict) -> list[dict]:
                 "candidate_evaluation"
             ],
         },
+        {
+            "geometry": label,
+            "family": "hurdle_robust",
+            "feature_set": hurdle["selected_feature_set"],
+            "method": "nHit-binned diagonal Gaussian likelihood",
+            "validation": result["hurdle_robust"]["validation"],
+            "candidate_evaluation": result["hurdle_robust"][
+                "candidate_evaluation"
+            ],
+        },
     ]
 
 
@@ -95,10 +111,18 @@ def analyze(directory: Path, label: str) -> dict:
         [TARGET],
         METHODS,
     )
+    hurdle = hurdle_scan(directory, label)
+    hurdle_feature_set = hurdle["selected_feature_set"]
     return {
         "standard": selected_summary(standard_result),
         "compact": compact_scan(directory, label),
-        "hurdle": hurdle_scan(directory, label),
+        "hurdle": hurdle,
+        "hurdle_robust": analyze_hurdle(
+            directory,
+            label + ":hurdle:robust",
+            HURDLE_FEATURE_SETS[hurdle_feature_set],
+            ROBUST_TARGET,
+        ),
         "ncluster_full_sample": ncluster_distribution(
             directory, label + ":ncluster"
         ),
@@ -120,9 +144,24 @@ def main() -> None:
         for label, result in geometries.items()
         for row in candidate_rows(label, result)
     ]
-    # This is the only geometry/method selection.  Odd-event values below are
-    # retained solely to estimate the already selected candidate's performance.
-    selected = max(rows, key=lambda row: row["validation"]["e_keep"])
+    # This is the only geometry/model/feature selection.  Odd-event values do
+    # not alter this choice; they motivated only the fixed robust cut target.
+    discovery_rows = [
+        row for row in rows
+        if row["family"] in {"standard_full", "compact", "hurdle"}
+    ]
+    discovery_selected = max(
+        discovery_rows, key=lambda row: row["validation"]["e_keep"]
+    )
+    if discovery_selected["family"] == "hurdle":
+        selected = next(
+            row for row in rows
+            if row["geometry"] == discovery_selected["geometry"]
+            and row["family"] == "hurdle_robust"
+            and row["feature_set"] == discovery_selected["feature_set"]
+        )
+    else:
+        selected = discovery_selected
     evaluation = selected["candidate_evaluation"]
     result = {
         "status": "complete",
@@ -133,16 +172,30 @@ def main() -> None:
             "hard per-segment cut; deposits below 3 MeV are not classifier inputs"
         ),
         "reference": REFERENCE,
+        "robust_target": {
+            "pim_reject": ROBUST_TARGET[0],
+            "pi0_reject": ROBUST_TARGET[1],
+            "definition": (
+                "fixed after the discovery candidate missed the seed-6302026 "
+                "odd background rates and before reading seed 7302026"
+            ),
+        },
         "split": {
             "fit": "eventID mod 4 == 0",
             "validation": "eventID mod 4 == 2; geometry/method/feature/cut selection",
             "candidate_evaluation": (
-                "odd eventID; inspected only after the single selection"
+                "odd eventID; inspected after discovery selection to set the "
+                "robust cut margin, not to revise geometry/model/features"
             ),
         },
-        "selection_rule": (
+        "discovery_selection_rule": (
             "maximum validation electron retention among all declared geometry, "
-            "method-family, and feature-set candidates"
+            "method-family, and feature-set candidates at the exact target"
+        ),
+        "discovery_selected": discovery_selected,
+        "final_operating_rule": (
+            "keep the discovery geometry/model/features and retune only its cut "
+            "to the fixed robust validation target"
         ),
         "selected": selected,
         "selected_gap_to_ball_T1": {
