@@ -55,28 +55,32 @@ def candidate_rows(label: str, result: dict) -> list[dict]:
         {
             "geometry": label,
             "family": "standard_full",
-            "detail": standard["selected_method"],
+            "feature_set": "bgo",
+            "method": standard["selected_method"],
             "validation": standard["validation"],
             "candidate_evaluation": standard["candidate_evaluation"],
         },
         {
             "geometry": label,
             "family": "compact",
-            "detail": compact["selected_feature_set"],
+            "feature_set": compact["selected_feature_set"],
+            "method": compact["selected"]["selected_method"],
             "validation": compact["selected"]["validation"],
             "candidate_evaluation": compact["selected"]["candidate_evaluation"],
         },
         {
             "geometry": label,
             "family": "hurdle",
-            "detail": hurdle["selected_feature_set"],
+            "feature_set": hurdle["selected_feature_set"],
+            "method": "nHit-binned diagonal Gaussian likelihood",
             "validation": hurdle["selected"]["validation"],
             "candidate_evaluation": hurdle["selected"]["candidate_evaluation"],
         },
         {
             "geometry": label,
             "family": "hurdle_guarded",
-            "detail": hurdle["selected_feature_set"],
+            "feature_set": hurdle["selected_feature_set"],
+            "method": "nHit-binned diagonal Gaussian likelihood",
             "validation": hurdle["guarded_operating_point"]["validation"],
             "candidate_evaluation": hurdle["guarded_operating_point"][
                 "candidate_evaluation"
