@@ -1,5 +1,6 @@
 // betaDetectorConstruction.cc
 #include "betaDetectorConstruction.hh"
+#include "BGOeggGeometry.hh"
 #include "BetaConfig.hh"
 #include "Constant.hh"
 #include "TargetSD.hh"
@@ -18,7 +19,9 @@
 #include "G4PhysicalConstants.hh"
 
 #include "G4Box.hh"
+#include "G4GenericTrap.hh"
 #include "G4Sphere.hh"
+#include "G4TwoVector.hh"
 #include "G4Tubs.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
@@ -42,6 +45,8 @@
 #include "betaBiasingOperator.hh"
 
 #include <cmath>
+#include <stdexcept>
+#include <string>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -51,6 +56,7 @@ G4ThreadLocal G4GlobalMagFieldMessenger *betaDetectorConstruction::fMagFieldMess
 
 betaDetectorConstruction::betaDetectorConstruction()
     : G4VUserDetectorConstruction(),
+      calorLV(nullptr),
       fAbsorberPV(nullptr),
       fCellPV(nullptr),
       fVisAttributes(),
@@ -134,8 +140,8 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
   const G4double calorRMax = calorRMin + calorThickness;
 
   // Geometry parameters
-  auto worldSizeXY = 3 * calorRMax;
-  auto worldSizeZ = 3 * calorRMax;
+  auto worldSizeXY = config.BGOeggFrustum() ? 180.0 * cm : 3 * calorRMax;
+  auto worldSizeZ = config.BGOeggFrustum() ? 180.0 * cm : 3 * calorRMax;
 
   // Get materials
   auto defaultMaterial = G4Material::GetMaterial("Galactic");
@@ -228,33 +234,34 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
   //
   if (shapeFlag == 1)
   {
-    G4Sphere *calorimeterS = new G4Sphere("Calorimeter",                // its name
-                                          calorRMin - ScintiThickness, calorRMax, // Rmin, Rmax
-                                          0 * deg, 360 * deg,           // phi
-                                          0 * deg, 180 * deg);          // theta
-
-    calorLV = new G4LogicalVolume(
-        calorimeterS,    // its solid
-        defaultMaterial, // its material
-        "Calorimeter");  // its name
-
-    new G4PVPlacement(
-        0,               // no rotation
-        G4ThreeVector(0., 0., config.BgoZOffsetCm() * cm),
-        calorLV,         // its logical volume
-        "Calorimeter",   // its name
-        worldLV,         // its mother  volume
-        false,           // no boolean operation
-        0,               // copy number
-        fCheckOverlaps); // checking overlaps
-
-    // ==== ConstructCalorimeter ====: (innner radius, outer radius, material, cellLV, mother);
     G4String mat_Cal = "G4_BGO";
     G4String mat_Scinti = "G4_PLASTIC_SC_VINYLTOLUENE";
     // G4String mat_AC = """;
 
-    // CsI(or BGO) crystals
-    ConstructCalorimeter(calorRMin, calorRMax, mat_Cal, cellLV_Cal, calorLV);
+    if (config.BGOeggFrustum())
+    {
+      // Published BGOegg frusta can extend beyond R=420 mm.  Place them
+      // directly in the world so a vacuum mother does not overlap the target,
+      // TH, or TLC volumes.
+      ConstructBGOeggFrusta(
+          mat_Cal, cellLV_Cal, worldLV, config.BgoZOffsetCm() * cm);
+    }
+    else
+    {
+      G4Sphere *calorimeterS = new G4Sphere(
+          "Calorimeter", calorRMin - ScintiThickness, calorRMax,
+          0 * deg, 360 * deg, 0 * deg, 180 * deg);
+
+      calorLV = new G4LogicalVolume(
+          calorimeterS, defaultMaterial, "Calorimeter");
+
+      new G4PVPlacement(
+          0, G4ThreeVector(0., 0., config.BgoZOffsetCm() * cm),
+          calorLV, "Calorimeter", worldLV, false, 0, fCheckOverlaps);
+
+      ConstructCalorimeter(
+          calorRMin, calorRMax, mat_Cal, cellLV_Cal, calorLV);
+    }
     // plastic scincillator
     // ConstructCalorimeter(Rmin-ScintiThickness, Rmin, mat_Scinti, cellLV_Scinti, calorLV);
 
@@ -455,7 +462,8 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
 
   auto visAttributes = new G4VisAttributes(G4Colour::Green());
   visAttributes->SetVisibility(false);
-  calorLV->SetVisAttributes(visAttributes);
+  if (calorLV)
+    calorLV->SetVisAttributes(visAttributes);
   fVisAttributes.push_back(visAttributes);
 
   visAttributes = new G4VisAttributes(G4Colour::Blue());
@@ -541,6 +549,118 @@ G4Transform3D betaDetectorConstruction::Rotate(G4double icrys, G4double phiSpan)
   rotm.rotateZ(phiSpan * icrys * deg);
   G4Transform3D transform = G4Transform3D(rotm, pos);
   return transform;
+}
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void betaDetectorConstruction::ConstructBGOeggFrusta(
+    G4String mat, std::vector<G4LogicalVolume *> &cells,
+    G4LogicalVolume *mother, G4double zOffset)
+{
+  const auto &config = BetaConfig::Instance();
+  const auto rings = BGOeggGeometry::BuildRings(config.NLayer());
+  const G4double phiSpan = config.PhiWidthDeg();
+  const G4double phiHalf = 0.5 * phiSpan * deg;
+  auto material = G4Material::GetMaterial(mat);
+
+  cells.assign(rings.size(), nullptr);
+  G4int copyNo = 0;
+  G4double activeVolume = 0.0;
+  for (std::size_t ringIndex = 0; ringIndex < rings.size(); ++ringIndex)
+  {
+    const auto &ring = rings[ringIndex];
+    const G4double thetaLow = ring.thetaLowDeg * deg;
+    const G4double thetaHigh = ring.thetaHighDeg * deg;
+    const G4double frontRadius = ring.frontRadiusMm * mm;
+    const G4double rearRadius =
+        (ring.frontRadiusMm + BGOeggGeometry::kCrystalLengthMm) * mm;
+
+    auto vertex = [](G4double radius, G4double theta, G4double phi)
+    {
+      return G4ThreeVector(
+          radius * std::sin(theta) * std::cos(phi),
+          radius * std::sin(theta) * std::sin(phi),
+          radius * std::cos(theta));
+    };
+
+    std::vector<G4ThreeVector> front = {
+        vertex(frontRadius, thetaLow, -phiHalf),
+        vertex(frontRadius, thetaLow, +phiHalf),
+        vertex(frontRadius, thetaHigh, +phiHalf),
+        vertex(frontRadius, thetaHigh, -phiHalf),
+    };
+    std::vector<G4ThreeVector> rear = {
+        vertex(rearRadius, thetaLow, -phiHalf),
+        vertex(rearRadius, thetaLow, +phiHalf),
+        vertex(rearRadius, thetaHigh, +phiHalf),
+        vertex(rearRadius, thetaHigh, -phiHalf),
+    };
+
+    G4ThreeVector normal =
+        (front[1] - front[0]).cross(front[3] - front[0]).unit();
+    const G4ThreeVector frontCenter =
+        0.25 * (front[0] + front[1] + front[2] + front[3]);
+    if (normal.dot(frontCenter) < 0.0)
+      normal = -normal;
+
+    const G4double frontPlane = normal.dot(front[0]);
+    const G4double rearPlane = normal.dot(rear[0]);
+    const G4double halfZ = 0.5 * (rearPlane - frontPlane);
+    if (!(halfZ > 0.0))
+      throw std::runtime_error("BGOegg frustum has non-positive thickness");
+
+    const G4ThreeVector localX(0.0, 1.0, 0.0);
+    const G4ThreeVector localY = normal.cross(localX).unit();
+    const G4ThreeVector origin = normal * (0.5 * (frontPlane + rearPlane));
+
+    std::vector<G4TwoVector> vertices;
+    vertices.reserve(8);
+    for (const auto &point : front)
+    {
+      const auto relative = point - origin;
+      vertices.emplace_back(relative.dot(localX), relative.dot(localY));
+    }
+    for (const auto &point : rear)
+    {
+      const auto relative = point - origin;
+      vertices.emplace_back(relative.dot(localX), relative.dot(localY));
+    }
+
+    const G4String solidName =
+        "BGOeggCellSolid_" + std::to_string(ringIndex);
+    auto solid = new G4GenericTrap(solidName, halfZ, vertices);
+    activeVolume += solid->GetCubicVolume() * config.NSector();
+    const G4String logicalName =
+        "BGOeggCellLV_" + std::to_string(ringIndex);
+    cells[ringIndex] = new G4LogicalVolume(solid, material, logicalName);
+
+    const G4RotationMatrix baseRotation(localX, localY, normal);
+    for (G4int sector = 0; sector < config.NSector(); ++sector)
+    {
+      G4RotationMatrix azimuth;
+      // The local frustum spans -phi/2..+phi/2.  Offset by half a sector so
+      // copy 0 keeps the historical global 0..phi sector convention.
+      azimuth.rotateZ((sector + 0.5) * phiSpan * deg);
+      const G4RotationMatrix rotation = azimuth * baseRotation;
+      const G4ThreeVector position =
+          azimuth * origin + G4ThreeVector(0.0, 0.0, zOffset);
+      const G4Transform3D transform(rotation, position);
+      fCellPV = new G4PVPlacement(
+          transform, cells[ringIndex], "cellPhysical", mother, false,
+          copyNo, fCheckOverlaps);
+      ++copyNo;
+    }
+  }
+
+  if (copyNo != config.NCells())
+    throw std::runtime_error("BGOegg frustum copy count does not match configuration");
+  G4cout << "BGOeggGeometrySummary model=" << config.GeometryModel()
+         << " rings=" << rings.size()
+         << " sectors=" << config.NSector()
+         << " cells=" << copyNo
+         << " theta_deg=" << rings.front().thetaLowDeg
+         << "--" << rings.back().thetaHighDeg
+         << " active_volume_liter=" << activeVolume / liter
+         << " z_offset_cm=" << zOffset / cm << G4endl;
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

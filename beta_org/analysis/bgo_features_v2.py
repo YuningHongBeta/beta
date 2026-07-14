@@ -62,7 +62,7 @@ def validate(path, expect_rows=None, expect_physics=4):
     if expect_physics is not None and meta["physicsFlag"] != expect_physics:
         raise ValueError(
             f"physicsFlag={meta['physicsFlag']}, expected={expect_physics}")
-    if meta["segmentationMode"] not in (0, 1):
+    if meta["segmentationMode"] not in (0, 1, 2):
         raise ValueError("invalid segmentationMode")
     if not np.all(np.isfinite(data)):
         raise ValueError("non-finite output feature")

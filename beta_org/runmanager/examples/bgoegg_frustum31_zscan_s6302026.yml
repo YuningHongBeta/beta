@@ -1,0 +1,65 @@
+schema: beta-bgo-th-tlc-pc-offset-v3
+tag: bgoegg_frustum31_zscan_s6302026
+build_dir: build_bgoegg_frustum
+events: 100000
+seed: 6302026
+threads: 1
+
+# Published BGOegg frusta with the original segment-size rule preserved.
+# The extended geometry adds five forward and four backward rings:
+# 31 rings x 60 sectors = 1,860 crystals, theta=5.336--168 deg.
+geometries:
+  - name: nominal22_z0
+    n_layer: 22
+    n_sector: 60
+    segmentation: bgoegg_published
+    geometry_mode: bgoegg_frustum
+    photon_counter: none
+    bgo_z_offset_cm: 0
+
+  - name: extended31_zm10
+    n_layer: 31
+    n_sector: 60
+    segmentation: bgoegg_published
+    geometry_mode: bgoegg_frustum
+    photon_counter: none
+    bgo_z_offset_cm: -10
+
+  - name: extended31_zm5
+    n_layer: 31
+    n_sector: 60
+    segmentation: bgoegg_published
+    geometry_mode: bgoegg_frustum
+    photon_counter: none
+    bgo_z_offset_cm: -5
+
+  - name: extended31_z0
+    n_layer: 31
+    n_sector: 60
+    segmentation: bgoegg_published
+    geometry_mode: bgoegg_frustum
+    photon_counter: none
+    bgo_z_offset_cm: 0
+
+  - name: extended31_zp5
+    n_layer: 31
+    n_sector: 60
+    segmentation: bgoegg_published
+    geometry_mode: bgoegg_frustum
+    photon_counter: none
+    bgo_z_offset_cm: 5
+
+  - name: extended31_zp10
+    n_layer: 31
+    n_sector: 60
+    segmentation: bgoegg_published
+    geometry_mode: bgoegg_frustum
+    photon_counter: none
+    bgo_z_offset_cm: 10
+
+primaries: [e, pim, pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096

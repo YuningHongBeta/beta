@@ -86,13 +86,16 @@ def load_species(path: Path, feature_names: list[str] | None) -> dict:
 
 def comparable_meta(sample: dict) -> dict:
     meta = sample["meta"]
-    return {
+    comparable = {
         key: meta[key]
         for key in (
             "version", "ncol", "nLayer", "nSector", "segmentationMode",
             "physicsFlag", "thetaMin_deg", "thetaMax_deg", "threshold_MeV",
         )
     }
+    for key in ("geometryMode", "rMin_cm", "thickness_cm", "bgoZOffset_cm"):
+        comparable[key] = sample["manifest"].get(key)
+    return comparable
 
 
 def load_geometry(

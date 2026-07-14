@@ -37,6 +37,10 @@ class betaDetectorConstruction : public G4VUserDetectorConstruction
     void ConstructCalorimeter(G4double rmin, G4double rmax, G4String mat,
                               std::vector<G4LogicalVolume*>& cells,
                               G4LogicalVolume* mother);
+    void ConstructBGOeggFrusta(G4String mat,
+                               std::vector<G4LogicalVolume*>& cells,
+                               G4LogicalVolume* mother,
+                               G4double zOffset);
     G4LogicalVolume* ConstructCell(G4double rmin, G4double rmax,
                                    G4double thetaStart, G4double thetaSpan,
                                    G4double phiSpan, G4String mat);
@@ -79,4 +83,3 @@ inline const G4VPhysicalVolume* betaDetectorConstruction::GetCellPV() const {
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
-

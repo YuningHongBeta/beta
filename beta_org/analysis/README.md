@@ -72,6 +72,9 @@ modeはsidecarの`readoutMode`に保存する。
 g++ -O3 -std=c++17 analysis/bgo_extract_features_v2.cc \
   $(root-config --cflags --libs) -o analysis/bgo_extract_features_v2
 analysis/bgo_extract_features_v2 --self-test-geometry
+g++ -O2 -std=c++17 analysis/check_bgoegg_geometry.cc \
+  -o analysis/check_bgoegg_geometry
+analysis/check_bgoegg_geometry
 
 # legacy geometry scan
 analysis/bgo_extract_features_v2 INPUT_E.root GEOM_e_T3.bgo2 3 \
@@ -83,7 +86,9 @@ python3 analysis/bgo_features_v2.py GEOM_e_T3.bgo2 --expect-rows 100000
 
 strict timingでは`--allow-legacy-hodo`を付けない。T4/T5も同様に抽出する。
 現在のschemaは130 float features。equal-solidではcos(theta) bin edgeの中点を
-cell方向に用いる。
+cell方向に用いる。`bgoegg_published`ではAnnual Reportの非一様ring tableと
+各frustumの8頂点平均を使い、`bgoZOffset_cm`を加えたworld座標からtarget方向を
+計算する。uniform/equal-solid geometryでもz offsetをcell方向へ反映する。
 
 結果JSONの`source_root_files`はbeta repository root相対の再生成元で、こちらを
 authoritative provenanceとする。`electron`/`pion`/`pi0`および

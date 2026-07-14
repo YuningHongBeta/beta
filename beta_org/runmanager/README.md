@@ -85,6 +85,11 @@ Validation requires a non-zombie, non-recovered ROOT file and checks:
 - fixed `physicsFlag=4`, `neutronScale=2`, `inelasticBias=3`, and
   `pionInelasticXSScale=1.65`.
 
+Published BGOegg frusta use `geometry_mode: bgoegg_frustum` and
+`segmentation: bgoegg_published`.  Only the published 22-ring layout and the
+segment-size-preserving 31-ring extension are accepted.  The latter adds five
+forward and four backward rings while keeping 60 azimuthal sectors.
+
 State and LSF logs live under the gitignored
 `beta_org/runmanager/.state/`. State includes the manifest SHA-256, job IDs,
 LSF state, output path, validation result, beta repository commit, repository

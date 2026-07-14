@@ -2,6 +2,8 @@
 #include <TFile.h>
 #include <TTree.h>
 
+#include "../include/BGOeggGeometry.hh"
+
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -155,11 +157,15 @@ struct Meta {
   int nLayer = 0;
   int nSector = 0;
   int segmentationMode = -1;
+  int geometryMode = -1;
   int physicsFlag = -1;
   int nSegTH = 0;
   int nSegTLC = 0;
   double thetaMinDeg = 0.0;
   double thetaMaxDeg = 0.0;
+  double rMinCm = 0.0;
+  double thicknessCm = 0.0;
+  double bgoZOffsetCm = 0.0;
   double thRMinMm = 15.0;
   double thRMaxMm = 21.0;
   double thBarZMinMm = -300.0;
@@ -176,9 +182,43 @@ struct Geometry {
   explicit Geometry(const Meta &m) : meta(m) {
     if (meta.nLayer <= 0 || meta.nSector <= 0)
       throw std::runtime_error("invalid nLayer/nSector");
-    if (meta.segmentationMode != 0 && meta.segmentationMode != 1)
+    if (meta.segmentationMode < 0 || meta.segmentationMode > 2)
       throw std::runtime_error("unknown segmentationMode");
     directions.reserve(NCell());
+
+    if (meta.segmentationMode == 2) {
+      if (meta.geometryMode != 2)
+        throw std::runtime_error(
+            "bgoegg_published segmentation requires geometryMode=2");
+      const auto rings = BGOeggGeometry::BuildRings(meta.nLayer);
+      if (static_cast<int>(rings.size()) != meta.nLayer || meta.nSector != 60)
+        throw std::runtime_error("invalid published BGOegg ring/sector count");
+      const double phiHalf =
+          0.5 * BGOeggGeometry::kPhiSpanDeg * kPi / 180.0;
+      for (const auto &ring : rings) {
+        const double thetaLow = ring.thetaLowDeg * kPi / 180.0;
+        const double thetaHigh = ring.thetaHighDeg * kPi / 180.0;
+        const double front = ring.frontRadiusMm;
+        const double rear = front + BGOeggGeometry::kCrystalLengthMm;
+        const double radialSum = front + rear;
+        const double rhoCenter = 0.25 * radialSum *
+            (std::sin(thetaLow) + std::sin(thetaHigh)) * std::cos(phiHalf);
+        const double zCenterLocal = 0.25 * radialSum *
+            (std::cos(thetaLow) + std::cos(thetaHigh));
+        const double zCenter = zCenterLocal + 10.0 * meta.bgoZOffsetCm;
+        for (int ip = 0; ip < meta.nSector; ++ip) {
+          const double phi = 2.0 * kPi * (ip + 0.5) / meta.nSector;
+          const double x = rhoCenter * std::cos(phi);
+          const double y = rhoCenter * std::sin(phi);
+          const double norm = std::sqrt(x * x + y * y + zCenter * zCenter);
+          if (!(norm > 0.0))
+            throw std::runtime_error("invalid BGOegg cell centroid direction");
+          directions.push_back({x / norm, y / norm, zCenter / norm});
+        }
+      }
+      return;
+    }
+
     const double thetaMin = meta.thetaMinDeg * kPi / 180.0;
     const double thetaMax = meta.thetaMaxDeg * kPi / 180.0;
     const double cosMin = std::cos(thetaMin);
@@ -200,9 +240,14 @@ struct Geometry {
       }
       for (int ip = 0; ip < meta.nSector; ++ip) {
         const double phi = 2.0 * kPi * (ip + 0.5) / meta.nSector;
-        directions.push_back({std::sin(thetaCenter) * std::cos(phi),
-                              std::sin(thetaCenter) * std::sin(phi),
-                              std::cos(thetaCenter)});
+        const double radiusMm =
+            10.0 * (meta.rMinCm + 0.5 * meta.thicknessCm);
+        const double x = radiusMm * std::sin(thetaCenter) * std::cos(phi);
+        const double y = radiusMm * std::sin(thetaCenter) * std::sin(phi);
+        const double z = radiusMm * std::cos(thetaCenter) +
+                         10.0 * meta.bgoZOffsetCm;
+        const double norm = std::sqrt(x * x + y * y + z * z);
+        directions.push_back({x / norm, y / norm, z / norm});
       }
     }
   }
@@ -228,7 +273,8 @@ Meta readMeta(TTree *tree, bool allowLegacyHodo) {
   if (!tree || tree->GetEntries() != 1)
     throw std::runtime_error("runmeta must contain exactly one entry");
   const char *required[] = {"nLayer", "nSector", "segmentationMode",
-                            "physicsFlag", "thetaMin_deg", "thetaMax_deg",
+                            "geometryMode", "physicsFlag", "thetaMin_deg",
+                            "thetaMax_deg", "rMin_cm", "thickness_cm",
                             "nSegTH", "nSegTLC"};
   for (const char *name : required) requireBranch(tree, name);
   const char *finalRequired[] = {"thRMin_mm", "thRMax_mm", "thBarZMin_mm",
@@ -254,11 +300,18 @@ Meta readMeta(TTree *tree, bool allowLegacyHodo) {
   tree->SetBranchAddress("nLayer", &m.nLayer);
   tree->SetBranchAddress("nSector", &m.nSector);
   tree->SetBranchAddress("segmentationMode", &m.segmentationMode);
+  tree->SetBranchAddress("geometryMode", &m.geometryMode);
   tree->SetBranchAddress("physicsFlag", &m.physicsFlag);
   tree->SetBranchAddress("thetaMin_deg", &m.thetaMinDeg);
   tree->SetBranchAddress("thetaMax_deg", &m.thetaMaxDeg);
+  tree->SetBranchAddress("rMin_cm", &m.rMinCm);
+  tree->SetBranchAddress("thickness_cm", &m.thicknessCm);
   tree->SetBranchAddress("nSegTH", &m.nSegTH);
   tree->SetBranchAddress("nSegTLC", &m.nSegTLC);
+  if (tree->GetBranch("bgoZOffset_cm")) {
+    tree->SetBranchStatus("bgoZOffset_cm", 1);
+    tree->SetBranchAddress("bgoZOffset_cm", &m.bgoZOffsetCm);
+  }
   if (finalMetadata) {
     tree->SetBranchAddress("thRMin_mm", &m.thRMinMm);
     tree->SetBranchAddress("thRMax_mm", &m.thRMaxMm);
@@ -270,7 +323,8 @@ Meta readMeta(TTree *tree, bool allowLegacyHodo) {
                            &m.thTimingSmearingApplied);
   }
   tree->GetEntry(0);
-  if (!(m.thetaMinDeg < m.thetaMaxDeg) || m.nSegTH <= 0 || m.nSegTLC <= 0)
+  if (!(m.thetaMinDeg < m.thetaMaxDeg) || !(m.rMinCm > 0.0) ||
+      !(m.thicknessCm > 0.0) || m.nSegTH <= 0 || m.nSegTLC <= 0)
     throw std::runtime_error("invalid runmeta geometry/hodoscope values");
   if (!(m.thRMinMm > 0.0 && m.thRMinMm < m.thRMaxMm &&
         m.thBarZMinMm < m.thBarZMaxMm &&
@@ -722,9 +776,13 @@ void writeManifest(const std::string &path, const std::string &input,
       << "  \"nLayer\": " << m.nLayer << ",\n"
       << "  \"nSector\": " << m.nSector << ",\n"
       << "  \"segmentationMode\": " << m.segmentationMode << ",\n"
+      << "  \"geometryMode\": " << m.geometryMode << ",\n"
       << "  \"physicsFlag\": " << m.physicsFlag << ",\n"
       << "  \"thetaMin_deg\": " << m.thetaMinDeg << ",\n"
       << "  \"thetaMax_deg\": " << m.thetaMaxDeg << ",\n"
+      << "  \"rMin_cm\": " << m.rMinCm << ",\n"
+      << "  \"thickness_cm\": " << m.thicknessCm << ",\n"
+      << "  \"bgoZOffset_cm\": " << m.bgoZOffsetCm << ",\n"
       << "  \"nSegTH\": " << m.nSegTH << ",\n"
       << "  \"nSegTLC\": " << m.nSegTLC << ",\n"
       << "  \"readoutMode\": \""
@@ -938,6 +996,8 @@ void selfTestGeometry() {
   equal.segmentationMode = 1;
   equal.thetaMinDeg = 5.666;
   equal.thetaMaxDeg = 170.302;
+  equal.rMinCm = 30.0;
+  equal.thicknessCm = 20.0;
   equal.nSegTH = 30;
   equal.nSegTLC = 30;
   const Geometry g(equal);
@@ -968,7 +1028,30 @@ void selfTestGeometry() {
       kPi / 180.0;
   if (std::abs(ug.directions[0][2] - std::cos(expectedTheta)) > 1e-12)
     throw std::runtime_error("uniform-theta direction self-test failed");
-  std::cout << "geometry self-test ok: equal-solid 10x20 and uniform 15x15\n";
+
+  Meta egg;
+  egg.nLayer = 31;
+  egg.nSector = 60;
+  egg.segmentationMode = 2;
+  egg.geometryMode = 2;
+  egg.thetaMinDeg = BGOeggGeometry::BuildRings(31).front().thetaLowDeg;
+  egg.thetaMaxDeg = BGOeggGeometry::BuildRings(31).back().thetaHighDeg;
+  egg.rMinCm = 20.0;
+  egg.thicknessCm = 22.0;
+  egg.nSegTH = 30;
+  egg.nSegTLC = 30;
+  const Geometry eg(egg);
+  if (static_cast<int>(eg.directions.size()) != 1860)
+    throw std::runtime_error("BGOegg published geometry size self-test failed");
+  if (!(std::acos(eg.directions.front()[2]) * 180.0 / kPi > 5.0 &&
+        std::acos(eg.directions.front()[2]) * 180.0 / kPi < 9.0))
+    throw std::runtime_error("BGOegg first centroid direction self-test failed");
+  Meta shifted = egg;
+  shifted.bgoZOffsetCm = -10.0;
+  const Geometry shiftedGeometry(shifted);
+  if (!(shiftedGeometry.directions.front()[2] < eg.directions.front()[2]))
+    throw std::runtime_error("BGOegg z-offset direction self-test failed");
+  std::cout << "geometry self-test ok: equal-solid, uniform, and BGOegg published 31-layer\n";
 }
 
 }  // namespace

@@ -107,7 +107,7 @@ class RunManagerTests(unittest.TestCase):
         content["geometries"][0]["photon_counter"] = "downstream"
         with tempfile.TemporaryDirectory() as directory:
             path = self.write_manifest(directory, content)
-            with self.assertRaisesRegex(rm.RunManagerError, "bgoegg_envelope"):
+            with self.assertRaisesRegex(rm.RunManagerError, "BGOegg geometry"):
                 rm.load_manifest(path)
 
     def test_v3_offset_manifest_and_command(self):
@@ -134,8 +134,33 @@ class RunManagerTests(unittest.TestCase):
         content["geometries"][1]["bgo_z_offset_cm"] = 0
         with tempfile.TemporaryDirectory() as directory:
             path = self.write_manifest(directory, content)
-            with self.assertRaisesRegex(rm.RunManagerError, "bgoegg_envelope"):
+            with self.assertRaisesRegex(rm.RunManagerError, "BGOegg geometry"):
                 rm.load_manifest(path)
+
+    def test_v3_published_bgoegg_frustum31(self):
+        content = base_manifest()
+        content["schema"] = rm.SCHEMA_V3
+        content["geometries"] = [
+            {
+                "name": "published31",
+                "n_layer": 31,
+                "n_sector": 60,
+                "segmentation": "bgoegg_published",
+                "geometry_mode": "bgoegg_frustum",
+                "photon_counter": "none",
+                "bgo_z_offset_cm": -10,
+            }
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = rm.load_manifest(self.write_manifest(directory, content))
+            jobs = rm.expand_jobs(manifest, Path(directory) / "state.json")
+        geometry = jobs[0]["geometry"]
+        self.assertAlmostEqual(geometry["theta_min_deg"], 5.336032242257286)
+        self.assertEqual(geometry["theta_max_deg"], 168.0)
+        command = rm.bsub_command(manifest, jobs[0])
+        self.assertEqual(command[-5:], [
+            "bgoegg_published", "e", "bgoegg_frustum", "none", "-10.0",
+        ])
 
     def test_v4_coverage_manifest_and_command(self):
         content = base_manifest()

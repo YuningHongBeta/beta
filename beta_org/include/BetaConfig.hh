@@ -1,6 +1,8 @@
 #ifndef BetaConfig_h
 #define BetaConfig_h 1
 
+#include "BGOeggGeometry.hh"
+
 #include <cmath>
 #include <cstdlib>
 #include <stdexcept>
@@ -20,7 +22,13 @@ public:
   int NCells() const { return fNLayer * fNSector; }
   double PhiWidthDeg() const { return 360.0 / static_cast<double>(fNSector); }
   bool EqualSolidAngle() const { return fSegmentation == "equal_solid_angle"; }
-  int SegmentationMode() const { return EqualSolidAngle() ? 1 : 0; }
+  bool BGOeggPublishedSegmentation() const { return fSegmentation == "bgoegg_published"; }
+  int SegmentationMode() const
+  {
+    if (BGOeggPublishedSegmentation())
+      return 2;
+    return EqualSolidAngle() ? 1 : 0;
+  }
   const std::string &Segmentation() const { return fSegmentation; }
   const std::string &Output() const { return fOutput; }
   const std::string &Primary() const { return fPrimary; }
@@ -28,8 +36,17 @@ public:
   int Threads() const { return fThreads; }
   long Seed() const { return fSeed; }
   const std::string &Geometry() const { return fGeometry; }
-  int GeometryMode() const { return fGeometry == "bgoegg_envelope" ? 1 : 0; }
+  int GeometryMode() const
+  {
+    if (fGeometry == "bgoegg_envelope")
+      return 1;
+    return fGeometry == "bgoegg_frustum" ? 2 : 0;
+  }
   bool BGOeggEnvelope() const { return GeometryMode() == 1; }
+  bool BGOeggFrustum() const { return GeometryMode() == 2; }
+  bool BGOeggGeometry() const { return GeometryMode() != 0; }
+  int BGOeggForwardExtraLayers() const { return fNLayer == 31 ? 5 : 0; }
+  int BGOeggBackwardExtraLayers() const { return fNLayer == 31 ? 4 : 0; }
   const std::string &PhotonCounter() const { return fPhotonCounter; }
   int PhotonCounterMode() const
   {
@@ -41,15 +58,27 @@ public:
   bool HasUpstreamPhotonCounter() const { return PhotonCounterMode() == 2; }
   bool BgoZOffsetConfigured() const { return fBgoZOffsetConfigured; }
   double BgoZOffsetCm() const { return fBgoZOffsetCm; }
-  double RMinCm() const { return BGOeggEnvelope() ? 20.0 : 30.0; }
-  double ThicknessCm() const { return BGOeggEnvelope() ? 22.0 : 20.0; }
-  double ThetaMinDeg() const { return fThetaMinDeg; }
-  double ThetaMaxDeg() const { return fThetaMaxDeg; }
+  double RMinCm() const { return BGOeggGeometry() ? 20.0 : 30.0; }
+  double ThicknessCm() const { return BGOeggGeometry() ? 22.0 : 20.0; }
+  double ThetaMinDeg() const
+  {
+    if (!BGOeggFrustum())
+      return fThetaMinDeg;
+    return BGOeggGeometry::BuildRings(fNLayer).front().thetaLowDeg;
+  }
+  double ThetaMaxDeg() const
+  {
+    if (!BGOeggFrustum())
+      return fThetaMaxDeg;
+    return BGOeggGeometry::BuildRings(fNLayer).back().thetaHighDeg;
+  }
   const char *GeometryModel() const
   {
-    return BGOeggEnvelope()
-               ? "spherical_shell_envelope_not_exact_bgoegg_trapezoids"
-               : "spherical_shell_current";
+    if (BGOeggEnvelope())
+      return "spherical_shell_envelope_not_exact_bgoegg_trapezoids";
+    if (BGOeggFrustum())
+      return "published_bgoegg_frusta_ideal_no_gaps";
+    return "spherical_shell_current";
   }
 
 private:
@@ -111,27 +140,35 @@ private:
         fThetaMaxDeg(ReadDouble("BETA_BGO_THETA_MAX_DEG",
                                fGeometry == "bgoegg_envelope" ? 144.0 : 170.302,
                                0.2, 179.9)),
-        fNLayer(ReadInt("BETA_N_LAYER", fGeometry == "bgoegg_envelope" ? 22 : 15, 1, 200)),
-        fNSector(ReadInt("BETA_N_SECTOR", fGeometry == "bgoegg_envelope" ? 60 : 15, 1, 360)),
-        fSegmentation(ReadString("BETA_SEGMENTATION", "uniform_theta")),
+        fNLayer(ReadInt("BETA_N_LAYER", (fGeometry == "bgoegg_envelope" ||
+                                         fGeometry == "bgoegg_frustum") ? 22 : 15,
+                        1, 200)),
+        fNSector(ReadInt("BETA_N_SECTOR", (fGeometry == "bgoegg_envelope" ||
+                                          fGeometry == "bgoegg_frustum") ? 60 : 15,
+                         1, 360)),
+        fSegmentation(ReadString(
+            "BETA_SEGMENTATION",
+            fGeometry == "bgoegg_frustum" ? "bgoegg_published" : "uniform_theta")),
         fOutput(ReadString("BETA_OUTPUT", "output/beta")),
         fPrimary(ReadString("BETA_PRIMARY", "e")),
         fWriteCalHit(ReadBool("BETA_WRITE_CALHIT", true)),
         fThreads(ReadInt("BETA_THREADS", 8, 1, 256)),
         fSeed(ReadInt("BETA_SEED", 6302026, 1, 2147483647))
   {
-    if (fGeometry != "current" && fGeometry != "bgoegg_envelope")
-      throw std::runtime_error("BETA_GEOMETRY must be current or bgoegg_envelope");
+    if (fGeometry != "current" && fGeometry != "bgoegg_envelope" &&
+        fGeometry != "bgoegg_frustum")
+      throw std::runtime_error(
+          "BETA_GEOMETRY must be current, bgoegg_envelope, or bgoegg_frustum");
     if (fPhotonCounter != "none" && fPhotonCounter != "downstream" &&
         fPhotonCounter != "two_sided")
       throw std::runtime_error("BETA_PHOTON_COUNTER must be none, downstream, or two_sided");
-    if (fGeometry != "bgoegg_envelope" && fPhotonCounter != "none")
+    if (!BGOeggGeometry() && fPhotonCounter != "none")
       throw std::runtime_error(
-          "BETA_PHOTON_COUNTER collars require BETA_GEOMETRY=bgoegg_envelope");
-    if (fGeometry != "bgoegg_envelope" && fBgoZOffsetCm != 0.0)
+          "BETA_PHOTON_COUNTER collars require a BGOegg geometry");
+    if (!BGOeggGeometry() && fBgoZOffsetCm != 0.0)
       throw std::runtime_error(
-          "BETA_BGO_Z_OFFSET_CM requires BETA_GEOMETRY=bgoegg_envelope");
-    if (fGeometry != "bgoegg_envelope" &&
+          "BETA_BGO_Z_OFFSET_CM requires a BGOegg geometry");
+    if (!BGOeggEnvelope() &&
         (fThetaMinConfigured || fThetaMaxConfigured))
       throw std::runtime_error(
           "BGO theta overrides require BETA_GEOMETRY=bgoegg_envelope");
@@ -139,8 +176,20 @@ private:
       throw std::runtime_error(
           "BETA_BGO_THETA_MIN_DEG must be less than BETA_BGO_THETA_MAX_DEG");
     if (fSegmentation != "uniform_theta" &&
-        fSegmentation != "equal_solid_angle")
-      throw std::runtime_error("BETA_SEGMENTATION must be uniform_theta or equal_solid_angle");
+        fSegmentation != "equal_solid_angle" &&
+        fSegmentation != "bgoegg_published")
+      throw std::runtime_error(
+          "BETA_SEGMENTATION must be uniform_theta, equal_solid_angle, or bgoegg_published");
+    if (BGOeggFrustum() && fSegmentation != "bgoegg_published")
+      throw std::runtime_error(
+          "BETA_GEOMETRY=bgoegg_frustum requires BETA_SEGMENTATION=bgoegg_published");
+    if (!BGOeggFrustum() && fSegmentation == "bgoegg_published")
+      throw std::runtime_error(
+          "BETA_SEGMENTATION=bgoegg_published requires BETA_GEOMETRY=bgoegg_frustum");
+    if (BGOeggFrustum() && fNSector != 60)
+      throw std::runtime_error("BGOegg published frusta require BETA_N_SECTOR=60");
+    if (BGOeggFrustum() && fNLayer != 22 && fNLayer != 31)
+      throw std::runtime_error("BGOegg published frusta support BETA_N_LAYER=22 or 31");
     if (fPrimary != "e" && fPrimary != "pim" && fPrimary != "pi0")
       throw std::runtime_error("BETA_PRIMARY must be e, pim, or pi0");
     if (NCells() > 20000)

@@ -7,6 +7,7 @@ import argparse
 import datetime as dt
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -87,6 +88,19 @@ EXPECTED_VECTOR_SIZES = {
 
 class RunManagerError(RuntimeError):
     pass
+
+
+def bgoegg_frustum_theta_range(n_layer: int) -> tuple[float, float]:
+    if n_layer not in {22, 31}:
+        raise RunManagerError("bgoegg_frustum supports n_layer=22 or 31")
+    forward_extra = 5 if n_layer == 31 else 0
+    backward_extra = 4 if n_layer == 31 else 0
+    last_forward_type = 12 + forward_extra
+    delta = math.radians(6.0)
+    theta_min = math.pi / 2.0 - math.atan(
+        1.3 * math.tan((last_forward_type + 1) * delta / 1.3)
+    )
+    return math.degrees(theta_min), 144.0 + 6.0 * backward_extra
 
 
 def now_iso() -> str:
@@ -256,23 +270,41 @@ def load_manifest(path: Path) -> dict[str, Any]:
         if n_layer * n_sector > 20_000:
             raise RunManagerError(f"{name}: n_layer*n_sector exceeds 20000")
         segmentation = item["segmentation"]
-        if segmentation not in {"uniform_theta", "equal_solid_angle"}:
+        if segmentation not in {
+            "uniform_theta", "equal_solid_angle", "bgoegg_published"
+        }:
             raise RunManagerError(
-                f"{name}.segmentation must be uniform_theta or equal_solid_angle"
+                f"{name}.segmentation must be uniform_theta, "
+                "equal_solid_angle, or bgoegg_published"
             )
         geometry_mode = item["geometry_mode"]
-        if geometry_mode not in {"current", "bgoegg_envelope"}:
+        if geometry_mode not in {"current", "bgoegg_envelope", "bgoegg_frustum"}:
             raise RunManagerError(
-                f"{name}.geometry_mode must be current or bgoegg_envelope"
+                f"{name}.geometry_mode must be current, bgoegg_envelope, "
+                "or bgoegg_frustum"
+            )
+        if geometry_mode == "bgoegg_frustum":
+            if segmentation != "bgoegg_published":
+                raise RunManagerError(
+                    f"{name}.bgoegg_frustum requires segmentation=bgoegg_published"
+                )
+            if n_sector != 60 or n_layer not in {22, 31}:
+                raise RunManagerError(
+                    f"{name}.bgoegg_frustum requires n_sector=60 and n_layer=22 or 31"
+                )
+        elif segmentation == "bgoegg_published":
+            raise RunManagerError(
+                f"{name}.bgoegg_published requires geometry_mode=bgoegg_frustum"
             )
         photon_counter = item["photon_counter"]
         if photon_counter not in {"none", "downstream", "two_sided"}:
             raise RunManagerError(
                 f"{name}.photon_counter must be none, downstream, or two_sided"
             )
-        if geometry_mode != "bgoegg_envelope" and photon_counter != "none":
+        egg_geometry = geometry_mode in {"bgoegg_envelope", "bgoegg_frustum"}
+        if not egg_geometry and photon_counter != "none":
             raise RunManagerError(
-                f"{name}.photon_counter collars require geometry_mode=bgoegg_envelope"
+                f"{name}.photon_counter collars require a BGOegg geometry"
             )
         if schema == SCHEMA_V2 and "bgo_z_offset_cm" in item:
             raise RunManagerError(
@@ -284,9 +316,9 @@ def load_manifest(path: Path) -> dict[str, Any]:
             -10.0,
             10.0,
         )
-        if geometry_mode != "bgoegg_envelope" and bgo_z_offset_cm != 0.0:
+        if not egg_geometry and bgo_z_offset_cm != 0.0:
             raise RunManagerError(
-                f"{name}.bgo_z_offset_cm requires geometry_mode=bgoegg_envelope"
+                f"{name}.bgo_z_offset_cm requires a BGOegg geometry"
             )
         if schema != SCHEMA_V4 and (
             "theta_min_deg" in item or "theta_max_deg" in item
@@ -294,12 +326,18 @@ def load_manifest(path: Path) -> dict[str, Any]:
             raise RunManagerError(
                 f"{name}.theta_min_deg/theta_max_deg require schema {SCHEMA_V4}"
             )
+        if geometry_mode == "bgoegg_frustum":
+            default_theta_min, default_theta_max = bgoegg_frustum_theta_range(n_layer)
+        elif geometry_mode == "bgoegg_envelope":
+            default_theta_min, default_theta_max = 24.0, 144.0
+        else:
+            default_theta_min, default_theta_max = 5.666, 170.302
         theta_min_deg = require_float(
-            item.get("theta_min_deg", 24.0 if geometry_mode == "bgoegg_envelope" else 5.666),
+            item.get("theta_min_deg", default_theta_min),
             f"{name}.theta_min_deg", 0.1, 179.8,
         )
         theta_max_deg = require_float(
-            item.get("theta_max_deg", 144.0 if geometry_mode == "bgoegg_envelope" else 170.302),
+            item.get("theta_max_deg", default_theta_max),
             f"{name}.theta_max_deg", 0.2, 179.9,
         )
         if theta_min_deg >= theta_max_deg:
@@ -856,7 +894,11 @@ def validate_inspection(
     expected_meta = {
         "nLayer": str(geometry["n_layer"]),
         "nSector": str(geometry["n_sector"]),
-        "segmentationMode": "1" if geometry["segmentation"] == "equal_solid_angle" else "0",
+        "segmentationMode": {
+            "uniform_theta": "0",
+            "equal_solid_angle": "1",
+            "bgoegg_published": "2",
+        }[geometry["segmentation"]],
         "physicsFlag": "4",
         "writeCalHit": "0",
         "segmentation": geometry["segmentation"],
@@ -864,7 +906,9 @@ def validate_inspection(
         "output": job["output_stem"],
         "nSegTH": "30",
         "nSegTLC": "30",
-        "geometryMode": "1" if geometry["geometry_mode"] == "bgoegg_envelope" else "0",
+        "geometryMode": {
+            "current": "0", "bgoegg_envelope": "1", "bgoegg_frustum": "2",
+        }[geometry["geometry_mode"]],
         "photonCounterMode": {
             "none": "0", "downstream": "1", "two_sided": "2",
         }[geometry["photon_counter"]],
@@ -872,7 +916,11 @@ def validate_inspection(
         "geometryModel": (
             "spherical_shell_envelope_not_exact_bgoegg_trapezoids"
             if geometry["geometry_mode"] == "bgoegg_envelope"
-            else "spherical_shell_current"
+            else (
+                "published_bgoegg_frusta_ideal_no_gaps"
+                if geometry["geometry_mode"] == "bgoegg_frustum"
+                else "spherical_shell_current"
+            )
         ),
         "photonCounter": geometry["photon_counter"],
         "pcNLayers": "8",
@@ -880,21 +928,30 @@ def validate_inspection(
     for key, expected in expected_meta.items():
         if meta.get(key) != expected:
             errors.append(f"runmeta {key}={meta.get(key)!r}, expected={expected!r}")
+    if geometry["geometry_mode"] == "bgoegg_frustum":
+        default_theta_min, default_theta_max = bgoegg_frustum_theta_range(
+            geometry["n_layer"]
+        )
+    elif geometry["geometry_mode"] == "bgoegg_envelope":
+        default_theta_min, default_theta_max = 24.0, 144.0
+    else:
+        default_theta_min, default_theta_max = 5.666, 170.302
+    egg_geometry = geometry["geometry_mode"] in {
+        "bgoegg_envelope", "bgoegg_frustum"
+    }
     for key, expected in {
         "neutronScale": 2.0,
         "inelasticBias": 3.0,
         "pionInelasticXSScale": 1.65,
         "seed": float(job["seed"]),
         "thetaMin_deg": geometry.get(
-            "theta_min_deg",
-            24.0 if geometry["geometry_mode"] == "bgoegg_envelope" else 5.666,
+            "theta_min_deg", default_theta_min,
         ),
         "thetaMax_deg": geometry.get(
-            "theta_max_deg",
-            144.0 if geometry["geometry_mode"] == "bgoegg_envelope" else 170.302,
+            "theta_max_deg", default_theta_max,
         ),
-        "rMin_cm": 20.0 if geometry["geometry_mode"] == "bgoegg_envelope" else 30.0,
-        "thickness_cm": 22.0 if geometry["geometry_mode"] == "bgoegg_envelope" else 20.0,
+        "rMin_cm": 20.0 if egg_geometry else 30.0,
+        "thickness_cm": 22.0 if egg_geometry else 20.0,
         "pcPbThickness_mm": 1.0,
         "pcScintiThickness_mm": 5.0,
         "pcZFront_cm": 52.0,
