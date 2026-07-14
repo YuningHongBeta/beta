@@ -417,6 +417,10 @@ def main() -> None:
     )
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     args = parser.parse_args()
+    # Keep provenance paths stable whether callers pass relative or absolute
+    # cache locations.
+    args.cache = args.cache.resolve()
+    args.hong_cache = args.hong_cache.resolve()
     standard = {
         "ball_a20x40": args.cache.parent / "bgoegg_study_v1" / "standard" /
         "ball__a20x40",
