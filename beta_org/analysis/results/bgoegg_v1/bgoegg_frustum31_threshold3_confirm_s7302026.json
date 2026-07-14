@@ -1,0 +1,115 @@
+{
+  "status": "complete",
+  "analysis": "bgoegg_frustum31_threshold3_confirm",
+  "confirmation_policy": "geometry, feature set, model family, fit rule, and validation cut are frozen from seed 6302026; seed 7302026 is evaluated once without refitting",
+  "selected": {
+    "geometry": "extended31_zm10",
+    "family": "hurdle_robust",
+    "feature_set": "energy_rms_isolation",
+    "method": "nHit-binned diagonal Gaussian likelihood",
+    "validation": {
+      "e_keep": 0.64756,
+      "pim_reject": 0.9272,
+      "pi0_reject": 0.99012,
+      "e_keep_95ci": [
+        0.6416158463533613,
+        0.6534588129605273
+      ],
+      "pim_reject_95ci": [
+        0.9239133926067304,
+        0.9303553418666584
+      ],
+      "pi0_reject_95ci": [
+        0.9888164561281417,
+        0.991272944948865
+      ],
+      "counts": {
+        "electron": 25000,
+        "pim": 25000,
+        "pi0": 25000
+      }
+    },
+    "candidate_evaluation": {
+      "e_keep": 0.64826,
+      "pim_reject": 0.92398,
+      "pi0_reject": 0.9901,
+      "e_keep_95ci": [
+        0.6440632435600486,
+        0.6524339768027019
+      ],
+      "pim_reject_95ci": [
+        0.9216242407013351,
+        0.9262706162351209
+      ],
+      "pi0_reject_95ci": [
+        0.9891937646806598,
+        0.9909309331460231
+      ],
+      "counts": {
+        "electron": 50000,
+        "pim": 50000,
+        "pi0": 50000
+      }
+    }
+  },
+  "training_directory": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgoegg_frustum31_zscan_s6302026/extended31_zm10",
+  "confirmation_directory": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgoegg_frustum31_zm10_confirm_s7302026/extended31_zm10",
+  "classifier_inputs": [
+    "sumE",
+    "allRmsDeg",
+    "isolatedEFrac4"
+  ],
+  "method": "nHit-binned diagonal Gaussian likelihood",
+  "target": {
+    "pim_reject": 0.927,
+    "pi0_reject": 0.9901
+  },
+  "threshold": [
+    -1.8890641561998798,
+    -6.096136335339402
+  ],
+  "training_validation": {
+    "e_keep": 0.64756,
+    "pim_reject": 0.9272,
+    "pi0_reject": 0.99012,
+    "e_keep_95ci": [
+      0.6416158463533613,
+      0.6534588129605273
+    ],
+    "pim_reject_95ci": [
+      0.9239133926067304,
+      0.9303553418666584
+    ],
+    "pi0_reject_95ci": [
+      0.9888164561281417,
+      0.991272944948865
+    ],
+    "counts": {
+      "electron": 25000,
+      "pim": 25000,
+      "pi0": 25000
+    }
+  },
+  "confirmation_all_100k": {
+    "e_keep": 0.65095,
+    "pim_reject": 0.9237299999999999,
+    "pi0_reject": 0.98978,
+    "e_keep_95ci": [
+      0.6479898768581178,
+      0.6538985262231933
+    ],
+    "pim_reject_95ci": [
+      0.9220685546436012,
+      0.9253588917800091
+    ],
+    "pi0_reject_95ci": [
+      0.9891375484802822,
+      0.9903848235711561
+    ],
+    "counts": {
+      "electron": 100000,
+      "pim": 100000,
+      "pi0": 100000
+    }
+  }
+}
