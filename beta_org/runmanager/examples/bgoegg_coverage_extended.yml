@@ -1,0 +1,45 @@
+schema: beta-bgo-th-tlc-pc-coverage-v4
+tag: bgoegg_coverage_extended
+build_dir: build_coverage_ext
+events: 100000
+seed: 6302026
+threads: 8
+
+# Upper-bound coverage extensions.  These are not minimal mechanical changes.
+# They quantify how many complete 60-crystal rings are needed before the
+# provisional BGOegg envelope approaches the current-ball angular coverage.
+geometries:
+  - name: both3_28
+    n_layer: 28
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+    bgo_z_offset_cm: 0
+    theta_min_deg: 6
+    theta_max_deg: 162
+  - name: front3_back4_29
+    n_layer: 29
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+    bgo_z_offset_cm: 0
+    theta_min_deg: 6
+    theta_max_deg: 168
+  - name: ball_holes_29
+    n_layer: 29
+    n_sector: 60
+    segmentation: uniform_theta
+    geometry_mode: bgoegg_envelope
+    photon_counter: none
+    bgo_z_offset_cm: 0
+    theta_min_deg: 5.666
+    theta_max_deg: 170.302
+
+primaries: [e, pim, pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096
