@@ -21,6 +21,32 @@ adjacency and test hit-pattern/dE classifiers.
 3, 4, 5 MeVとsegmentationを比較する。固定detector operating pointは100k全event、
 学習scoreだけをeven eventID=train / odd eventID=testで評価する。
 
+## 3 MeV固定のBGOegg比較
+
+`bgo_threshold3_analysis_v1.py`はper-segment thresholdを3 MeVに固定し、
+current ball、BGOegg 22x60、端部ring追加案を共通の背景除去条件で比較する。
+3 MeV未満のdepositはextractorでzero化され、classifier入力には使わない。
+
+追加したhurdle likelihoodは`nHit=0,1,2,3,4,5+`を離散成分として扱い、
+各bin内でtotal energyとshower topologyの対角Gaussian likelihoodを作る。
+空または低統計binはspecies全体のmomentへpseudo-count 50でshrinkする。
+feature、method、cutは`eventID mod 4 == 0/2`だけで決め、odd eventは
+candidate evaluationである。複数候補の比較にもodd eventを使っているため、
+study全体のblind holdoutではない。
+
+```bash
+python3 analysis/bgo_threshold3_analysis_v1.py
+
+# 新seed ROOTを3 MeVで抽出後、fit/cutを変えず独立確認する。
+python3 analysis/bgo_threshold3_confirm_v1.py \
+  --confirm-cache tmp/bgo_threshold3_confirm_s7302026
+```
+
+比較の最低条件は1 MeV current-ball基準のπ−除去92.212%、
+π0除去98.894%である。`guarded` operating pointは25k validation背景sampleの
+一側95%程度の統計ゆらぎを見込み、validation目標だけを92.50%、99.01%へ
+厳しくしたものを表す。
+
 ## 入力制約とreadout mode
 
 - 必須tree: `runmeta`, `calarr`, `th`, `tlc`

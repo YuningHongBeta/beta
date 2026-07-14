@@ -1,0 +1,151 @@
+{
+  "status": "complete",
+  "analysis": "bgo_threshold3_confirm_v1",
+  "confirmation_policy": "feature set, fit sample, and validation cut are frozen from seed 6302026; seed 7302026 is evaluated once without refitting",
+  "ball_a20x40": {
+    "feature_set": "energy_shape",
+    "classifier_inputs": [
+      "sumE",
+      "allRmsDeg",
+      "isolatedEFrac4",
+      "cl2Sum4",
+      "local3x3Frac",
+      "bgoLeadingTheta_deg"
+    ],
+    "threshold_MeV": 3.0,
+    "training_directory": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgo_threshold3_v1/normalized_standard/ball_a20x40",
+    "confirmation_directory": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgo_threshold3_confirm_s7302026/ball_a20x40",
+    "fit": "training eventID mod 4 == 0 only",
+    "cut_selection": "training eventID mod 4 == 2 only",
+    "target": {
+      "pim_reject": 0.92212,
+      "pi0_reject": 0.98894
+    },
+    "threshold": [
+      -5.078853599531647,
+      Infinity
+    ],
+    "training_validation": {
+      "e_keep": 0.5696,
+      "pim_reject": 0.93608,
+      "pi0_reject": 0.98896,
+      "e_keep_95ci": [
+        0.5634521603359791,
+        0.5757264537074381
+      ],
+      "pim_reject_95ci": [
+        0.9329803299051393,
+        0.9390456760151682
+      ],
+      "pi0_reject_95ci": [
+        0.9875875563030172,
+        0.990182201206599
+      ],
+      "counts": {
+        "electron": 25000,
+        "pim": 25000,
+        "pi0": 25000
+      }
+    },
+    "confirmation_all_100k": {
+      "e_keep": 0.57181,
+      "pim_reject": 0.93365,
+      "pi0_reject": 0.98944,
+      "e_keep_95ci": [
+        0.5687404514123642,
+        0.5748740316964067
+      ],
+      "pim_reject_95ci": [
+        0.9320906559918964,
+        0.9351760283155603
+      ],
+      "pi0_reject_95ci": [
+        0.9887873912613866,
+        0.9900550069109683
+      ],
+      "counts": {
+        "electron": 100000,
+        "pim": 100000,
+        "pi0": 100000
+      }
+    },
+    "confirmation_inputs": {
+      "electron": "beta_org/tmp/bgo_threshold3_confirm_s7302026/ball_a20x40/e.bgo2",
+      "pim": "beta_org/tmp/bgo_threshold3_confirm_s7302026/ball_a20x40/pim.bgo2",
+      "pi0": "beta_org/tmp/bgo_threshold3_confirm_s7302026/ball_a20x40/pi0.bgo2"
+    }
+  },
+  "egg29_zm10": {
+    "feature_set": "cluster_shape",
+    "classifier_inputs": [
+      "sumE",
+      "allRmsDeg",
+      "cl1MaxFrac4",
+      "cl2OverCl1",
+      "isolatedEFrac4",
+      "local3x3Frac"
+    ],
+    "threshold_MeV": 3.0,
+    "training_directory": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgo_threshold3_v1/standard/egg29zm10",
+    "confirmation_directory": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgo_threshold3_confirm_s7302026/egg29_zm10",
+    "fit": "training eventID mod 4 == 0 only",
+    "cut_selection": "training eventID mod 4 == 2 only",
+    "target": {
+      "pim_reject": 0.925,
+      "pi0_reject": 0.9901
+    },
+    "threshold": [
+      1.0882590756735233,
+      -8.924696155861707
+    ],
+    "training_validation": {
+      "e_keep": 0.61248,
+      "pim_reject": 0.92628,
+      "pi0_reject": 0.99012,
+      "e_keep_95ci": [
+        0.6064240739047322,
+        0.6185013644229054
+      ],
+      "pim_reject_95ci": [
+        0.9229748645753267,
+        0.9294541525859937
+      ],
+      "pi0_reject_95ci": [
+        0.9888164561281417,
+        0.991272944948865
+      ],
+      "counts": {
+        "electron": 25000,
+        "pim": 25000,
+        "pi0": 25000
+      }
+    },
+    "confirmation_all_100k": {
+      "e_keep": 0.60643,
+      "pim_reject": 0.92458,
+      "pi0_reject": 0.98968,
+      "e_keep_95ci": [
+        0.6033980120433132,
+        0.6094538113415423
+      ],
+      "pim_reject_95ci": [
+        0.922926961386856,
+        0.9262004197344629
+      ],
+      "pi0_reject_95ci": [
+        0.9890345431928369,
+        0.9902878365412238
+      ],
+      "counts": {
+        "electron": 100000,
+        "pim": 100000,
+        "pi0": 100000
+      }
+    },
+    "confirmation_inputs": {
+      "electron": "beta_org/tmp/bgo_threshold3_confirm_s7302026/egg29_zm10/e.bgo2",
+      "pim": "beta_org/tmp/bgo_threshold3_confirm_s7302026/egg29_zm10/pim.bgo2",
+      "pi0": "beta_org/tmp/bgo_threshold3_confirm_s7302026/egg29_zm10/pi0.bgo2"
+    }
+  }
+}
