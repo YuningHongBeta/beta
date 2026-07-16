@@ -1,0 +1,25 @@
+schema: beta-bgo-th-tlc-pc-offset-v3
+tag: bgoc_u15x15_t3_confirm_s7302026
+build_dir: build_opt
+events: 100000
+seed: 7302026
+threads: 1
+
+# Hong-thesis/current BGOC reference: 15 uniform-theta rings x 15 sectors.
+# All three species are regenerated with one independent seed so the 1/3 MeV
+# threshold and multivariate selections can be compared on identical samples.
+geometries:
+  - name: u15x15
+    n_layer: 15
+    n_sector: 15
+    segmentation: uniform_theta
+    geometry_mode: current
+    photon_counter: none
+    bgo_z_offset_cm: 0
+
+primaries: [e, pim, pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096

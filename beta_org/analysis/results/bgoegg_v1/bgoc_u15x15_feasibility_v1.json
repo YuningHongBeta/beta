@@ -1,0 +1,3671 @@
+{
+  "status": "complete",
+  "analysis": "bgoc_u15x15_feasibility_v1",
+  "geometry": "original uniform-theta 15x15 BGOC; 225 cells",
+  "threshold_policy": "hard per-cell threshold in feature extraction; sub-threshold deposits are absent",
+  "reference_definition": "unmasked 1 MeV, four-neighbour reconstructed cluster count nCl4 == 1; target rates frozen from seed-6302026 validation events",
+  "reference_training_validation": {
+    "e_keep": 0.75108,
+    "pim_reject": 0.88448,
+    "pi0_reject": 0.98448,
+    "counts": {
+      "electron": 25000,
+      "pim": 25000,
+      "pi0": 25000
+    }
+  },
+  "target": {
+    "pim_reject": 0.88448,
+    "pi0_reject": 0.98448
+  },
+  "guarded_target": {
+    "pim_reject": 0.88948,
+    "pi0_reject": 0.98948,
+    "definition": "fixed +0.5 percentage-point validation margin before confirmation"
+  },
+  "split": {
+    "fit": "seed 6302026 eventID mod 4 == 0",
+    "validation": "seed 6302026 eventID mod 4 == 2; candidate and cut selection",
+    "confirmation": "all 100k events from independent seed 7302026; no refit"
+  },
+  "overlap_source": "/gpfs/home/had/yhong/geant4/k18geant4/param/BGOEGG/bgo_material_overlap_comparison_e63_20260715.json",
+  "results": {
+    "none": {
+      "disabled_cells": [],
+      "disabled_cell_count": 0,
+      "coverage_remaining_fraction": 1.0,
+      "ncl4_eq_1": {
+        "training_validation_T1": {
+          "e_keep": 0.75108,
+          "pim_reject": 0.88448,
+          "pi0_reject": 0.98448,
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_T1": {
+          "e_keep": 0.75404,
+          "pim_reject": 0.88729,
+          "pi0_reject": 0.98582,
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        },
+        "confirmation_T3": {
+          "e_keep": 0.90306,
+          "pim_reject": 0.72512,
+          "pi0_reject": 0.98334,
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "selection_rule": "maximum seed-6302026 validation electron retention among declared standard, compact, and hurdle candidates at the unmasked T1 target",
+      "selected": {
+        "family": "standard_full",
+        "feature_set": "bgo",
+        "features": [
+          "maxE",
+          "sumE",
+          "nHit",
+          "nCl4",
+          "nCl8",
+          "cl1Sum4",
+          "cl2Sum4",
+          "cl1Size4",
+          "cl1MaxFrac4",
+          "cl1RmsDeg4",
+          "allRmsDeg",
+          "cl2OverCl1",
+          "isolatedEFrac4",
+          "seed15NCl4",
+          "seed15Cl1Sum4",
+          "seed15Cl1Size4",
+          "e2OverE1",
+          "nHit2T",
+          "sum2T",
+          "local3x3Frac",
+          "meanHitE",
+          "thetaSpan",
+          "phiSpan"
+        ],
+        "method": "quadratic_ridge",
+        "validation": {
+          "e_keep": 0.61076,
+          "pim_reject": 0.88452,
+          "pi0_reject": 0.98688,
+          "e_keep_95ci": [
+            0.6046994563770574,
+            0.6167865104541048
+          ],
+          "pim_reject_95ci": [
+            0.8804990543338231,
+            0.8884227944014469
+          ],
+          "pi0_reject_95ci": [
+            0.9853928112119292,
+            0.9882175854182287
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        }
+      },
+      "exact_target": {
+        "target": {
+          "pim_reject": 0.88448,
+          "pi0_reject": 0.98448
+        },
+        "threshold": 0.28788710039436477,
+        "training_validation": {
+          "e_keep": 0.61076,
+          "pim_reject": 0.88452,
+          "pi0_reject": 0.98688,
+          "e_keep_95ci": [
+            0.6046994563770574,
+            0.6167865104541048
+          ],
+          "pim_reject_95ci": [
+            0.8804990543338231,
+            0.8884227944014469
+          ],
+          "pi0_reject_95ci": [
+            0.9853928112119292,
+            0.9882175854182287
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_all": {
+          "e_keep": 0.61385,
+          "pim_reject": 0.88369,
+          "pi0_reject": 0.98801,
+          "e_keep_95ci": [
+            0.6108281122388609,
+            0.6168631410954039
+          ],
+          "pim_reject_95ci": [
+            0.8816882048697238,
+            0.8856623176759423
+          ],
+          "pi0_reject_95ci": [
+            0.9873164189564538,
+            0.988666089077403
+          ],
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "guarded_target": {
+        "target": {
+          "pim_reject": 0.88948,
+          "pi0_reject": 0.98948
+        },
+        "threshold": 0.25808964559188363,
+        "training_validation": {
+          "e_keep": 0.50012,
+          "pim_reject": 0.9262,
+          "pi0_reject": 0.98952,
+          "e_keep_95ci": [
+            0.4939225075477934,
+            0.5063174555798676
+          ],
+          "pim_reject_95ci": [
+            0.9228932604197952,
+            0.9293757813230845
+          ],
+          "pi0_reject_95ci": [
+            0.9881803266252883,
+            0.9907092588134129
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_all": {
+          "e_keep": 0.49947,
+          "pim_reject": 0.9266,
+          "pi0_reject": 0.99046,
+          "e_keep_95ci": [
+            0.49637110645954385,
+            0.5025689342583557
+          ],
+          "pim_reject_95ci": [
+            0.9249671854083629,
+            0.9282000405239813
+          ],
+          "pi0_reject_95ci": [
+            0.9898383995839518,
+            0.9910439202256532
+          ],
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "candidate_table": [
+        {
+          "family": "standard_full",
+          "feature_set": "bgo",
+          "features": [
+            "maxE",
+            "sumE",
+            "nHit",
+            "nCl4",
+            "nCl8",
+            "cl1Sum4",
+            "cl2Sum4",
+            "cl1Size4",
+            "cl1MaxFrac4",
+            "cl1RmsDeg4",
+            "allRmsDeg",
+            "cl2OverCl1",
+            "isolatedEFrac4",
+            "seed15NCl4",
+            "seed15Cl1Sum4",
+            "seed15Cl1Size4",
+            "e2OverE1",
+            "nHit2T",
+            "sum2T",
+            "local3x3Frac",
+            "meanHitE",
+            "thetaSpan",
+            "phiSpan"
+          ],
+          "method": "quadratic_ridge",
+          "validation": {
+            "e_keep": 0.61076,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98688,
+            "e_keep_95ci": [
+              0.6046994563770574,
+              0.6167865104541048
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.9853928112119292,
+              0.9882175854182287
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms",
+          "features": [
+            "sumE",
+            "allRmsDeg"
+          ],
+          "method": "histogram",
+          "validation": {
+            "e_keep": 0.5306,
+            "pim_reject": 0.8846,
+            "pi0_reject": 0.99008,
+            "e_keep_95ci": [
+              0.5244094398176274,
+              0.5367811577359439
+            ],
+            "pim_reject_95ci": [
+              0.8805802350472685,
+              0.8885015891064425
+            ],
+            "pi0_reject_95ci": [
+              0.9887740129294451,
+              0.991235400438341
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_isolation",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4"
+          ],
+          "method": "qda",
+          "validation": {
+            "e_keep": 0.576,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98844,
+            "e_keep_95ci": [
+              0.569862850027807,
+              0.5821137974908669
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.9870378873960031,
+              0.9896920298937486
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_hits",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "nHit"
+          ],
+          "method": "histogram",
+          "validation": {
+            "e_keep": 0.50252,
+            "pim_reject": 0.88548,
+            "pi0_reject": 0.99052,
+            "e_keep_95ci": [
+              0.49632221734723103,
+              0.5087170083336512
+            ],
+            "pim_reject_95ci": [
+              0.8814732631279928,
+              0.8893682906285659
+            ],
+            "pi0_reject_95ci": [
+              0.9892411734891288,
+              0.9916481046800815
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_clusters",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "nCl4",
+            "cl2OverCl1"
+          ],
+          "method": "qda",
+          "validation": {
+            "e_keep": 0.57172,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.9884,
+            "e_keep_95ci": [
+              0.5655755852103155,
+              0.5778423774217807
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.9869956340413923,
+              0.989654295539139
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_local",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "local3x3Frac"
+          ],
+          "method": "qda",
+          "validation": {
+            "e_keep": 0.56652,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98864,
+            "e_keep_95ci": [
+              0.5603673889191951,
+              0.572652171514255
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.987249215173946,
+              0.9898806406619074
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_shape",
+          "features": [
+            "sumE",
+            "maxE",
+            "allRmsDeg",
+            "isolatedEFrac4",
+            "local3x3Frac"
+          ],
+          "method": "qda",
+          "validation": {
+            "e_keep": 0.60148,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98716,
+            "e_keep_95ci": [
+              0.5953959027725957,
+              0.6075329155194442
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.9856876780066326,
+              0.9884826325880678
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_rms",
+          "features": [
+            "sumE",
+            "allRmsDeg"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.52288,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98924,
+            "e_keep_95ci": [
+              0.5166855017310134,
+              0.5290674679430295
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.9878838314175745,
+              0.9904458400565844
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_rms_isolation",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.54716,
+            "pim_reject": 0.88468,
+            "pi0_reject": 0.98864,
+            "e_keep_95ci": [
+              0.5409829049004464,
+              0.5533226042703518
+            ],
+            "pim_reject_95ci": [
+              0.8806614163684622,
+              0.8885803832036895
+            ],
+            "pi0_reject_95ci": [
+              0.987249215173946,
+              0.9898806406619074
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_shape",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4",
+            "cl2Sum4",
+            "local3x3Frac",
+            "bgoLeadingTheta_deg"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.54896,
+            "pim_reject": 0.88664,
+            "pi0_reject": 0.98848,
+            "e_keep_95ci": [
+              0.5427847825291682,
+              0.555120173556546
+            ],
+            "pim_reject_95ci": [
+              0.8826505501156828,
+              0.8905106472082661
+            ],
+            "pi0_reject_95ci": [
+              0.9870801447897736,
+              0.9897297602091987
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "cluster_shape",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "cl1MaxFrac4",
+            "cl2OverCl1",
+            "isolatedEFrac4",
+            "local3x3Frac"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.54908,
+            "pim_reject": 0.88664,
+            "pi0_reject": 0.9886,
+            "e_keep_95ci": [
+              0.5429049106003792,
+              0.555240008612996
+            ],
+            "pim_reject_95ci": [
+              0.8826505501156828,
+              0.8905106472082661
+            ],
+            "pi0_reject_95ci": [
+              0.9872069414143361,
+              0.9898429267122972
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        }
+      ]
+    },
+    "bac7": {
+      "disabled_cells": [
+        210,
+        211,
+        216,
+        217,
+        218,
+        223,
+        224
+      ],
+      "disabled_cell_count": 7,
+      "coverage_remaining_fraction": 0.9688888888888889,
+      "ncl4_eq_1": {
+        "training_validation_T1": {
+          "e_keep": 0.7518,
+          "pim_reject": 0.88236,
+          "pi0_reject": 0.98016,
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_T1": {
+          "e_keep": 0.75581,
+          "pim_reject": 0.88525,
+          "pi0_reject": 0.98172,
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        },
+        "confirmation_T3": {
+          "e_keep": 0.89981,
+          "pim_reject": 0.72192,
+          "pi0_reject": 0.97238,
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "selection_rule": "maximum seed-6302026 validation electron retention among declared standard, compact, and hurdle candidates at the unmasked T1 target",
+      "selected": {
+        "family": "compact",
+        "feature_set": "energy_rms_isolation",
+        "features": [
+          "sumE",
+          "allRmsDeg",
+          "isolatedEFrac4"
+        ],
+        "method": "pairwise_qda",
+        "validation": {
+          "e_keep": 0.53428,
+          "pim_reject": 0.88456,
+          "pi0_reject": 0.98452,
+          "e_keep_95ci": [
+            0.528091839651865,
+            0.540457627149979
+          ],
+          "pim_reject_95ci": [
+            0.8805396446146115,
+            0.8884621918298791
+          ],
+          "pi0_reject_95ci": [
+            0.9829135715045825,
+            0.9859775502815744
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        }
+      },
+      "exact_target": {
+        "target": {
+          "pim_reject": 0.88448,
+          "pi0_reject": 0.98448
+        },
+        "threshold": [
+          -1.9076054844832135,
+          -9.960854094834469
+        ],
+        "training_validation": {
+          "e_keep": 0.53428,
+          "pim_reject": 0.88456,
+          "pi0_reject": 0.98452,
+          "e_keep_95ci": [
+            0.528091839651865,
+            0.540457627149979
+          ],
+          "pim_reject_95ci": [
+            0.8805396446146115,
+            0.8884621918298791
+          ],
+          "pi0_reject_95ci": [
+            0.9829135715045825,
+            0.9859775502815744
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_all": {
+          "e_keep": 0.52996,
+          "pim_reject": 0.88634,
+          "pi0_reject": 0.98457,
+          "e_keep_95ci": [
+            0.5268655014745336,
+            0.5330521968117603
+          ],
+          "pim_reject_95ci": [
+            0.8843579250868437,
+            0.8882923938693258
+          ],
+          "pi0_reject_95ci": [
+            0.983787242702786,
+            0.9853155296132853
+          ],
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "guarded_target": {
+        "target": {
+          "pim_reject": 0.88948,
+          "pi0_reject": 0.98948
+        },
+        "threshold": [
+          -1.9787543610338583,
+          -10.74143050323057
+        ],
+        "training_validation": {
+          "e_keep": 0.40472,
+          "pim_reject": 0.91284,
+          "pi0_reject": 0.98952,
+          "e_keep_95ci": [
+            0.39865071181672784,
+            0.41081856482038737
+          ],
+          "pim_reject_95ci": [
+            0.9092797627648276,
+            0.9162733840984537
+          ],
+          "pi0_reject_95ci": [
+            0.9881803266252883,
+            0.9907092588134129
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_all": {
+          "e_keep": 0.39796,
+          "pim_reject": 0.91393,
+          "pi0_reject": 0.98913,
+          "e_keep_95ci": [
+            0.39493022061612,
+            0.40099761873189604
+          ],
+          "pim_reject_95ci": [
+            0.912175737397125,
+            0.9156524619234921
+          ],
+          "pi0_reject_95ci": [
+            0.9884682764826372,
+            0.9897541455058473
+          ],
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "candidate_table": [
+        {
+          "family": "standard_full",
+          "feature_set": "bgo",
+          "features": [
+            "maxE",
+            "sumE",
+            "nHit",
+            "nCl4",
+            "nCl8",
+            "cl1Sum4",
+            "cl2Sum4",
+            "cl1Size4",
+            "cl1MaxFrac4",
+            "cl1RmsDeg4",
+            "allRmsDeg",
+            "cl2OverCl1",
+            "isolatedEFrac4",
+            "seed15NCl4",
+            "seed15Cl1Sum4",
+            "seed15Cl1Size4",
+            "e2OverE1",
+            "nHit2T",
+            "sum2T",
+            "local3x3Frac",
+            "meanHitE",
+            "thetaSpan",
+            "phiSpan"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.46224,
+            "pim_reject": 0.89176,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.4560660225366037,
+              0.46842557995938144
+            ],
+            "pim_reject_95ci": [
+              0.8878484384656448,
+              0.8955511856385096
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms",
+          "features": [
+            "sumE",
+            "allRmsDeg"
+          ],
+          "method": "histogram",
+          "validation": {
+            "e_keep": 0.50716,
+            "pim_reject": 0.89108,
+            "pi0_reject": 0.98456,
+            "e_keep_95ci": [
+              0.5009620611501354,
+              0.5133557388003082
+            ],
+            "pim_reject_95ci": [
+              0.887157941574823,
+              0.8948818914725853
+            ],
+            "pi0_reject_95ci": [
+              0.982955509968263,
+              0.9860155995271143
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_isolation",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.53428,
+            "pim_reject": 0.88456,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.528091839651865,
+              0.540457627149979
+            ],
+            "pim_reject_95ci": [
+              0.8805396446146115,
+              0.8884621918298791
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_hits",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "nHit"
+          ],
+          "method": "histogram",
+          "validation": {
+            "e_keep": 0.46888,
+            "pim_reject": 0.88916,
+            "pi0_reject": 0.98608,
+            "e_keep_95ci": [
+              0.46269932066112784,
+              0.4750702415654363
+            ],
+            "pim_reject_95ci": [
+              0.8852085576976745,
+              0.8929918653071567
+            ],
+            "pi0_reject_95ci": [
+              0.9845512224207075,
+              0.9874594200250432
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_clusters",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "nCl4",
+            "cl2OverCl1"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.49996,
+            "pim_reject": 0.88692,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.4937625319707218,
+              0.506157480320058
+            ],
+            "pim_reject_95ci": [
+              0.8829347423661564,
+              0.890786368922335
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_local",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "local3x3Frac"
+          ],
+          "method": "histogram",
+          "validation": {
+            "e_keep": 0.49192,
+            "pim_reject": 0.90084,
+            "pi0_reject": 0.9846,
+            "e_keep_95ci": [
+              0.48572457632430305,
+              0.4981179064131855
+            ],
+            "pim_reject_95ci": [
+              0.8970733436880273,
+              0.9044834904091476
+            ],
+            "pi0_reject_95ci": [
+              0.9829974510674292,
+              0.9860536461371686
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_shape",
+          "features": [
+            "sumE",
+            "maxE",
+            "allRmsDeg",
+            "isolatedEFrac4",
+            "local3x3Frac"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.4814,
+            "pim_reject": 0.89816,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.47520967239340706,
+              0.48759604281912805
+            ],
+            "pim_reject_95ci": [
+              0.8943496289794031,
+              0.9018480286000079
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_rms",
+          "features": [
+            "sumE",
+            "allRmsDeg"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.46756,
+            "pim_reject": 0.885,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.461380565332715,
+              0.4737494024895774
+            ],
+            "pim_reject_95ci": [
+              0.8809861477417327,
+              0.8888955535041818
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_rms_isolation",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.47368,
+            "pim_reject": 0.89272,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.4674951606137766,
+              0.4798729267192301
+            ],
+            "pim_reject_95ci": [
+              0.888823338999322,
+              0.8964959901261208
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_shape",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4",
+            "cl2Sum4",
+            "local3x3Frac",
+            "bgoLeadingTheta_deg"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.46184,
+            "pim_reject": 0.897,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.45566646143165623,
+              0.4680252639721254
+            ],
+            "pim_reject_95ci": [
+              0.8931709587150662,
+              0.9007070552969547
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "cluster_shape",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "cl1MaxFrac4",
+            "cl2OverCl1",
+            "isolatedEFrac4",
+            "local3x3Frac"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.46332,
+            "pim_reject": 0.92796,
+            "pi0_reject": 0.98456,
+            "e_keep_95ci": [
+              0.4571448574976129,
+              0.4695064131473219
+            ],
+            "pim_reject_95ci": [
+              0.9246888109774746,
+              0.9310996899711009
+            ],
+            "pi0_reject_95ci": [
+              0.982955509968263,
+              0.9860155995271143
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        }
+      ]
+    },
+    "sdc2_42": {
+      "disabled_cells": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43
+      ],
+      "disabled_cell_count": 42,
+      "coverage_remaining_fraction": 0.8133333333333334,
+      "ncl4_eq_1": {
+        "training_validation_T1": {
+          "e_keep": 0.729,
+          "pim_reject": 0.86092,
+          "pi0_reject": 0.8868,
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_T1": {
+          "e_keep": 0.73511,
+          "pim_reject": 0.86229,
+          "pi0_reject": 0.88644,
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        },
+        "confirmation_T3": {
+          "e_keep": 0.84463,
+          "pim_reject": 0.69156,
+          "pi0_reject": 0.83998,
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "selection_rule": "maximum seed-6302026 validation electron retention among declared standard, compact, and hurdle candidates at the unmasked T1 target",
+      "selected": {
+        "family": "compact",
+        "feature_set": "energy_rms_local",
+        "features": [
+          "sumE",
+          "allRmsDeg",
+          "local3x3Frac"
+        ],
+        "method": "pairwise_qda",
+        "validation": {
+          "e_keep": 0.2568,
+          "pim_reject": 0.89068,
+          "pi0_reject": 0.98452,
+          "e_keep_95ci": [
+            0.25142227718188415,
+            0.2622524507583591
+          ],
+          "pim_reject_95ci": [
+            0.8867517890830017,
+            0.8944881668722031
+          ],
+          "pi0_reject_95ci": [
+            0.9829135715045825,
+            0.9859775502815744
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        }
+      },
+      "exact_target": {
+        "target": {
+          "pim_reject": 0.88448,
+          "pi0_reject": 0.98448
+        },
+        "threshold": [
+          -1.5296762943121212,
+          -2.660236662236288
+        ],
+        "training_validation": {
+          "e_keep": 0.2568,
+          "pim_reject": 0.89068,
+          "pi0_reject": 0.98452,
+          "e_keep_95ci": [
+            0.25142227718188415,
+            0.2622524507583591
+          ],
+          "pim_reject_95ci": [
+            0.8867517890830017,
+            0.8944881668722031
+          ],
+          "pi0_reject_95ci": [
+            0.9829135715045825,
+            0.9859775502815744
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_all": {
+          "e_keep": 0.25223,
+          "pim_reject": 0.89343,
+          "pi0_reject": 0.98615,
+          "e_keep_95ci": [
+            0.24954782878081797,
+            0.25493120645299144
+          ],
+          "pim_reject_95ci": [
+            0.891502388827702,
+            0.8953273854305308
+          ],
+          "pi0_reject_95ci": [
+            0.985406755352608,
+            0.9868558955780276
+          ],
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "guarded_target": {
+        "target": {
+          "pim_reject": 0.88948,
+          "pi0_reject": 0.98948
+        },
+        "threshold": [
+          -1.5557854293055722,
+          -2.762823030193443
+        ],
+        "training_validation": {
+          "e_keep": 0.22092,
+          "pim_reject": 0.90612,
+          "pi0_reject": 0.98952,
+          "e_keep_95ci": [
+            0.21582044667618833,
+            0.22610530609339674
+          ],
+          "pim_reject_95ci": [
+            0.9024419357783648,
+            0.909673275935897
+          ],
+          "pi0_reject_95ci": [
+            0.9881803266252883,
+            0.9907092588134129
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_all": {
+          "e_keep": 0.21745,
+          "pim_reject": 0.90856,
+          "pi0_reject": 0.99134,
+          "e_keep_95ci": [
+            0.2149041557127323,
+            0.22001755153718838
+          ],
+          "pim_reject_95ci": [
+            0.9067578125091192,
+            0.9103307993683271
+          ],
+          "pi0_reject_95ci": [
+            0.9907465541174384,
+            0.9918956980850885
+          ],
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "candidate_table": [
+        {
+          "family": "standard_full",
+          "feature_set": "bgo",
+          "features": [
+            "maxE",
+            "sumE",
+            "nHit",
+            "nCl4",
+            "nCl8",
+            "cl1Sum4",
+            "cl2Sum4",
+            "cl1Size4",
+            "cl1MaxFrac4",
+            "cl1RmsDeg4",
+            "allRmsDeg",
+            "cl2OverCl1",
+            "isolatedEFrac4",
+            "seed15NCl4",
+            "seed15Cl1Sum4",
+            "seed15Cl1Size4",
+            "e2OverE1",
+            "nHit2T",
+            "sum2T",
+            "local3x3Frac",
+            "meanHitE",
+            "thetaSpan",
+            "phiSpan"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.23948,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.9854,
+            "e_keep_95ci": [
+              0.23423012934765772,
+              0.24480992050017195
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.9838368425325875,
+              0.9868140088564173
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms",
+          "features": [
+            "sumE",
+            "allRmsDeg"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.25596,
+            "pim_reject": 0.89172,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.25058821444754603,
+              0.26140677159906983
+            ],
+            "pim_reject_95ci": [
+              0.8878078196833749,
+              0.8955118167115591
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_isolation",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.24216,
+            "pim_reject": 0.88456,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.23688958563640786,
+              0.24750964072918555
+            ],
+            "pim_reject_95ci": [
+              0.8805396446146115,
+              0.8884621918298791
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_hits",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "nHit"
+          ],
+          "method": "qda",
+          "validation": {
+            "e_keep": 0.24856,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98628,
+            "e_keep_95ci": [
+              0.24324166515756468,
+              0.25395559468328555
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.984761500254765,
+              0.9876490807370876
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_clusters",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "nCl4",
+            "cl2OverCl1"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.25564,
+            "pim_reject": 0.88664,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.250270483176942,
+              0.2610846011959109
+            ],
+            "pim_reject_95ci": [
+              0.8826505501156828,
+              0.8905106472082661
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_local",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "local3x3Frac"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.2568,
+            "pim_reject": 0.89068,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.25142227718188415,
+              0.2622524507583591
+            ],
+            "pim_reject_95ci": [
+              0.8867517890830017,
+              0.8944881668722031
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_shape",
+          "features": [
+            "sumE",
+            "maxE",
+            "allRmsDeg",
+            "isolatedEFrac4",
+            "local3x3Frac"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.2452,
+            "pim_reject": 0.88808,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.23990662477086527,
+              0.2505716674954751
+            ],
+            "pim_reject_95ci": [
+              0.8841121919822607,
+              0.891928562873621
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_rms",
+          "features": [
+            "sumE",
+            "allRmsDeg"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.19972,
+            "pim_reject": 0.8848,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.19481054418251842,
+              0.20472172270027866
+            ],
+            "pim_reject_95ci": [
+              0.8807831894909843,
+              0.8886985732088284
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_rms_isolation",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.18644,
+            "pim_reject": 0.89776,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.18166058028000234,
+              0.19131576714163692
+            ],
+            "pim_reject_95ci": [
+              0.8939431740549647,
+              0.901454606432243
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_shape",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4",
+            "cl2Sum4",
+            "local3x3Frac",
+            "bgoLeadingTheta_deg"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.1642,
+            "pim_reject": 0.91884,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.15965950582435864,
+              0.1688436752707634
+            ],
+            "pim_reject_95ci": [
+              0.9153902191615145,
+              0.9221610840848199
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "cluster_shape",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "cl1MaxFrac4",
+            "cl2OverCl1",
+            "isolatedEFrac4",
+            "local3x3Frac"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.1714,
+            "pim_reject": 0.9134,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.16677907467019532,
+              0.17612189408459056
+            ],
+            "pim_reject_95ci": [
+              0.9098498543750023,
+              0.9168231204173639
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        }
+      ]
+    },
+    "sdc2_bac49": {
+      "disabled_cells": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        210,
+        211,
+        216,
+        217,
+        218,
+        223,
+        224
+      ],
+      "disabled_cell_count": 49,
+      "coverage_remaining_fraction": 0.7822222222222223,
+      "ncl4_eq_1": {
+        "training_validation_T1": {
+          "e_keep": 0.72968,
+          "pim_reject": 0.85832,
+          "pi0_reject": 0.88224,
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_T1": {
+          "e_keep": 0.73672,
+          "pim_reject": 0.8598399999999999,
+          "pi0_reject": 0.88262,
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        },
+        "confirmation_T3": {
+          "e_keep": 0.84129,
+          "pim_reject": 0.68826,
+          "pi0_reject": 0.83112,
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "selection_rule": "maximum seed-6302026 validation electron retention among declared standard, compact, and hurdle candidates at the unmasked T1 target",
+      "selected": {
+        "family": "compact",
+        "feature_set": "energy_rms_clusters",
+        "features": [
+          "sumE",
+          "allRmsDeg",
+          "nCl4",
+          "cl2OverCl1"
+        ],
+        "method": "pairwise_qda",
+        "validation": {
+          "e_keep": 0.25704,
+          "pim_reject": 0.88916,
+          "pi0_reject": 0.98452,
+          "e_keep_95ci": [
+            0.25166058563945126,
+            0.2624940685561141
+          ],
+          "pim_reject_95ci": [
+            0.8852085576976745,
+            0.8929918653071567
+          ],
+          "pi0_reject_95ci": [
+            0.9829135715045825,
+            0.9859775502815744
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        }
+      },
+      "exact_target": {
+        "target": {
+          "pim_reject": 0.88448,
+          "pi0_reject": 0.98448
+        },
+        "threshold": [
+          -4.20597852972044,
+          -4.955648832968021
+        ],
+        "training_validation": {
+          "e_keep": 0.25704,
+          "pim_reject": 0.88916,
+          "pi0_reject": 0.98452,
+          "e_keep_95ci": [
+            0.25166058563945126,
+            0.2624940685561141
+          ],
+          "pim_reject_95ci": [
+            0.8852085576976745,
+            0.8929918653071567
+          ],
+          "pi0_reject_95ci": [
+            0.9829135715045825,
+            0.9859775502815744
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_all": {
+          "e_keep": 0.25217,
+          "pim_reject": 0.89213,
+          "pi0_reject": 0.98554,
+          "e_keep_95ci": [
+            0.2494880432671623,
+            0.2548709965762207
+          ],
+          "pim_reject_95ci": [
+            0.890192210670609,
+            0.8940376634617166
+          ],
+          "pi0_reject_95ci": [
+            0.9847812343032089,
+            0.9862614634914241
+          ],
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "guarded_target": {
+        "target": {
+          "pim_reject": 0.88948,
+          "pi0_reject": 0.98948
+        },
+        "threshold": [
+          Infinity,
+          -6.265693910180517
+        ],
+        "training_validation": {
+          "e_keep": 0.21836,
+          "pim_reject": 0.8906000000000001,
+          "pi0_reject": 0.98952,
+          "e_keep_95ci": [
+            0.21328232414826095,
+            0.22352421523122143
+          ],
+          "pim_reject_95ci": [
+            0.8866705605443336,
+            0.8944094199924305
+          ],
+          "pi0_reject_95ci": [
+            0.9881803266252883,
+            0.9907092588134129
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_all": {
+          "e_keep": 0.21701,
+          "pim_reject": 0.8924300000000001,
+          "pi0_reject": 0.98999,
+          "e_keep_95ci": [
+            0.21446604255701762,
+            0.21957569849644215
+          ],
+          "pim_reject_95ci": [
+            0.8904945516406209,
+            0.8943352994438374
+          ],
+          "pi0_reject_95ci": [
+            0.9893539093557928,
+            0.9905884465621382
+          ],
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "candidate_table": [
+        {
+          "family": "standard_full",
+          "feature_set": "bgo",
+          "features": [
+            "maxE",
+            "sumE",
+            "nHit",
+            "nCl4",
+            "nCl8",
+            "cl1Sum4",
+            "cl2Sum4",
+            "cl1Size4",
+            "cl1MaxFrac4",
+            "cl1RmsDeg4",
+            "allRmsDeg",
+            "cl2OverCl1",
+            "isolatedEFrac4",
+            "seed15NCl4",
+            "seed15Cl1Sum4",
+            "seed15Cl1Size4",
+            "e2OverE1",
+            "nHit2T",
+            "sum2T",
+            "local3x3Frac",
+            "meanHitE",
+            "thetaSpan",
+            "phiSpan"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.2438,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.2385171539101339,
+              0.24916156853349408
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms",
+          "features": [
+            "sumE",
+            "allRmsDeg"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.2564,
+            "pim_reject": 0.89544,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.2510251011762879,
+              0.26184974967175184
+            ],
+            "pim_reject_95ci": [
+              0.8915860840116743,
+              0.8991724093407527
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_isolation",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.24272,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98456,
+            "e_keep_95ci": [
+              0.23744532877699115,
+              0.24807372551768725
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.982955509968263,
+              0.9860155995271143
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_hits",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "nHit"
+          ],
+          "method": "qda",
+          "validation": {
+            "e_keep": 0.2482,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98628,
+            "e_keep_95ci": [
+              0.24288431857236759,
+              0.2535930518854994
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.984761500254765,
+              0.9876490807370876
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_clusters",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "nCl4",
+            "cl2OverCl1"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.25704,
+            "pim_reject": 0.88916,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.25166058563945126,
+              0.2624940685561141
+            ],
+            "pim_reject_95ci": [
+              0.8852085576976745,
+              0.8929918653071567
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_local",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "local3x3Frac"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.2554,
+            "pim_reject": 0.88972,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.2500321872317934,
+              0.26084297088573755
+            ],
+            "pim_reject_95ci": [
+              0.8857770894982773,
+              0.8935431614356388
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_shape",
+          "features": [
+            "sumE",
+            "maxE",
+            "allRmsDeg",
+            "isolatedEFrac4",
+            "local3x3Frac"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.24564,
+            "pim_reject": 0.88556,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.24034333138423108,
+              0.2510148256835332
+            ],
+            "pim_reject_95ci": [
+              0.8815544511709156,
+              0.8894470780040838
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_rms",
+          "features": [
+            "sumE",
+            "allRmsDeg"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.184,
+            "pim_reject": 0.88516,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.17924545663764974,
+              0.1888516405215479
+            ],
+            "pim_reject_95ci": [
+              0.8811485170891985,
+              0.8890531349935972
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_rms_isolation",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.17408,
+            "pim_reject": 0.90596,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.16942991093207013,
+              0.17883023434047954
+            ],
+            "pim_reject_95ci": [
+              0.9022792013259029,
+              0.9095160595514773
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_shape",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4",
+            "cl2Sum4",
+            "local3x3Frac",
+            "bgoLeadingTheta_deg"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.15024,
+            "pim_reject": 0.95572,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.14586461355526534,
+              0.1547228570219529
+            ],
+            "pim_reject_95ci": [
+              0.9530991790187515,
+              0.9582007921287501
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "cluster_shape",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "cl1MaxFrac4",
+            "cl2OverCl1",
+            "isolatedEFrac4",
+            "local3x3Frac"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.15968,
+            "pim_reject": 0.93728,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.15519160255323086,
+              0.16427296739999106
+            ],
+            "pim_reject_95ci": [
+              0.9342068052142057,
+              0.9402188319827124
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        }
+      ]
+    },
+    "sdc1active_bac66": {
+      "disabled_cells": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        50,
+        51,
+        52,
+        53,
+        54,
+        57,
+        58,
+        59,
+        61,
+        65,
+        69,
+        210,
+        211,
+        216,
+        217,
+        218,
+        223,
+        224
+      ],
+      "disabled_cell_count": 66,
+      "coverage_remaining_fraction": 0.7066666666666667,
+      "ncl4_eq_1": {
+        "training_validation_T1": {
+          "e_keep": 0.6982,
+          "pim_reject": 0.83324,
+          "pi0_reject": 0.78756,
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_T1": {
+          "e_keep": 0.70455,
+          "pim_reject": 0.8348599999999999,
+          "pi0_reject": 0.7894,
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        },
+        "confirmation_T3": {
+          "e_keep": 0.78409,
+          "pim_reject": 0.66185,
+          "pi0_reject": 0.7128099999999999,
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "selection_rule": "maximum seed-6302026 validation electron retention among declared standard, compact, and hurdle candidates at the unmasked T1 target",
+      "selected": {
+        "family": "compact",
+        "feature_set": "energy_rms",
+        "features": [
+          "sumE",
+          "allRmsDeg"
+        ],
+        "method": "pairwise_qda",
+        "validation": {
+          "e_keep": 0.26924,
+          "pim_reject": 0.88456,
+          "pi0_reject": 0.98452,
+          "e_keep_95ci": [
+            0.26377737438028176,
+            0.27477353112749175
+          ],
+          "pim_reject_95ci": [
+            0.8805396446146115,
+            0.8884621918298791
+          ],
+          "pi0_reject_95ci": [
+            0.9829135715045825,
+            0.9859775502815744
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        }
+      },
+      "exact_target": {
+        "target": {
+          "pim_reject": 0.88448,
+          "pi0_reject": 0.98448
+        },
+        "threshold": [
+          -1.4766150633955604,
+          -1.50960402782391
+        ],
+        "training_validation": {
+          "e_keep": 0.26924,
+          "pim_reject": 0.88456,
+          "pi0_reject": 0.98452,
+          "e_keep_95ci": [
+            0.26377737438028176,
+            0.27477353112749175
+          ],
+          "pim_reject_95ci": [
+            0.8805396446146115,
+            0.8884621918298791
+          ],
+          "pi0_reject_95ci": [
+            0.9829135715045825,
+            0.9859775502815744
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_all": {
+          "e_keep": 0.26615,
+          "pim_reject": 0.88716,
+          "pi0_reject": 0.9837,
+          "e_keep_95ci": [
+            0.26341987608444123,
+            0.2688980897283139
+          ],
+          "pim_reject_95ci": [
+            0.885184095648882,
+            0.8891061603097826
+          ],
+          "pi0_reject_95ci": [
+            0.9828963890128642,
+            0.9844664501420229
+          ],
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "guarded_target": {
+        "target": {
+          "pim_reject": 0.88948,
+          "pi0_reject": 0.98948
+        },
+        "threshold": [
+          -1.4889307096222484,
+          -1.5604341101855257
+        ],
+        "training_validation": {
+          "e_keep": 0.25604,
+          "pim_reject": 0.88956,
+          "pi0_reject": 0.98952,
+          "e_keep_95ci": [
+            0.2506676478618032,
+            0.2614873136032534
+          ],
+          "pim_reject_95ci": [
+            0.8856146486254605,
+            0.8933856514715744
+          ],
+          "pi0_reject_95ci": [
+            0.9881803266252883,
+            0.9907092588134129
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_all": {
+          "e_keep": 0.25243,
+          "pim_reject": 0.8926499999999999,
+          "pi0_reject": 0.98855,
+          "e_keep_95ci": [
+            0.24974711431803823,
+            0.25513190555052623
+          ],
+          "pim_reject_95ci": [
+            0.8907162713303397,
+            0.8945535628523488
+          ],
+          "pi0_reject_95ci": [
+            0.9878715770952259,
+            0.9891908894524694
+          ],
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "candidate_table": [
+        {
+          "family": "standard_full",
+          "feature_set": "bgo",
+          "features": [
+            "maxE",
+            "sumE",
+            "nHit",
+            "nCl4",
+            "nCl8",
+            "cl1Sum4",
+            "cl2Sum4",
+            "cl1Size4",
+            "cl1MaxFrac4",
+            "cl1RmsDeg4",
+            "allRmsDeg",
+            "cl2OverCl1",
+            "isolatedEFrac4",
+            "seed15NCl4",
+            "seed15Cl1Sum4",
+            "seed15Cl1Size4",
+            "e2OverE1",
+            "nHit2T",
+            "sum2T",
+            "local3x3Frac",
+            "meanHitE",
+            "thetaSpan",
+            "phiSpan"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.24688,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.9876,
+            "e_keep_95ci": [
+              0.2415740904322137,
+              0.2522636856213816
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.9861513847390789,
+              0.9888987906570456
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms",
+          "features": [
+            "sumE",
+            "allRmsDeg"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.26924,
+            "pim_reject": 0.88456,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.26377737438028176,
+              0.27477353112749175
+            ],
+            "pim_reject_95ci": [
+              0.8805396446146115,
+              0.8884621918298791
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_isolation",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4"
+          ],
+          "method": "qda",
+          "validation": {
+            "e_keep": 0.24528,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98484,
+            "e_keep_95ci": [
+              0.2399860254134008,
+              0.2506522422713803
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.9832491535771574,
+              0.9862818698827626
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_hits",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "nHit"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.26436,
+            "pim_reject": 0.885,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.2589300116854348,
+              0.2698623932974555
+            ],
+            "pim_reject_95ci": [
+              0.8809861477417327,
+              0.8888955535041818
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_clusters",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "nCl4",
+            "cl2OverCl1"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.23856,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.99128,
+            "e_keep_95ci": [
+              0.23331724750589,
+              0.2438830850298715
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.9900496588147039,
+              0.9923593858296933
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_local",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "local3x3Frac"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.24516,
+            "pim_reject": 0.9014800000000001,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.23986692454297487,
+              0.25053138001414516
+            ],
+            "pim_reject_95ci": [
+              0.8977239051531029,
+              0.9051127322915978
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_shape",
+          "features": [
+            "sumE",
+            "maxE",
+            "allRmsDeg",
+            "isolatedEFrac4",
+            "local3x3Frac"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.24492,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98576,
+            "e_keep_95ci": [
+              0.23962872448356412,
+              0.2502896538182338
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.9842149368882929,
+              0.9871558038836952
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_rms",
+          "features": [
+            "sumE",
+            "allRmsDeg"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.21324,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98456,
+            "e_keep_95ci": [
+              0.20820694660369235,
+              0.2183611659955846
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.982955509968263,
+              0.9860155995271143
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_rms_isolation",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.21044,
+            "pim_reject": 0.8866,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.20543184744574827,
+              0.21553712550810383
+            ],
+            "pim_reject_95ci": [
+              0.8826099518454018,
+              0.8904712577693268
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_shape",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4",
+            "cl2Sum4",
+            "local3x3Frac",
+            "bgoLeadingTheta_deg"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.183,
+            "pim_reject": 0.92668,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.17825574317529824,
+              0.18784166125339052
+            ],
+            "pim_reject_95ci": [
+              0.9233829020446929,
+              0.9298459922088311
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "cluster_shape",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "cl1MaxFrac4",
+            "cl2OverCl1",
+            "isolatedEFrac4",
+            "local3x3Frac"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.18352,
+            "pim_reject": 0.91772,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.17877038750980656,
+              0.1883668571387468
+            ],
+            "pim_reject_95ci": [
+              0.9142492009556898,
+              0.9210624464324747
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        }
+      ]
+    },
+    "sdc1full_bac80": {
+      "disabled_cells": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        72,
+        73,
+        74,
+        210,
+        211,
+        216,
+        217,
+        218,
+        223,
+        224
+      ],
+      "disabled_cell_count": 80,
+      "coverage_remaining_fraction": 0.6444444444444444,
+      "ncl4_eq_1": {
+        "training_validation_T1": {
+          "e_keep": 0.66156,
+          "pim_reject": 0.80492,
+          "pi0_reject": 0.6795599999999999,
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_T1": {
+          "e_keep": 0.66513,
+          "pim_reject": 0.80522,
+          "pi0_reject": 0.68133,
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        },
+        "confirmation_T3": {
+          "e_keep": 0.72296,
+          "pim_reject": 0.63681,
+          "pi0_reject": 0.5910500000000001,
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "selection_rule": "maximum seed-6302026 validation electron retention among declared standard, compact, and hurdle candidates at the unmasked T1 target",
+      "selected": {
+        "family": "standard_full",
+        "feature_set": "bgo",
+        "features": [
+          "maxE",
+          "sumE",
+          "nHit",
+          "nCl4",
+          "nCl8",
+          "cl1Sum4",
+          "cl2Sum4",
+          "cl1Size4",
+          "cl1MaxFrac4",
+          "cl1RmsDeg4",
+          "allRmsDeg",
+          "cl2OverCl1",
+          "isolatedEFrac4",
+          "seed15NCl4",
+          "seed15Cl1Sum4",
+          "seed15Cl1Size4",
+          "e2OverE1",
+          "nHit2T",
+          "sum2T",
+          "local3x3Frac",
+          "meanHitE",
+          "thetaSpan",
+          "phiSpan"
+        ],
+        "method": "pairwise_qda",
+        "validation": {
+          "e_keep": 0.27144,
+          "pim_reject": 0.88452,
+          "pi0_reject": 0.98576,
+          "e_keep_95ci": [
+            0.26596293819317823,
+            0.2769872913217149
+          ],
+          "pim_reject_95ci": [
+            0.8804990543338231,
+            0.8884227944014469
+          ],
+          "pi0_reject_95ci": [
+            0.9842149368882929,
+            0.9871558038836952
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        }
+      },
+      "exact_target": {
+        "target": {
+          "pim_reject": 0.88448,
+          "pi0_reject": 0.98448
+        },
+        "threshold": [
+          -9.69893071932146,
+          -4.111968561062472
+        ],
+        "training_validation": {
+          "e_keep": 0.27144,
+          "pim_reject": 0.88452,
+          "pi0_reject": 0.98576,
+          "e_keep_95ci": [
+            0.26596293819317823,
+            0.2769872913217149
+          ],
+          "pim_reject_95ci": [
+            0.8804990543338231,
+            0.8884227944014469
+          ],
+          "pi0_reject_95ci": [
+            0.9842149368882929,
+            0.9871558038836952
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_all": {
+          "e_keep": 0.26945,
+          "pim_reject": 0.88591,
+          "pi0_reject": 0.9851,
+          "e_keep_95ci": [
+            0.2667090247330124,
+            0.2722086875531997
+          ],
+          "pim_reject_95ci": [
+            0.8839247023454664,
+            0.8878656496459798
+          ],
+          "pi0_reject_95ci": [
+            0.9843302502847965,
+            0.9858324813133755
+          ],
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "guarded_target": {
+        "target": {
+          "pim_reject": 0.88948,
+          "pi0_reject": 0.98948
+        },
+        "threshold": [
+          -10.421706477852009,
+          -4.376750656462091
+        ],
+        "training_validation": {
+          "e_keep": 0.23744,
+          "pim_reject": 0.91048,
+          "pi0_reject": 0.98952,
+          "e_keep_95ci": [
+            0.23220595881710632,
+            0.2427547178604853
+          ],
+          "pim_reject_95ci": [
+            0.9068777049214769,
+            0.9139561670978034
+          ],
+          "pi0_reject_95ci": [
+            0.9881803266252883,
+            0.9907092588134129
+          ],
+          "counts": {
+            "electron": 25000,
+            "pim": 25000,
+            "pi0": 25000
+          }
+        },
+        "confirmation_all": {
+          "e_keep": 0.23608,
+          "pim_reject": 0.91327,
+          "pi0_reject": 0.98867,
+          "e_keep_95ci": [
+            0.23345807359849963,
+            0.23872220237884623
+          ],
+          "pim_reject_95ci": [
+            0.9115097413773733,
+            0.9149985086485525
+          ],
+          "pi0_reject_95ci": [
+            0.9879949955657467,
+            0.9893074617628016
+          ],
+          "counts": {
+            "electron": 100000,
+            "pim": 100000,
+            "pi0": 100000
+          }
+        }
+      },
+      "candidate_table": [
+        {
+          "family": "standard_full",
+          "feature_set": "bgo",
+          "features": [
+            "maxE",
+            "sumE",
+            "nHit",
+            "nCl4",
+            "nCl8",
+            "cl1Sum4",
+            "cl2Sum4",
+            "cl1Size4",
+            "cl1MaxFrac4",
+            "cl1RmsDeg4",
+            "allRmsDeg",
+            "cl2OverCl1",
+            "isolatedEFrac4",
+            "seed15NCl4",
+            "seed15Cl1Sum4",
+            "seed15Cl1Size4",
+            "e2OverE1",
+            "nHit2T",
+            "sum2T",
+            "local3x3Frac",
+            "meanHitE",
+            "thetaSpan",
+            "phiSpan"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.27144,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98576,
+            "e_keep_95ci": [
+              0.26596293819317823,
+              0.2769872913217149
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.9842149368882929,
+              0.9871558038836952
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms",
+          "features": [
+            "sumE",
+            "allRmsDeg"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.24856,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98636,
+            "e_keep_95ci": [
+              0.24324166515756468,
+              0.25395559468328555
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.9848456332512829,
+              0.9877249231590104
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_isolation",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.25704,
+            "pim_reject": 0.8966,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.25166058563945126,
+              0.2624940685561141
+            ],
+            "pim_reject_95ci": [
+              0.8927645552139678,
+              0.9003135817058494
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_hits",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "nHit"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.25288,
+            "pim_reject": 0.88536,
+            "pi0_reject": 0.98664,
+            "e_keep_95ci": [
+              0.24753021010349247,
+              0.258305722333156
+            ],
+            "pim_reject_95ci": [
+              0.8813514822143997,
+              0.8892501084144979
+            ],
+            "pi0_reject_95ci": [
+              0.9851401991269346,
+              0.9879902712479012
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_clusters",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "nCl4",
+            "cl2OverCl1"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.27036,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98592,
+            "e_keep_95ci": [
+              0.2648900036617477,
+              0.2759005577041958
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.984383055501089,
+              0.9873076361077805
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_rms_local",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "local3x3Frac"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.26168,
+            "pim_reject": 0.88492,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.25626830044855553,
+              0.2671649280165711
+            ],
+            "pim_reject_95ci": [
+              0.8809049639840374,
+              0.8888167618434364
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "compact",
+          "feature_set": "energy_shape",
+          "features": [
+            "sumE",
+            "maxE",
+            "allRmsDeg",
+            "isolatedEFrac4",
+            "local3x3Frac"
+          ],
+          "method": "pairwise_qda",
+          "validation": {
+            "e_keep": 0.25504,
+            "pim_reject": 0.885,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.24967474734923753,
+              0.2604805213853101
+            ],
+            "pim_reject_95ci": [
+              0.8809861477417327,
+              0.8888955535041818
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_rms",
+          "features": [
+            "sumE",
+            "allRmsDeg"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.24584,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.986,
+            "e_keep_95ci": [
+              0.2405418368768134,
+              0.25121625873705267
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.984467132871777,
+              0.9873835341555331
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_rms_isolation",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.246,
+            "pim_reject": 0.88452,
+            "pi0_reject": 0.98544,
+            "e_keep_95ci": [
+              0.2407006423885797,
+              0.2513774040621678
+            ],
+            "pim_reject_95ci": [
+              0.8804990543338231,
+              0.8884227944014469
+            ],
+            "pi0_reject_95ci": [
+              0.9838788414124863,
+              0.986851997685739
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "energy_shape",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "isolatedEFrac4",
+            "cl2Sum4",
+            "local3x3Frac",
+            "bgoLeadingTheta_deg"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.2354,
+            "pim_reject": 0.90844,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.23018195562881139,
+              0.24069934787854208
+            ],
+            "pim_reject_95ci": [
+              0.9048019481816082,
+              0.9119525506674341
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        },
+        {
+          "family": "hurdle",
+          "feature_set": "cluster_shape",
+          "features": [
+            "sumE",
+            "allRmsDeg",
+            "cl1MaxFrac4",
+            "cl2OverCl1",
+            "isolatedEFrac4",
+            "local3x3Frac"
+          ],
+          "method": "nHit-binned diagonal Gaussian likelihood",
+          "validation": {
+            "e_keep": 0.02724,
+            "pim_reject": 0.97156,
+            "pi0_reject": 0.98452,
+            "e_keep_95ci": [
+              0.025293650875502355,
+              0.02933161384912505
+            ],
+            "pim_reject_95ci": [
+              0.9694259128621058,
+              0.9735491911366562
+            ],
+            "pi0_reject_95ci": [
+              0.9829135715045825,
+              0.9859775502815744
+            ],
+            "counts": {
+              "electron": 25000,
+              "pim": 25000,
+              "pi0": 25000
+            }
+          }
+        }
+      ]
+    }
+  }
+}

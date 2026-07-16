@@ -286,10 +286,14 @@ Meta readMeta(TTree *tree, bool allowLegacyHodo) {
   if (!tree || tree->GetEntries() != 1)
     throw std::runtime_error("runmeta must contain exactly one entry");
   const char *required[] = {"nLayer", "nSector", "segmentationMode",
-                            "geometryMode", "physicsFlag", "thetaMin_deg",
+                            "physicsFlag", "thetaMin_deg",
                             "thetaMax_deg", "rMin_cm", "thickness_cm",
                             "nSegTH", "nSegTLC"};
   for (const char *name : required) requireBranch(tree, name);
+  const bool hasGeometryMode = tree->GetBranch("geometryMode");
+  if (!hasGeometryMode && !allowLegacyHodo)
+    throw std::runtime_error(
+        "missing branch runmeta.geometryMode; use --allow-legacy-hodo only for old exploratory files");
   const char *finalRequired[] = {"thRMin_mm", "thRMax_mm", "thBarZMin_mm",
                                  "thBarZMax_mm",
                                  "thEffectiveLightSpeed_mm_per_ns"};
@@ -307,13 +311,17 @@ Meta readMeta(TTree *tree, bool allowLegacyHodo) {
   m.finalReadoutMetadata = finalMetadata;
   tree->SetBranchStatus("*", 0);
   for (const char *name : required) tree->SetBranchStatus(name, 1);
+  if (hasGeometryMode) tree->SetBranchStatus("geometryMode", 1);
   if (finalMetadata)
     for (const char *name : finalRequired) tree->SetBranchStatus(name, 1);
   if (finalMetadata) tree->SetBranchStatus("thTimingSmearingApplied", 1);
   tree->SetBranchAddress("nLayer", &m.nLayer);
   tree->SetBranchAddress("nSector", &m.nSector);
   tree->SetBranchAddress("segmentationMode", &m.segmentationMode);
-  tree->SetBranchAddress("geometryMode", &m.geometryMode);
+  if (hasGeometryMode)
+    tree->SetBranchAddress("geometryMode", &m.geometryMode);
+  else
+    m.geometryMode = 0;
   tree->SetBranchAddress("physicsFlag", &m.physicsFlag);
   tree->SetBranchAddress("thetaMin_deg", &m.thetaMinDeg);
   tree->SetBranchAddress("thetaMax_deg", &m.thetaMaxDeg);
@@ -339,7 +347,8 @@ Meta readMeta(TTree *tree, bool allowLegacyHodo) {
   if (!(m.thetaMinDeg < m.thetaMaxDeg) || !(m.rMinCm > 0.0) ||
       !(m.thicknessCm > 0.0) || m.nSegTH <= 0 || m.nSegTLC <= 0)
     throw std::runtime_error("invalid runmeta geometry/hodoscope values");
-  if (!(m.thRMinMm > 0.0 && m.thRMinMm < m.thRMaxMm &&
+  if (m.finalReadoutMetadata &&
+      !(m.thRMinMm > 0.0 && m.thRMinMm < m.thRMaxMm &&
         m.thBarZMinMm < m.thBarZMaxMm &&
         m.thEffectiveLightSpeedMmPerNs > 0.0))
     throw std::runtime_error("invalid final TH geometry/timing metadata");
@@ -437,7 +446,11 @@ double angularRmsDeg(const Geometry &g, const std::vector<double> &e,
 
 std::vector<float> makeBgoFeatures(const Geometry &g,
                                    const std::vector<double> &raw,
-                                   int eventID, double threshold) {
+                                   int eventID, double threshold,
+                                   const std::vector<unsigned char> &disabledCells) {
+  if (!disabledCells.empty() &&
+      static_cast<int>(disabledCells.size()) != g.NCell())
+    throw std::runtime_error("disabled-cell mask size mismatch");
   std::vector<double> e(g.NCell(), 0.0);
   std::vector<int> hitCells;
   std::vector<double> sortedE;
@@ -445,6 +458,7 @@ std::vector<float> makeBgoFeatures(const Geometry &g,
   int nHit2t = 0, thetaMin = g.meta.nLayer, thetaMax = -1;
   int leadingCell = -1;
   for (int i = 0; i < g.NCell(); ++i) {
+    if (!disabledCells.empty() && disabledCells[i]) continue;
     if (raw[i] < threshold) continue;
     e[i] = raw[i];
     hitCells.push_back(i);
@@ -545,6 +559,35 @@ std::vector<float> makeBgoFeatures(const Geometry &g,
     f[kBGOLeadingPhiDeg] = phi;
   }
   return f;
+}
+
+std::vector<unsigned char> readDisabledCells(const std::string &path,
+                                             int nCell) {
+  std::vector<unsigned char> disabled;
+  if (path.empty()) return disabled;
+  disabled.assign(nCell, 0);
+  std::ifstream input(path);
+  if (!input) throw std::runtime_error("cannot open disabled-cell mask " + path);
+  std::string token;
+  std::size_t count = 0;
+  while (input >> token) {
+    if (!token.empty() && token[0] == '#') {
+      std::string rest;
+      std::getline(input, rest);
+      continue;
+    }
+    std::size_t used = 0;
+    const int cell = std::stoi(token, &used);
+    if (used != token.size() || cell < 0 || cell >= nCell)
+      throw std::runtime_error("invalid disabled-cell index: " + token);
+    if (disabled[cell])
+      throw std::runtime_error("duplicate disabled-cell index: " + token);
+    disabled[cell] = 1;
+    ++count;
+  }
+  if (count == 0)
+    throw std::runtime_error("disabled-cell mask is empty: " + path);
+  return disabled;
 }
 
 void addHodoscopeFeatures(std::vector<float> &f, const Meta &m,
@@ -777,7 +820,12 @@ void writeF64(std::ofstream &out, double v) {
 void writeManifest(const std::string &path, const std::string &input,
                    const Meta &m, double threshold, std::size_t nrow,
                    std::size_t missingTH, std::size_t missingTLC,
-                   std::size_t extraTH, std::size_t extraTLC) {
+                   std::size_t extraTH, std::size_t extraTLC,
+                   const std::string &disabledCellPath,
+                   std::size_t disabledCellCount,
+                   bool pcSumBranchPresent,
+                   bool pcSideBranchesPresent,
+                   bool pcGammaBranchesPresent) {
   std::ofstream out(path + ".json");
   out << std::setprecision(15);
   out << "{\n"
@@ -812,6 +860,17 @@ void writeManifest(const std::string &path, const std::string &input,
       << "  \"thTimingSmearingAppliedInSource\": "
       << m.thTimingSmearingApplied << ",\n"
       << "  \"threshold_MeV\": " << threshold << ",\n"
+      << "  \"disabledCellMask\": ";
+  if (disabledCellPath.empty()) out << "null";
+  else out << "\"" << disabledCellPath << "\"";
+  out << ",\n"
+      << "  \"disabledCellCount\": " << disabledCellCount << ",\n"
+      << "  \"pcSumBranchPresent\": "
+      << (pcSumBranchPresent ? "true" : "false") << ",\n"
+      << "  \"pcSideBranchesPresent\": "
+      << (pcSideBranchesPresent ? "true" : "false") << ",\n"
+      << "  \"pcGammaBranchesPresent\": "
+      << (pcGammaBranchesPresent ? "true" : "false") << ",\n"
       << "  \"missingTH\": " << missingTH << ",\n"
       << "  \"missingTLC\": " << missingTLC << ",\n"
       << "  \"extraTH\": " << extraTH << ",\n"
@@ -832,14 +891,16 @@ void writeManifest(const std::string &path, const std::string &input,
   } else {
     out << "null,\n";
   }
-  out << "  \"classifierInputs\": [\"calarr.dE_MeV\", "
-         "\"evt.EdepPC_MeV\", \"evt.EdepPCDown_MeV\", "
-         "\"evt.EdepPCUp_MeV\", \"evt.PCGammaN\", "
-         "\"evt.PCGammaDownN\", \"evt.PCGammaUpN\", "
-         "\"evt.PCGammaEnergy_MeV\", \"evt.PCGammaDownEnergy_MeV\", "
-         "\"evt.PCGammaUpEnergy_MeV\", \"evt.PCGammaMaxEnergy_MeV\", "
-         "\"th.dE_MeV\", "
-         "\"th.time_ns\", ";
+  out << "  \"classifierInputs\": [\"calarr.dE_MeV\", ";
+  if (pcSumBranchPresent) out << "\"evt.EdepPC_MeV\", ";
+  if (pcSideBranchesPresent)
+    out << "\"evt.EdepPCDown_MeV\", \"evt.EdepPCUp_MeV\", ";
+  if (pcGammaBranchesPresent)
+    out << "\"evt.PCGammaN\", \"evt.PCGammaDownN\", "
+           "\"evt.PCGammaUpN\", \"evt.PCGammaEnergy_MeV\", "
+           "\"evt.PCGammaDownEnergy_MeV\", \"evt.PCGammaUpEnergy_MeV\", "
+           "\"evt.PCGammaMaxEnergy_MeV\", ";
+  out << "\"th.dE_MeV\", \"th.time_ns\", ";
   if (m.finalReadoutMetadata) out << "\"th.zReco_mm\", ";
   out << "\"tlc.cherenkovExpectedPhotons\", "
          "\"tlc.cherenkovTime_ns\"],\n"
@@ -852,7 +913,7 @@ void writeManifest(const std::string &path, const std::string &input,
 
 bool extract(const std::string &input, const std::string &output,
              double threshold, bool allowMissing, bool allowNonFlag4,
-             bool allowLegacyHodo) {
+             bool allowLegacyHodo, const std::string &disabledCellPath) {
   TFile file(input.c_str(), "READ");
   if (file.IsZombie()) throw std::runtime_error("cannot open " + input);
   auto *cal = dynamic_cast<TTree *>(file.Get("calarr"));
@@ -866,6 +927,10 @@ bool extract(const std::string &input, const std::string &output,
   if (meta.physicsFlag != 4 && !allowNonFlag4)
     throw std::runtime_error("physicsFlag is not 4");
   const Geometry geometry(meta);
+  const auto disabledCells =
+      readDisabledCells(disabledCellPath, geometry.NCell());
+  const std::size_t disabledCellCount = static_cast<std::size_t>(
+      std::count(disabledCells.begin(), disabledCells.end(), 1));
 
   const auto evtIndex = buildEventIndex(evt);
   const auto thIndex = buildEventIndex(th);
@@ -881,9 +946,13 @@ bool extract(const std::string &input, const std::string &output,
   cal->SetBranchAddress("eventID", &calEventID);
   cal->SetBranchAddress("dE_MeV", &calE);
 
-  requireBranch(evt, "EdepPC_MeV");
-  requireBranch(evt, "EdepPCDown_MeV");
-  requireBranch(evt, "EdepPCUp_MeV");
+  const bool hasPCSumBranch = evt->GetBranch("EdepPC_MeV");
+  if (!hasPCSumBranch && !allowLegacyHodo)
+    throw std::runtime_error(
+        "missing branch evt.EdepPC_MeV; use --allow-legacy-hodo only for old exploratory files");
+  const bool hasPCSideBranches =
+      hasPCSumBranch && evt->GetBranch("EdepPCDown_MeV") &&
+      evt->GetBranch("EdepPCUp_MeV");
   const char *pcGammaBranches[] = {
       "PCGammaN", "PCGammaDownN", "PCGammaUpN", "PCGammaEnergy_MeV",
       "PCGammaDownEnergy_MeV", "PCGammaUpEnergy_MeV",
@@ -893,9 +962,11 @@ bool extract(const std::string &input, const std::string &output,
     hasPCGammaBranches = hasPCGammaBranches && evt->GetBranch(name);
   evt->SetBranchStatus("*", 0);
   evt->SetBranchStatus("eventID", 1);
-  evt->SetBranchStatus("EdepPC_MeV", 1);
-  evt->SetBranchStatus("EdepPCDown_MeV", 1);
-  evt->SetBranchStatus("EdepPCUp_MeV", 1);
+  if (hasPCSumBranch) evt->SetBranchStatus("EdepPC_MeV", 1);
+  if (hasPCSideBranches) {
+    evt->SetBranchStatus("EdepPCDown_MeV", 1);
+    evt->SetBranchStatus("EdepPCUp_MeV", 1);
+  }
   if (hasPCGammaBranches)
     for (const char *name : pcGammaBranches) evt->SetBranchStatus(name, 1);
   int evtEventID = -1;
@@ -904,9 +975,11 @@ bool extract(const std::string &input, const std::string &output,
   double pcGammaEnergy = 0.0, pcGammaDownEnergy = 0.0;
   double pcGammaUpEnergy = 0.0, pcGammaMaxEnergy = 0.0;
   evt->SetBranchAddress("eventID", &evtEventID);
-  evt->SetBranchAddress("EdepPC_MeV", &pcSumE);
-  evt->SetBranchAddress("EdepPCDown_MeV", &pcDownE);
-  evt->SetBranchAddress("EdepPCUp_MeV", &pcUpE);
+  if (hasPCSumBranch) evt->SetBranchAddress("EdepPC_MeV", &pcSumE);
+  if (hasPCSideBranches) {
+    evt->SetBranchAddress("EdepPCDown_MeV", &pcDownE);
+    evt->SetBranchAddress("EdepPCUp_MeV", &pcUpE);
+  }
   if (hasPCGammaBranches) {
     evt->SetBranchAddress("PCGammaN", &pcGammaN);
     evt->SetBranchAddress("PCGammaDownN", &pcGammaDownN);
@@ -964,18 +1037,24 @@ bool extract(const std::string &input, const std::string &output,
     if (!calE || static_cast<int>(calE->size()) != geometry.NCell())
       throw std::runtime_error("calarr vector size mismatch for event " +
                                std::to_string(calEventID));
-    auto f = makeBgoFeatures(geometry, *calE, calEventID, threshold);
+    auto f = makeBgoFeatures(geometry, *calE, calEventID, threshold,
+                             disabledCells);
 
     const auto eit = evtIndex.find(calEventID);
     if (eit == evtIndex.end())
       throw std::runtime_error("evt eventID is missing from calarr join: " +
                                std::to_string(calEventID));
     evt->GetEntry(eit->second);
+    if (!hasPCSumBranch) pcSumE = 0.0;
+    if (!hasPCSideBranches) {
+      pcDownE = 0.0;
+      pcUpE = 0.0;
+    }
     if (evtEventID != calEventID || !std::isfinite(pcSumE) ||
         !std::isfinite(pcDownE) || !std::isfinite(pcUpE) ||
         pcSumE < 0.0 || pcDownE < 0.0 || pcUpE < 0.0 ||
-        std::abs(pcSumE - pcDownE - pcUpE) >
-            1.0e-8 * std::max(1.0, pcSumE))
+        (hasPCSideBranches && std::abs(pcSumE - pcDownE - pcUpE) >
+            1.0e-8 * std::max(1.0, pcSumE)))
       throw std::runtime_error("evt PC join/value mismatch for event " +
                                std::to_string(calEventID));
     f[kPCSumE] = static_cast<float>(pcSumE);
@@ -1070,7 +1149,10 @@ bool extract(const std::string &input, const std::string &output,
   out.write(reinterpret_cast<const char *>(all.data()), all.size() * sizeof(float));
   if (!out) throw std::runtime_error("failed while writing " + output);
   writeManifest(output, input, meta, threshold, cal->GetEntries(),
-                missingTH, missingTLC, extraTH, extraTLC);
+                missingTH, missingTLC, extraTH, extraTLC,
+                disabledCellPath, disabledCellCount,
+                hasPCSumBranch,
+                hasPCSideBranches, hasPCGammaBranches);
   std::cout << input << " -> " << output
             << " rows=" << cal->GetEntries() << " cols=" << kNFeature
             << " geometry=" << meta.nLayer << "x" << meta.nSector
@@ -1081,6 +1163,7 @@ bool extract(const std::string &input, const std::string &output,
             << useTHZReco
             << " missing=" << missingTH << "/" << missingTLC
             << " extra=" << extraTH << "/" << extraTLC
+            << " disabledCells=" << disabledCellCount
             << " threshold=" << threshold << " MeV\n";
   return true;
 }
@@ -1147,6 +1230,13 @@ void selfTestGeometry() {
   const Geometry shiftedGeometry(shifted);
   if (!(shiftedGeometry.directions.front()[2] < eg.directions.front()[2]))
     throw std::runtime_error("BGOegg z-offset direction self-test failed");
+  std::vector<double> raw(eg.NCell(), 0.0);
+  raw[0] = 10.0;
+  std::vector<unsigned char> disabled(eg.NCell(), 0);
+  disabled[0] = 1;
+  const auto masked = makeBgoFeatures(eg, raw, 0, 3.0, disabled);
+  if (masked[kNHit] != 0.0f || masked[kSumE] != 0.0f)
+    throw std::runtime_error("disabled-cell mask self-test failed");
   std::cout << "geometry self-test ok: equal-solid, uniform, and BGOegg published 31-layer\n";
 }
 
@@ -1164,15 +1254,19 @@ int main(int argc, char **argv) {
   }
   if (argc < 4) {
     std::cerr << "usage: bgo_extract_features_v2 input.root output.bgo2 threshold_MeV"
-                 " [--allow-missing] [--allow-nonflag4] [--allow-legacy-hodo]\n";
+                 " [--allow-missing] [--allow-nonflag4] [--allow-legacy-hodo]"
+                 " [--mask-cells PATH]\n";
     return 2;
   }
   bool allowMissing = false, allowNonFlag4 = false, allowLegacyHodo = false;
+  std::string disabledCellPath;
   for (int i = 4; i < argc; ++i) {
     const std::string arg(argv[i]);
     if (arg == "--allow-missing") allowMissing = true;
     else if (arg == "--allow-nonflag4") allowNonFlag4 = true;
     else if (arg == "--allow-legacy-hodo") allowLegacyHodo = true;
+    else if (arg == "--mask-cells" && i + 1 < argc)
+      disabledCellPath = argv[++i];
     else {
       std::cerr << "unknown option: " << arg << '\n';
       return 2;
@@ -1180,7 +1274,8 @@ int main(int argc, char **argv) {
   }
   try {
     return extract(argv[1], argv[2], std::stod(argv[3]),
-                   allowMissing, allowNonFlag4, allowLegacyHodo) ? 0 : 1;
+                   allowMissing, allowNonFlag4, allowLegacyHodo,
+                   disabledCellPath) ? 0 : 1;
   } catch (const std::exception &e) {
     std::cerr << "ERROR: " << e.what() << '\n';
     return 1;
