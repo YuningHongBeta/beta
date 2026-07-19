@@ -1,9 +1,9 @@
 schema: beta-bgo-th-tlc-beam-overlay-v6
-tag: hong_k18_overlay_s8202026b
+tag: hong_k18_overlay_s8202026c
 build_dir: build_beamoverlay
 events: 100000
 seed: 8202026
-threads: 8
+threads: 2
 
 # Hong thesis Appendix C: K1.8, 1.5 GeV/c K-, 20 g/cm2 13C
 # scintillator target. Pure 13C at 1.0 g/cm3 is an explicit transport proxy

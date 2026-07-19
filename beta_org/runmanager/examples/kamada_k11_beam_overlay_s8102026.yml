@@ -1,9 +1,9 @@
 schema: beta-bgo-th-tlc-beam-overlay-v6
-tag: kamada_k11_overlay_s8102026b
+tag: kamada_k11_overlay_s8102026c
 build_dir: build_beamoverlay
 events: 100000
 seed: 8102026
-threads: 8
+threads: 2
 
 # Kamada thesis baseline: K1.1, 1.1 GeV/c pi+, 6Li target.
 # Clean and overlay samples share the same signal seed and geometry.
