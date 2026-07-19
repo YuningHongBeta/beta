@@ -69,10 +69,12 @@ python3 analysis/bgo_threshold3_confirm_v1.py \
 
 ## 入力制約とreadout mode
 
-- 必須tree: `runmeta`, `calarr`, `th`, `tlc`
+- 必須tree: `runmeta`, `evt`, `calarr`, `th`, `tlc`
 - 常時使用: `calarr.{eventID,dE_MeV}`, `th.{eventID,dE_MeV,time_ns}`,
   `tlc.{eventID,cherenkovExpectedPhotons,cherenkovTime_ns}`
 - `strict-timing`だけ: `th.zReco_mm`
+- rate-overlay ROOTでは`evt.beamMultiplicity`を末尾featureとして読む。旧ROOTに
+  branchがない場合は0を格納し、旧BGO2 feature fileの読出し互換性も維持する。
 - 禁止: `target`, `pdg`, `pid`, `th.chargedPath_truth_mm`,
   `tlc.dE_truth_MeV`, `tlc.chargedPath_truth_mm`, `tlc.cherenkovPath_mm`
 - treeはentry番号でなく`eventID`で結合する。duplicate、missing、extraはdefaultで
@@ -105,7 +107,8 @@ python3 analysis/bgo_features_v2.py GEOM_e_T3.bgo2 --expect-rows 100000
 ```
 
 strict timingでは`--allow-legacy-hodo`を付けない。T4/T5も同様に抽出する。
-現在のschemaは130 float features。equal-solidではcos(theta) bin edgeの中点を
+現在のschemaは141 float features。末尾の`beamMultiplicity`は新しいrate-overlay
+ROOTでは`evt`から読み、旧ROOTでは0へfallbackする。equal-solidではcos(theta) bin edgeの中点を
 cell方向に用いる。`bgoegg_published`ではAnnual Reportの非一様ring tableと
 各frustumの8頂点平均を使い、`bgoZOffset_cm`を加えたworld座標からtarget方向を
 計算する。uniform/equal-solid geometryでもz offsetをcell方向へ反映する。

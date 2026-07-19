@@ -11,10 +11,30 @@
 #include "G4RandomDirection.hh"
 #include "G4GenericMessenger.hh"
 #include "Randomize.hh"
+#include "CLHEP/Random/RandPoisson.h"
 #include <cmath>
 #include <algorithm>
 
 namespace {
+
+G4double StandardGaussian()
+{
+  const G4double u1 = std::max(G4UniformRand(), 1.0e-300);
+  const G4double u2 = G4UniformRand();
+  return std::sqrt(-2.0 * std::log(u1)) * std::cos(twopi * u2);
+}
+
+G4double TruncatedGaussian(G4double mean, G4double sigma, G4double maxAbs)
+{
+  for (int attempt = 0; attempt < 100000; ++attempt) {
+    const G4double value = mean + sigma * StandardGaussian();
+    if (std::abs(value) <= maxAbs)
+      return value;
+  }
+  G4Exception("TruncatedGaussian", "Gen004", FatalException,
+              "Failed to sample the configured truncated Gaussian beam profile");
+  return mean;
+}
 
 // Källén function: λ(a,b,c) = a^2 + b^2 + c^2 - 2ab - 2ac - 2bc
 inline G4double Kallen(G4double a, G4double b, G4double c)
@@ -211,7 +231,8 @@ void betaPrimaryGeneratorAction::GenerateElectronLambda3Body()
   fGun->SetParticleMomentumDirection(p_e.unit());
 }
 
-void betaPrimaryGeneratorAction::GenerateIncidentBeam(G4Event* evt)
+void betaPrimaryGeneratorAction::GenerateIncidentBeam(
+    G4Event* evt, G4double arrivalTime, G4double x, G4double y)
 {
   const auto &config = BetaConfig::Instance();
   auto* part = G4ParticleTable::GetParticleTable()->FindParticle(
@@ -234,9 +255,9 @@ void betaPrimaryGeneratorAction::GenerateIncidentBeam(G4Event* evt)
   fGun->SetParticleEnergy(totalEnergy - mass);
   // In this geometry theta_min is the upstream/beam-entrance opening (+z).
   fGun->SetParticleMomentumDirection(G4ThreeVector(0., 0., -1.));
-  fGun->SetParticlePosition(G4ThreeVector(0., 0., upstreamDistance));
+  fGun->SetParticlePosition(G4ThreeVector(x, y, upstreamDistance));
   // Define t=0 at the target center, where the clean signal vertex is placed.
-  fGun->SetParticleTime(-upstreamDistance / (beta * c_light));
+  fGun->SetParticleTime(arrivalTime - upstreamDistance / (beta * c_light));
   fGun->GeneratePrimaryVertex(evt);
 }
 
@@ -262,6 +283,25 @@ void betaPrimaryGeneratorAction::GeneratePrimaries(G4Event* evt)
     fGun->GeneratePrimaryVertex(evt);
   }
 
-  if (fOverlayBeam)
-    GenerateIncidentBeam(evt);
+  if (fOverlayBeam) {
+    const auto &config = BetaConfig::Instance();
+    const int multiplicity = config.BeamMultiplicityMode() == "poisson"
+                                 ? static_cast<int>(CLHEP::RandPoisson::shoot(
+                                       config.BeamMeanPerBgoGate()))
+                                 : config.BeamFixedMultiplicity();
+    for (int index = 0; index < multiplicity; ++index) {
+      const G4double arrivalTime = config.BgoGateWidthNs() > 0.0
+          ? (G4UniformRand() - 0.5) * config.BgoGateWidthNs() * ns
+          : 0.0;
+      G4double x = config.BeamXMeanMm() * mm;
+      G4double y = config.BeamYMeanMm() * mm;
+      if (config.BeamProfileModel() == "independent_truncated_gaussian") {
+        x = TruncatedGaussian(config.BeamXMeanMm(), config.BeamXSigmaMm(),
+                              config.BeamXMaxAbsMm()) * mm;
+        y = TruncatedGaussian(config.BeamYMeanMm(), config.BeamYSigmaMm(),
+                              config.BeamYMaxAbsMm()) * mm;
+      }
+      GenerateIncidentBeam(evt, arrivalTime, x, y);
+    }
+  }
 }

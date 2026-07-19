@@ -291,6 +291,13 @@ void betaEventAction::EndOfEventAction(const G4Event *evt)
   ana->FillNtupleDColumn(0, 10, fPCGammaDownEnergy / MeV);
   ana->FillNtupleDColumn(0, 11, fPCGammaUpEnergy / MeV);
   ana->FillNtupleDColumn(0, 12, fPCGammaMaxEnergy / MeV);
+  const auto &config = BetaConfig::Instance();
+  const int signalVertices = config.BeamOnly() ? 0 : 1;
+  const int beamMultiplicity = config.BeamOverlay()
+                                   ? std::max(0, evt->GetNumberOfPrimaryVertex() -
+                                                     signalVertices)
+                                   : 0;
+  ana->FillNtupleIColumn(0, 13, beamMultiplicity);
   ana->AddNtupleRow(0);
 
   // --------------------------

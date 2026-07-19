@@ -1,0 +1,53 @@
+schema: beta-bgo-th-tlc-rate-overlay-v7
+tag: hong_k18_rate_gate_scan_s8402026
+build_dir: build_rateoverlay
+events: 100000
+seed: 8402026
+threads: 2
+
+# Hong Appendix C proposal rate: 1.25e6 K-/spill divided by the separately
+# assumed historical 2.1 s spill gives lambda=0.595 in a 1 us BGO window.
+# The target-plane profile is an explicit independent truncated-Gaussian proxy
+# for Yamamoto thesis Fig. 2.4 (Hong ref. [34]); it is not a digitized PDF fit.
+# TH/TLC gate widths are provisional sensitivity points, centered at target t=0
+# and including TOF, rather than beta-specific measured electronics gates.
+beam:
+  particle: kaon-
+  momentum_mev_c: 1500
+  multiplicity_mode: poisson
+  fixed_multiplicity: 1
+  mean_per_bgo_gate: 0.595
+  bgo_gate_width_ns: 1000
+  hodo_gate_width_ns: [4, 10, 20, 50]
+  profile_model: independent_truncated_gaussian
+  x_mean_mm: 0
+  y_mean_mm: 0
+  x_sigma_mm: 24
+  y_sigma_mm: 5
+  x_max_abs_mm: 60
+  y_max_abs_mm: 20
+target:
+  material: C13_100pct
+  areal_density_g_cm2: 20
+  density_g_cm3: 1.0
+  radius_mm: 15
+signal:
+  pim_momentum_mev_c: 105.4
+  pi0_momentum_mev_c: 100
+geometries:
+  - name: u15x15_hole87p9msr_t1
+    n_layer: 15
+    n_sector: 15
+    segmentation: uniform_theta
+    geometry_mode: current
+    photon_counter: none
+    bgo_z_offset_cm: 0
+    theta_min_deg: 9.59510523
+    theta_max_deg: 170.302
+# Generate clean controls under the same detector gate; the 4 ns point can
+# otherwise fold signal TOF acceptance into the inferred beam degradation.
+primaries: [e, pim, pi0, beam, e_beam, pim_beam, pi0_beam]
+lsf:
+  queue: l
+  wall_minutes: 720
+  memory_mb: 4096

@@ -259,6 +259,42 @@ class RunManagerTests(unittest.TestCase):
             with self.assertRaisesRegex(rm.RunManagerError, "beam mapping"):
                 rm.load_manifest(path)
 
+    def test_v7_rate_gate_scan_expands_and_exports(self):
+        content = base_manifest()
+        content["schema"] = rm.SCHEMA_V7
+        content["events"] = 20000
+        content["primaries"] = ["e_beam"]
+        content["beam"] = {
+            "particle": "pi+", "momentum_mev_c": 1100,
+            "multiplicity_mode": "poisson", "fixed_multiplicity": 1,
+            "mean_per_bgo_gate": 10, "bgo_gate_width_ns": 1000,
+            "hodo_gate_width_ns": [4, 10, 20, 50],
+            "profile_model": "pencil", "x_mean_mm": 0, "y_mean_mm": 0,
+            "x_sigma_mm": 0, "y_sigma_mm": 0,
+            "x_max_abs_mm": 0, "y_max_abs_mm": 0,
+        }
+        content["target"] = {
+            "material": "Li6_90pct", "areal_density_g_cm2": 14.1,
+            "density_g_cm3": 0.47, "radius_mm": 15,
+        }
+        content["signal"] = {
+            "pim_momentum_mev_c": 105.4, "pi0_momentum_mev_c": 100,
+        }
+        for geometry in content["geometries"]:
+            geometry["bgo_z_offset_cm"] = 0
+            geometry["theta_min_deg"] = 24 if geometry["geometry_mode"] == "bgoegg_envelope" else 5.666
+            geometry["theta_max_deg"] = 144 if geometry["geometry_mode"] == "bgoegg_envelope" else 170.302
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = rm.load_manifest(self.write_manifest(directory, content))
+            jobs = rm.expand_jobs(manifest, Path(directory) / "state.json")
+        self.assertEqual(len(jobs), 8)
+        self.assertEqual({job["beam"]["hodo_gate_width_ns"] for job in jobs},
+                         {4.0, 10.0, 20.0, 50.0})
+        command = rm.bsub_command(manifest, jobs[0])
+        self.assertIn("BETA_EVENTS=20000", command)
+        self.assertIn("BETA_BEAM_MULTIPLICITY_MODE=poisson", command)
+        self.assertIn("BETA_HODO_GATE_WIDTH_NS=4.0", command)
+
     def test_v5_rejects_endcap_inside_frustum_extent(self):
         content = base_manifest()
         content["schema"] = rm.SCHEMA_V5
@@ -379,6 +415,11 @@ class RunManagerTests(unittest.TestCase):
         errors = rm.validate_inspection(job, inspection)
         self.assertTrue(any("incomplete optional" in error for error in errors))
         inspection["branches"]["evt"] = set(rm.EXPECTED_BRANCHES["evt"])
+        inspection["branches"]["evt"].update(rm.RATE_EVT_BRANCHES)
+        inspection["branches"]["runmeta"].update(rm.RATE_RUNMETA_BRANCHES)
+        self.assertEqual(rm.validate_inspection(job, inspection), [])
+        inspection["branches"]["evt"] = set(rm.EXPECTED_BRANCHES["evt"])
+        inspection["branches"]["runmeta"] = set(rm.EXPECTED_BRANCHES["runmeta"])
         inspection["meta"]["physicsFlag"] = "3"
         errors = rm.validate_inspection(job, inspection)
         self.assertTrue(any("physicsFlag" in error for error in errors))

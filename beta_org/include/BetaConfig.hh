@@ -43,6 +43,18 @@ public:
   bool BeamOnly() const { return fPrimary == "beam"; }
   const std::string &BeamParticle() const { return fBeamParticle; }
   double BeamMomentumMeVC() const { return fBeamMomentumMeVC; }
+  const std::string &BeamMultiplicityMode() const { return fBeamMultiplicityMode; }
+  int BeamFixedMultiplicity() const { return fBeamFixedMultiplicity; }
+  double BeamMeanPerBgoGate() const { return fBeamMeanPerBgoGate; }
+  double BgoGateWidthNs() const { return fBgoGateWidthNs; }
+  double HodoGateWidthNs() const { return fHodoGateWidthNs; }
+  const std::string &BeamProfileModel() const { return fBeamProfileModel; }
+  double BeamXMeanMm() const { return fBeamXMeanMm; }
+  double BeamYMeanMm() const { return fBeamYMeanMm; }
+  double BeamXSigmaMm() const { return fBeamXSigmaMm; }
+  double BeamYSigmaMm() const { return fBeamYSigmaMm; }
+  double BeamXMaxAbsMm() const { return fBeamXMaxAbsMm; }
+  double BeamYMaxAbsMm() const { return fBeamYMaxAbsMm; }
   double PiMinusMomentumMeVC() const { return fPiMinusMomentumMeVC; }
   double PiZeroMomentumMeVC() const { return fPiZeroMomentumMeVC; }
   const std::string &TargetMaterial() const { return fTargetMaterial; }
@@ -204,6 +216,19 @@ private:
         fBeamParticle(ReadString("BETA_BEAM_PARTICLE", "pi+")),
         fBeamMomentumMeVC(ReadDouble(
             "BETA_BEAM_MOMENTUM_MEV_C", 1100.0, 1.0, 10000.0)),
+        fBeamMultiplicityMode(ReadString("BETA_BEAM_MULTIPLICITY_MODE", "fixed")),
+        fBeamFixedMultiplicity(ReadInt("BETA_BEAM_FIXED_MULTIPLICITY", 1, 0, 100000)),
+        fBeamMeanPerBgoGate(ReadDouble(
+            "BETA_BEAM_MEAN_PER_BGO_GATE", 1.0, 0.0, 100000.0)),
+        fBgoGateWidthNs(ReadDouble("BETA_BGO_GATE_WIDTH_NS", 0.0, 0.0, 1.0e9)),
+        fHodoGateWidthNs(ReadDouble("BETA_HODO_GATE_WIDTH_NS", 0.0, 0.0, 1.0e9)),
+        fBeamProfileModel(ReadString("BETA_BEAM_PROFILE_MODEL", "pencil")),
+        fBeamXMeanMm(ReadDouble("BETA_BEAM_X_MEAN_MM", 0.0, -1000.0, 1000.0)),
+        fBeamYMeanMm(ReadDouble("BETA_BEAM_Y_MEAN_MM", 0.0, -1000.0, 1000.0)),
+        fBeamXSigmaMm(ReadDouble("BETA_BEAM_X_SIGMA_MM", 0.0, 0.0, 1000.0)),
+        fBeamYSigmaMm(ReadDouble("BETA_BEAM_Y_SIGMA_MM", 0.0, 0.0, 1000.0)),
+        fBeamXMaxAbsMm(ReadDouble("BETA_BEAM_X_MAX_ABS_MM", 0.0, 0.0, 1000.0)),
+        fBeamYMaxAbsMm(ReadDouble("BETA_BEAM_Y_MAX_ABS_MM", 0.0, 0.0, 1000.0)),
         fPiMinusMomentumMeVC(ReadDouble(
             "BETA_PIM_MOMENTUM_MEV_C", 100.0, 0.01, 1000.0)),
         fPiZeroMomentumMeVC(ReadDouble(
@@ -308,6 +333,23 @@ private:
         fBeamParticle != "kaon+" && fBeamParticle != "kaon-")
       throw std::runtime_error(
           "BETA_BEAM_PARTICLE must be pi+, pi-, kaon+, or kaon-");
+    if (fBeamMultiplicityMode != "fixed" && fBeamMultiplicityMode != "poisson")
+      throw std::runtime_error(
+          "BETA_BEAM_MULTIPLICITY_MODE must be fixed or poisson");
+    if (fBeamMultiplicityMode == "poisson" && fBgoGateWidthNs <= 0.0)
+      throw std::runtime_error(
+          "BETA_BGO_GATE_WIDTH_NS must be positive for poisson beam multiplicity");
+    if (fBeamProfileModel != "pencil" &&
+        fBeamProfileModel != "independent_truncated_gaussian")
+      throw std::runtime_error(
+          "BETA_BEAM_PROFILE_MODEL must be pencil or independent_truncated_gaussian");
+    if (fBeamProfileModel == "independent_truncated_gaussian" &&
+        (fBeamXSigmaMm <= 0.0 || fBeamYSigmaMm <= 0.0 ||
+         fBeamXMaxAbsMm <= 0.0 || fBeamYMaxAbsMm <= 0.0 ||
+         std::abs(fBeamXMeanMm) >= fBeamXMaxAbsMm ||
+         std::abs(fBeamYMeanMm) >= fBeamYMaxAbsMm))
+      throw std::runtime_error(
+          "truncated Gaussian beam requires positive sigma/max and |mean| < max");
     if (fTargetMaterial != "Li6_90pct" &&
         fTargetMaterial != "C13_100pct")
       throw std::runtime_error(
@@ -342,6 +384,18 @@ private:
   std::string fPrimary;
   std::string fBeamParticle;
   double fBeamMomentumMeVC;
+  std::string fBeamMultiplicityMode;
+  int fBeamFixedMultiplicity;
+  double fBeamMeanPerBgoGate;
+  double fBgoGateWidthNs;
+  double fHodoGateWidthNs;
+  std::string fBeamProfileModel;
+  double fBeamXMeanMm;
+  double fBeamYMeanMm;
+  double fBeamXSigmaMm;
+  double fBeamYSigmaMm;
+  double fBeamXMaxAbsMm;
+  double fBeamYMaxAbsMm;
   double fPiMinusMomentumMeVC;
   double fPiZeroMomentumMeVC;
   std::string fTargetMaterial;

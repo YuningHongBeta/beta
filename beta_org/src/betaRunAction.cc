@@ -98,6 +98,7 @@ betaRunAction::betaRunAction(
   man->CreateNtupleDColumn("PCGammaDownEnergy_MeV"); // col10
   man->CreateNtupleDColumn("PCGammaUpEnergy_MeV");   // col11
   man->CreateNtupleDColumn("PCGammaMaxEnergy_MeV");  // col12
+  man->CreateNtupleIColumn("beamMultiplicity");       // col13
   man->FinishNtuple();
 
   // ---- ntuple 1: calhit (per segment hit list) ----
@@ -190,6 +191,19 @@ betaRunAction::betaRunAction(
   man->CreateNtupleDColumn("targetLength_mm");
   man->CreateNtupleDColumn("pimMomentum_MeV_c");
   man->CreateNtupleDColumn("pi0Momentum_MeV_c");
+  man->CreateNtupleSColumn("beamMultiplicityMode");
+  man->CreateNtupleIColumn("beamFixedMultiplicity");
+  man->CreateNtupleDColumn("beamMeanPerBgoGate");
+  man->CreateNtupleDColumn("bgoGateWidth_ns");
+  man->CreateNtupleDColumn("hodoGateWidth_ns");
+  man->CreateNtupleSColumn("beamProfileModel");
+  man->CreateNtupleDColumn("beamXMean_mm");
+  man->CreateNtupleDColumn("beamYMean_mm");
+  man->CreateNtupleDColumn("beamXSigma_mm");
+  man->CreateNtupleDColumn("beamYSigma_mm");
+  man->CreateNtupleDColumn("beamXMaxAbs_mm");
+  man->CreateNtupleDColumn("beamYMaxAbs_mm");
+  man->CreateNtupleSColumn("detectorGateTimeReference");
   if (BetaConfig::Instance().BgoZOffsetConfigured())
     man->CreateNtupleDColumn("bgoZOffset_cm");
   man->FinishNtuple();
@@ -294,8 +308,21 @@ void betaRunAction::BeginOfRunAction(const G4Run *)
     man->FillNtupleDColumn(4, 53, config.TargetLengthMm());
     man->FillNtupleDColumn(4, 54, config.PiMinusMomentumMeVC());
     man->FillNtupleDColumn(4, 55, config.PiZeroMomentumMeVC());
+    man->FillNtupleSColumn(4, 56, config.BeamMultiplicityMode());
+    man->FillNtupleIColumn(4, 57, config.BeamFixedMultiplicity());
+    man->FillNtupleDColumn(4, 58, config.BeamMeanPerBgoGate());
+    man->FillNtupleDColumn(4, 59, config.BgoGateWidthNs());
+    man->FillNtupleDColumn(4, 60, config.HodoGateWidthNs());
+    man->FillNtupleSColumn(4, 61, config.BeamProfileModel());
+    man->FillNtupleDColumn(4, 62, config.BeamXMeanMm());
+    man->FillNtupleDColumn(4, 63, config.BeamYMeanMm());
+    man->FillNtupleDColumn(4, 64, config.BeamXSigmaMm());
+    man->FillNtupleDColumn(4, 65, config.BeamYSigmaMm());
+    man->FillNtupleDColumn(4, 66, config.BeamXMaxAbsMm());
+    man->FillNtupleDColumn(4, 67, config.BeamYMaxAbsMm());
+    man->FillNtupleSColumn(4, 68, "full_width_rectangular_centered_on_target_signal_t0");
     if (config.BgoZOffsetConfigured())
-      man->FillNtupleDColumn(4, 56, config.BgoZOffsetCm());
+      man->FillNtupleDColumn(4, 69, config.BgoZOffsetCm());
     man->AddNtupleRow(4);
   }
 

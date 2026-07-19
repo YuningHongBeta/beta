@@ -122,6 +122,15 @@ Geometry/readout scan controls are environment variables:
 - `BETA_BEAM_PARTICLE`, `BETA_BEAM_MOMENTUM_MEV_C`: incident beam species and
   momentum. The v6 runmanager manifests use 1.1 GeV/c π⁺ for the Kamada K1.1
   reference and 1.5 GeV/c K⁻ for the Hong Appendix-C K1.8 reference.
+- `BETA_BEAM_MULTIPLICITY_MODE`: `fixed` (default, backward-compatible one
+  beam particle) or `poisson`. The corresponding controls are
+  `BETA_BEAM_FIXED_MULTIPLICITY` and `BETA_BEAM_MEAN_PER_BGO_GATE`.
+- `BETA_BGO_GATE_WIDTH_NS`: full-width rectangular BGO integration gate. In
+  Poisson mode, beam target-arrival times are uniform in this window.
+  `BETA_HODO_GATE_WIDTH_NS` independently gates TH and TLC steps.
+- `BETA_BEAM_PROFILE_MODEL`: `pencil` (default) or
+  `independent_truncated_gaussian`, configured by `BETA_BEAM_{X,Y}_MEAN_MM`,
+  `BETA_BEAM_{X,Y}_SIGMA_MM`, and `BETA_BEAM_{X,Y}_MAX_ABS_MM`.
 - `BETA_TARGET_MATERIAL`, `BETA_TARGET_AREAL_DENSITY_G_CM2`,
   `BETA_TARGET_DENSITY_G_CM3`, `BETA_TARGET_RADIUS_MM`: target transport model.
 - `BETA_PIM_MOMENTUM_MEV_C`, `BETA_PI0_MOMENTUM_MEV_C`: generated decay-
@@ -132,13 +141,17 @@ Geometry/readout scan controls are environment variables:
 - `BETA_SEED`, `BETA_THREADS`: reproducibility and worker count.
 
 Every output contains a `runmeta` tree with the geometry/counter modes and
-dimensions, primary, seed, and fixed physics parameters. The tuned INCL physics
-parameters are not scan axes.
+dimensions, primary, seed, fixed physics parameters, and beam rate/gate/profile
+settings. `evt.beamMultiplicity` records the realized number of beam primaries.
+Both BGO and TH/TLC gates are full-width rectangular windows centered on the
+clean signal vertex at target-center `t=0`; consequently a short TH/TLC gate
+also includes time of flight. A zero gate width disables step-time rejection.
+The tuned INCL physics parameters are not scan axes.
 
-The initial overlay is a correlated, on-axis pencil-beam diagnostic. It does
-not yet include the beam-profile tails, multiple beam particles within the BGO
-integration time, spill structure, electronics dead time, or accidental
-pile-up. The Hong K1.8 manifest uses pure enriched 13C at 1.0 g/cm3 as an
+The v7 rate overlay adds Poisson in-gate multiplicity, arrival-time pile-up,
+and a configurable transverse profile. It still does not model within-spill
+rate variation, beam angle/momentum correlations, electronics dead time, or
+waveform shaping. The Hong K1.8 manifest uses pure enriched 13C at 1.0 g/cm3 as an
 explicit proxy because Appendix C gives 20 g/cm2 but not the scintillator
 composition or density. These limitations prevent interpreting the result as
 an absolute detector rate prediction.

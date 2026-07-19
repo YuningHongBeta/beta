@@ -2,6 +2,7 @@
 
 #include "CalorimeterSD.hh"
 #include "CalorimeterHit.hh"
+#include "BetaConfig.hh"
 #include "betaStackingAction.hh"
 
 #include "G4Step.hh"
@@ -11,6 +12,9 @@
 #include "G4TouchableHandle.hh"
 #include "G4StepPoint.hh"
 #include "G4VProcess.hh"
+#include "G4SystemOfUnits.hh"
+
+#include <cmath>
 
 CalorimeterSD::CalorimeterSD(const G4String& name,
                              const G4String& hitsCollectionName)
@@ -41,8 +45,16 @@ G4bool CalorimeterSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   if (edep <= 0.) return false;
 
   const auto* pre   = step->GetPreStepPoint();
+  const auto* post  = step->GetPostStepPoint();
   const auto* track = step->GetTrack();
   if (!pre || !track) return false;
+
+  const auto gateWidth = BetaConfig::Instance().BgoGateWidthNs() * ns;
+  const auto stepTime = post
+      ? 0.5 * (pre->GetGlobalTime() + post->GetGlobalTime())
+      : pre->GetGlobalTime();
+  if (gateWidth > 0.0 && std::abs(stepTime) > 0.5 * gateWidth)
+    return false;
 
   const auto th = pre->GetTouchableHandle();
   if (!th) return false;
@@ -58,7 +70,7 @@ G4bool CalorimeterSD::ProcessHits(G4Step* step, G4TouchableHistory*)
     fHitByCopyNo.resize(copyNo + 1, nullptr);
   }
 
-  const auto time = pre->GetGlobalTime();
+  const auto time = stepTime;
   const auto pdg  = track->GetDefinition()->GetPDGEncoding(); // first-hit pid
   const auto mom  = pre->GetMomentum();
 

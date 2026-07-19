@@ -1,5 +1,6 @@
 #include "HodoscopeSD.hh"
 
+#include "BetaConfig.hh"
 #include "Constant.hh"
 #include "DetectorResponse.hh"
 #include "G4HCofThisEvent.hh"
@@ -45,6 +46,13 @@ G4bool HodoscopeSD::ProcessHits(G4Step *step, G4TouchableHistory *)
   const auto *track = step->GetTrack();
   const auto *pre = step->GetPreStepPoint();
   const auto *post = step->GetPostStepPoint();
+  const G4double stepTime = post
+                                ? 0.5 * (pre->GetGlobalTime() +
+                                         post->GetGlobalTime())
+                                : pre->GetGlobalTime();
+  const G4double gateWidth = BetaConfig::Instance().HodoGateWidthNs() * ns;
+  if (gateWidth > 0.0 && std::abs(stepTime) > 0.5 * gateWidth)
+    return false;
   const auto touchable = pre->GetTouchableHandle();
   if (!touchable)
     return false;

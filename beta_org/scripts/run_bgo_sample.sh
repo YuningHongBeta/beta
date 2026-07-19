@@ -49,10 +49,11 @@ export BETA_THREADS="${BETA_THREADS:-8}"
 export BETA_SEED="${BETA_SEED:-6302026}"
 events="${BETA_EVENTS:-100000}"
 case "$events" in
-  100000) run_macro="macros/run.mac" ;;
-  2000000) run_macro="macros/run_2m.mac" ;;
+  20000) run_macro="$project_dir/macros/run_20k.mac" ;;
+  100000) run_macro="$project_dir/macros/run.mac" ;;
+  2000000) run_macro="$project_dir/macros/run_2m.mac" ;;
   *)
-    echo "unsupported BETA_EVENTS=$events (expected 100000 or 2000000)" >&2
+    echo "unsupported BETA_EVENTS=$events (expected 20000, 100000, or 2000000)" >&2
     exit 4
     ;;
 esac

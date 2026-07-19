@@ -104,8 +104,9 @@ enum Feature : int {
   kPCGammaUpEnergy,
   kPCGammaMaxEnergy,
   kPoissonFeatureStart,
-  kNFeature =
-      kPoissonFeatureStart + kNEfficiency * kNPoissonFeaturePerEfficiency
+  kBeamMultiplicity =
+      kPoissonFeatureStart + kNEfficiency * kNPoissonFeaturePerEfficiency,
+  kNFeature
 };
 
 const std::vector<std::string> kFeatureNames = [] {
@@ -151,6 +152,7 @@ const std::vector<std::string> kFeatureNames = [] {
     names.push_back("matchedAnySegHitGe2_" + tag);
     names.push_back("matchedAnySegHitGe3_" + tag);
   }
+  names.push_back("beamMultiplicity");
   return names;
 }();
 
@@ -825,7 +827,8 @@ void writeManifest(const std::string &path, const std::string &input,
                    std::size_t disabledCellCount,
                    bool pcSumBranchPresent,
                    bool pcSideBranchesPresent,
-                   bool pcGammaBranchesPresent) {
+                   bool pcGammaBranchesPresent,
+                   bool beamMultiplicityBranchPresent) {
   std::ofstream out(path + ".json");
   out << std::setprecision(15);
   out << "{\n"
@@ -871,6 +874,8 @@ void writeManifest(const std::string &path, const std::string &input,
       << (pcSideBranchesPresent ? "true" : "false") << ",\n"
       << "  \"pcGammaBranchesPresent\": "
       << (pcGammaBranchesPresent ? "true" : "false") << ",\n"
+      << "  \"beamMultiplicityBranchPresent\": "
+      << (beamMultiplicityBranchPresent ? "true" : "false") << ",\n"
       << "  \"missingTH\": " << missingTH << ",\n"
       << "  \"missingTLC\": " << missingTLC << ",\n"
       << "  \"extraTH\": " << extraTH << ",\n"
@@ -900,6 +905,8 @@ void writeManifest(const std::string &path, const std::string &input,
            "\"evt.PCGammaUpN\", \"evt.PCGammaEnergy_MeV\", "
            "\"evt.PCGammaDownEnergy_MeV\", \"evt.PCGammaUpEnergy_MeV\", "
            "\"evt.PCGammaMaxEnergy_MeV\", ";
+  if (beamMultiplicityBranchPresent)
+    out << "\"evt.beamMultiplicity\", ";
   out << "\"th.dE_MeV\", \"th.time_ns\", ";
   if (m.finalReadoutMetadata) out << "\"th.zReco_mm\", ";
   out << "\"tlc.cherenkovExpectedPhotons\", "
@@ -960,6 +967,7 @@ bool extract(const std::string &input, const std::string &output,
   bool hasPCGammaBranches = true;
   for (const char *name : pcGammaBranches)
     hasPCGammaBranches = hasPCGammaBranches && evt->GetBranch(name);
+  const bool hasBeamMultiplicityBranch = evt->GetBranch("beamMultiplicity");
   evt->SetBranchStatus("*", 0);
   evt->SetBranchStatus("eventID", 1);
   if (hasPCSumBranch) evt->SetBranchStatus("EdepPC_MeV", 1);
@@ -969,8 +977,11 @@ bool extract(const std::string &input, const std::string &output,
   }
   if (hasPCGammaBranches)
     for (const char *name : pcGammaBranches) evt->SetBranchStatus(name, 1);
+  if (hasBeamMultiplicityBranch)
+    evt->SetBranchStatus("beamMultiplicity", 1);
   int evtEventID = -1;
   int pcGammaN = 0, pcGammaDownN = 0, pcGammaUpN = 0;
+  int beamMultiplicity = 0;
   double pcSumE = 0.0, pcDownE = 0.0, pcUpE = 0.0;
   double pcGammaEnergy = 0.0, pcGammaDownEnergy = 0.0;
   double pcGammaUpEnergy = 0.0, pcGammaMaxEnergy = 0.0;
@@ -989,6 +1000,8 @@ bool extract(const std::string &input, const std::string &output,
     evt->SetBranchAddress("PCGammaUpEnergy_MeV", &pcGammaUpEnergy);
     evt->SetBranchAddress("PCGammaMaxEnergy_MeV", &pcGammaMaxEnergy);
   }
+  if (hasBeamMultiplicityBranch)
+    evt->SetBranchAddress("beamMultiplicity", &beamMultiplicity);
 
   requireBranch(th, "dE_MeV");
   requireBranch(th, "time_ns");
@@ -1045,6 +1058,11 @@ bool extract(const std::string &input, const std::string &output,
       throw std::runtime_error("evt eventID is missing from calarr join: " +
                                std::to_string(calEventID));
     evt->GetEntry(eit->second);
+    if (!hasBeamMultiplicityBranch) beamMultiplicity = 0;
+    if (beamMultiplicity < 0)
+      throw std::runtime_error("negative evt.beamMultiplicity for event " +
+                               std::to_string(calEventID));
+    f[kBeamMultiplicity] = static_cast<float>(beamMultiplicity);
     if (!hasPCSumBranch) pcSumE = 0.0;
     if (!hasPCSideBranches) {
       pcDownE = 0.0;
@@ -1152,7 +1170,8 @@ bool extract(const std::string &input, const std::string &output,
                 missingTH, missingTLC, extraTH, extraTLC,
                 disabledCellPath, disabledCellCount,
                 hasPCSumBranch,
-                hasPCSideBranches, hasPCGammaBranches);
+                hasPCSideBranches, hasPCGammaBranches,
+                hasBeamMultiplicityBranch);
   std::cout << input << " -> " << output
             << " rows=" << cal->GetEntries() << " cols=" << kNFeature
             << " geometry=" << meta.nLayer << "x" << meta.nSector

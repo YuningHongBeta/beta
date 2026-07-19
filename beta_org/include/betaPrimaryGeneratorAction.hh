@@ -29,7 +29,8 @@ private:
 
   void GenerateElectronLambda3Body(); // e-のエネルギー&方向をfGunにセット
   void GeneratePionFixedP(const G4String& pname); // π±/π0
-  void GenerateIncidentBeam(G4Event* evt);
+  void GenerateIncidentBeam(G4Event* evt, G4double arrivalTime,
+                            G4double x, G4double y);
 
 private:
   G4ParticleGun* fGun = nullptr;

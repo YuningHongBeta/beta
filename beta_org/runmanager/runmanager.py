@@ -28,10 +28,13 @@ SCHEMA_V3 = "beta-bgo-th-tlc-pc-offset-v3"
 SCHEMA_V4 = "beta-bgo-th-tlc-pc-coverage-v4"
 SCHEMA_V5 = "beta-bgo-th-tlc-pc-design-v5"
 SCHEMA_V6 = "beta-bgo-th-tlc-beam-overlay-v6"
-SUPPORTED_SCHEMAS = {SCHEMA_V2, SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6}
+SCHEMA_V7 = "beta-bgo-th-tlc-rate-overlay-v7"
+SUPPORTED_SCHEMAS = {
+    SCHEMA_V2, SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6, SCHEMA_V7,
+}
 # Backward-compatible name used by the v2 tests and external helpers.
 EXPECTED_SCHEMA = SCHEMA_V2
-SUPPORTED_EVENTS = {100_000, 2_000_000}
+SUPPORTED_EVENTS = {20_000, 100_000, 2_000_000}
 ACTIVE_LSF_STATES = {"PEND", "RUN", "PROV", "WAIT", "SSUSP", "USUSP", "PSUSP"}
 RETRYABLE_VALIDATION = {"failed", "missing"}
 SAFE_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
@@ -78,6 +81,17 @@ EXPECTED_BRANCHES = {
 OPTIONAL_PC_GAMMA_BRANCHES = {
     "PCGammaN", "PCGammaDownN", "PCGammaUpN", "PCGammaEnergy_MeV",
     "PCGammaDownEnergy_MeV", "PCGammaUpEnergy_MeV", "PCGammaMaxEnergy_MeV",
+}
+RATE_EVT_BRANCHES = {"beamMultiplicity"}
+RATE_RUNMETA_BRANCHES = {
+    "beamMultiplicityMode", "beamFixedMultiplicity", "beamMeanPerBgoGate",
+    "bgoGateWidth_ns", "hodoGateWidth_ns", "beamProfileModel",
+    "beamXMean_mm", "beamYMean_mm", "beamXSigma_mm", "beamYSigma_mm",
+    "beamXMaxAbs_mm", "beamYMaxAbs_mm", "detectorGateTimeReference",
+}
+OPTIONAL_RATE_BRANCHES = {
+    "evt": RATE_EVT_BRANCHES,
+    "runmeta": RATE_RUNMETA_BRANCHES,
 }
 
 EXPECTED_VECTOR_SIZES = {
@@ -274,7 +288,7 @@ def load_manifest(path: Path) -> dict[str, Any]:
         raise RunManagerError("primaries must be a non-empty list")
     primaries: list[str] = []
     allowed_primaries = {"e", "pim", "pi0"}
-    if schema == SCHEMA_V6:
+    if schema in {SCHEMA_V6, SCHEMA_V7}:
         allowed_primaries |= {"beam", "e_beam", "pim_beam", "pi0_beam"}
     for item in primary_raw:
         if item not in allowed_primaries:
@@ -286,21 +300,35 @@ def load_manifest(path: Path) -> dict[str, Any]:
     beam: dict[str, Any] | None = None
     target: dict[str, Any] | None = None
     signal: dict[str, Any] | None = None
-    if schema == SCHEMA_V6:
+    if schema in {SCHEMA_V6, SCHEMA_V7}:
         beam_raw = raw.get("beam")
         target_raw = raw.get("target")
         signal_raw = raw.get("signal")
         if not isinstance(beam_raw, dict):
-            raise RunManagerError("schema v6 requires a beam mapping")
+            raise RunManagerError("beam-overlay schemas require a beam mapping")
         if not isinstance(target_raw, dict):
-            raise RunManagerError("schema v6 requires a target mapping")
+            raise RunManagerError("beam-overlay schemas require a target mapping")
         if not isinstance(signal_raw, dict):
-            raise RunManagerError("schema v6 requires a signal mapping")
-        unknown_beam = sorted(set(beam_raw) - {"particle", "momentum_mev_c"})
+            raise RunManagerError("beam-overlay schemas require a signal mapping")
+        v7_beam_fields = {
+            "particle", "momentum_mev_c", "multiplicity_mode",
+            "fixed_multiplicity", "mean_per_bgo_gate", "bgo_gate_width_ns",
+            "hodo_gate_width_ns", "profile_model", "x_mean_mm", "y_mean_mm",
+            "x_sigma_mm", "y_sigma_mm", "x_max_abs_mm", "y_max_abs_mm",
+        }
+        allowed_beam_fields = (
+            v7_beam_fields if schema == SCHEMA_V7
+            else {"particle", "momentum_mev_c"}
+        )
+        unknown_beam = sorted(set(beam_raw) - allowed_beam_fields)
         if unknown_beam:
             raise RunManagerError(f"unknown beam fields: {', '.join(unknown_beam)}")
-        if set(beam_raw) != {"particle", "momentum_mev_c"}:
+        if schema == SCHEMA_V6 and set(beam_raw) != {"particle", "momentum_mev_c"}:
             raise RunManagerError("beam requires particle and momentum_mev_c")
+        if schema == SCHEMA_V7 and set(beam_raw) != v7_beam_fields:
+            raise RunManagerError(
+                "schema v7 beam mapping requires all rate, gate, and profile fields"
+            )
         particle = beam_raw["particle"]
         if particle not in {"pi+", "pi-", "kaon+", "kaon-"}:
             raise RunManagerError("beam.particle must be pi+, pi-, kaon+, or kaon-")
@@ -311,6 +339,72 @@ def load_manifest(path: Path) -> dict[str, Any]:
             ),
             "phase_space_model": "on_axis_pencil_beam",
         }
+        if schema == SCHEMA_V7:
+            multiplicity_mode = beam_raw["multiplicity_mode"]
+            if multiplicity_mode not in {"fixed", "poisson"}:
+                raise RunManagerError(
+                    "beam.multiplicity_mode must be fixed or poisson"
+                )
+            profile_model = beam_raw["profile_model"]
+            if profile_model not in {"pencil", "independent_truncated_gaussian"}:
+                raise RunManagerError(
+                    "beam.profile_model must be pencil or independent_truncated_gaussian"
+                )
+            hodo_raw = beam_raw["hodo_gate_width_ns"]
+            hodo_values = hodo_raw if isinstance(hodo_raw, list) else [hodo_raw]
+            if not hodo_values:
+                raise RunManagerError("beam.hodo_gate_width_ns scan cannot be empty")
+            hodo_widths = [
+                require_float(value, "beam.hodo_gate_width_ns", 0.0, 1.0e9)
+                for value in hodo_values
+            ]
+            if len(set(hodo_widths)) != len(hodo_widths):
+                raise RunManagerError("beam.hodo_gate_width_ns has duplicates")
+            beam.update({
+                "multiplicity_mode": multiplicity_mode,
+                "fixed_multiplicity": require_int(
+                    beam_raw["fixed_multiplicity"],
+                    "beam.fixed_multiplicity", 0, 100000,
+                ),
+                "mean_per_bgo_gate": require_float(
+                    beam_raw["mean_per_bgo_gate"],
+                    "beam.mean_per_bgo_gate", 0.0, 100000.0,
+                ),
+                "bgo_gate_width_ns": require_float(
+                    beam_raw["bgo_gate_width_ns"],
+                    "beam.bgo_gate_width_ns", 0.0, 1.0e9,
+                ),
+                "hodo_gate_widths_ns": hodo_widths,
+                "profile_model": profile_model,
+                "x_mean_mm": require_float(
+                    beam_raw["x_mean_mm"], "beam.x_mean_mm", -1000.0, 1000.0
+                ),
+                "y_mean_mm": require_float(
+                    beam_raw["y_mean_mm"], "beam.y_mean_mm", -1000.0, 1000.0
+                ),
+                "x_sigma_mm": require_float(
+                    beam_raw["x_sigma_mm"], "beam.x_sigma_mm", 0.0, 1000.0
+                ),
+                "y_sigma_mm": require_float(
+                    beam_raw["y_sigma_mm"], "beam.y_sigma_mm", 0.0, 1000.0
+                ),
+                "x_max_abs_mm": require_float(
+                    beam_raw["x_max_abs_mm"], "beam.x_max_abs_mm", 0.0, 1000.0
+                ),
+                "y_max_abs_mm": require_float(
+                    beam_raw["y_max_abs_mm"], "beam.y_max_abs_mm", 0.0, 1000.0
+                ),
+            })
+            if multiplicity_mode == "poisson" and beam["bgo_gate_width_ns"] <= 0.0:
+                raise RunManagerError("poisson beam requires positive bgo_gate_width_ns")
+            if profile_model == "independent_truncated_gaussian" and not (
+                beam["x_sigma_mm"] > 0.0 and beam["y_sigma_mm"] > 0.0 and
+                beam["x_max_abs_mm"] > abs(beam["x_mean_mm"]) and
+                beam["y_max_abs_mm"] > abs(beam["y_mean_mm"])
+            ):
+                raise RunManagerError(
+                    "invalid independent truncated Gaussian beam profile"
+                )
         unknown_target = sorted(set(target_raw) - {
             "material", "areal_density_g_cm2", "density_g_cm3", "radius_mm"
         })
@@ -360,7 +454,7 @@ def load_manifest(path: Path) -> dict[str, Any]:
         }
     elif "beam" in raw or "target" in raw or "signal" in raw:
         raise RunManagerError(
-            f"beam/target/signal mappings require schema {SCHEMA_V6}"
+            f"beam/target/signal mappings require schema {SCHEMA_V6} or {SCHEMA_V7}"
         )
 
     geometry_raw = raw["geometries"]
@@ -392,9 +486,10 @@ def load_manifest(path: Path) -> dict[str, Any]:
                 "geometry_mode", "photon_counter",
             } - set(item)
         )
-        if schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6} and "bgo_z_offset_cm" not in item:
+        if (schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6, SCHEMA_V7}
+                and "bgo_z_offset_cm" not in item):
             missing_geometry.append("bgo_z_offset_cm")
-        if schema in {SCHEMA_V4, SCHEMA_V6}:
+        if schema in {SCHEMA_V4, SCHEMA_V6, SCHEMA_V7}:
             for field in ("theta_min_deg", "theta_max_deg"):
                 if field not in item:
                     missing_geometry.append(field)
@@ -553,7 +648,7 @@ def load_manifest(path: Path) -> dict[str, Any]:
                     f"{name}.upstream photon counter intersects BGOegg: "
                     f"z_front={pc_z_front_cm}, extent={upstream_extent_cm} cm"
                 )
-        if schema not in {SCHEMA_V4, SCHEMA_V6} and (
+        if schema not in {SCHEMA_V4, SCHEMA_V6, SCHEMA_V7} and (
             "theta_min_deg" in item or "theta_max_deg" in item
         ):
             raise RunManagerError(
@@ -670,39 +765,56 @@ def expand_jobs(manifest: dict[str, Any], state_file: Path) -> list[dict[str, An
     build_dir = Path(manifest["build_dir"])
     logs = state_file.parent / "logs" / manifest["tag"]
     jobs: list[dict[str, Any]] = []
+    gate_widths = manifest["beam"].get("hodo_gate_widths_ns", [None]) \
+        if manifest.get("beam") else [None]
     for geometry in manifest["geometries"]:
-        for primary in manifest["primaries"]:
-            run_tag = f"{manifest['tag']}_{geometry['name']}"
-            output_stem = f"output/scan/{run_tag}_{primary}"
-            key = f"{geometry['name']}:{primary}"
-            job_name = f"bgo_{manifest['tag']}_{geometry['name']}_{primary}"
-            if len(job_name) > 120:
-                digest = hashlib.sha1(job_name.encode()).hexdigest()[:10]
-                job_name = f"{job_name[:109]}_{digest}"
-            jobs.append(
-                {
-                    "key": key,
-                    "job_name": job_name,
-                    "run_tag": run_tag,
-                    "geometry": geometry,
-                    "primary": primary,
-                    "events": manifest["events"],
-                    "seed": manifest["seed"],
-                    "threads": manifest["threads"],
-                    "beam": manifest.get("beam"),
-                    "target": manifest.get("target"),
-                    "signal": manifest.get("signal"),
-                    "output_stem": output_stem,
-                    "output_root": str(build_dir / f"{output_stem}.root"),
-                    "stdout": str(logs / f"{geometry['name']}_{primary}.out"),
-                    "stderr": str(logs / f"{geometry['name']}_{primary}.err"),
-                    "lsf_id": None,
-                    "lsf_state": "NOT_SUBMITTED",
-                    "submission": "pending",
-                    "validation": {"status": "not_run", "errors": []},
-                }
-            )
+        for hodo_gate_width_ns in gate_widths:
+            gate_tag = ("" if hodo_gate_width_ns is None else
+                        f"_hg{str(hodo_gate_width_ns).replace('.', 'p')}ns")
+            for primary in manifest["primaries"]:
+                jobs.append(make_job(
+                    manifest, logs, geometry, primary,
+                    hodo_gate_width_ns, gate_tag,
+                ))
     return jobs
+
+
+def make_job(
+    manifest: dict[str, Any], logs: Path,
+    geometry: dict[str, Any], primary: str,
+    hodo_gate_width_ns: float | None, gate_tag: str,
+) -> dict[str, Any]:
+    build_dir = Path(manifest["build_dir"])
+    run_tag = f"{manifest['tag']}_{geometry['name']}{gate_tag}"
+    output_stem = f"output/scan/{run_tag}_{primary}"
+    key = f"{geometry['name']}{gate_tag}:{primary}"
+    job_name = f"bgo_{manifest['tag']}_{geometry['name']}{gate_tag}_{primary}"
+    if len(job_name) > 120:
+        digest = hashlib.sha1(job_name.encode()).hexdigest()[:10]
+        job_name = f"{job_name[:109]}_{digest}"
+    return {
+        "key": key,
+        "job_name": job_name,
+        "run_tag": run_tag,
+        "geometry": geometry,
+        "primary": primary,
+        "events": manifest["events"],
+        "seed": manifest["seed"],
+        "threads": manifest["threads"],
+        "beam": ({**manifest["beam"],
+                  "hodo_gate_width_ns": hodo_gate_width_ns}
+                 if manifest.get("beam") else None),
+        "target": manifest.get("target"),
+        "signal": manifest.get("signal"),
+        "output_stem": output_stem,
+        "output_root": str(build_dir / f"{output_stem}.root"),
+        "stdout": str(logs / f"{geometry['name']}{gate_tag}_{primary}.out"),
+        "stderr": str(logs / f"{geometry['name']}{gate_tag}_{primary}.err"),
+        "lsf_id": None,
+        "lsf_state": "NOT_SUBMITTED",
+        "submission": "pending",
+        "validation": {"status": "not_run", "errors": []},
+    }
 
 
 def make_state(manifest: dict[str, Any], jobs: list[dict[str, Any]]) -> dict[str, Any]:
@@ -778,15 +890,31 @@ def bsub_command(manifest: dict[str, Any], job: dict[str, Any]) -> list[str]:
             f"BETA_EVENTS={job['events']}",
             *(
                 [
-                    f"BETA_BEAM_PARTICLE={manifest['beam']['particle']}",
-                    f"BETA_BEAM_MOMENTUM_MEV_C={manifest['beam']['momentum_mev_c']}",
+                    f"BETA_BEAM_PARTICLE={job['beam']['particle']}",
+                    f"BETA_BEAM_MOMENTUM_MEV_C={job['beam']['momentum_mev_c']}",
                     f"BETA_TARGET_MATERIAL={manifest['target']['material']}",
                     f"BETA_TARGET_AREAL_DENSITY_G_CM2={manifest['target']['areal_density_g_cm2']}",
                     f"BETA_TARGET_DENSITY_G_CM3={manifest['target']['density_g_cm3']}",
                     f"BETA_TARGET_RADIUS_MM={manifest['target']['radius_mm']}",
                     f"BETA_PIM_MOMENTUM_MEV_C={manifest['signal']['pim_momentum_mev_c']}",
                     f"BETA_PI0_MOMENTUM_MEV_C={manifest['signal']['pi0_momentum_mev_c']}",
-                ] if manifest["schema"] == SCHEMA_V6 else []
+                ] if manifest["schema"] in {SCHEMA_V6, SCHEMA_V7} else []
+            ),
+            *(
+                [
+                    f"BETA_BEAM_MULTIPLICITY_MODE={job['beam']['multiplicity_mode']}",
+                    f"BETA_BEAM_FIXED_MULTIPLICITY={job['beam']['fixed_multiplicity']}",
+                    f"BETA_BEAM_MEAN_PER_BGO_GATE={job['beam']['mean_per_bgo_gate']}",
+                    f"BETA_BGO_GATE_WIDTH_NS={job['beam']['bgo_gate_width_ns']}",
+                    f"BETA_HODO_GATE_WIDTH_NS={job['beam']['hodo_gate_width_ns']}",
+                    f"BETA_BEAM_PROFILE_MODEL={job['beam']['profile_model']}",
+                    f"BETA_BEAM_X_MEAN_MM={job['beam']['x_mean_mm']}",
+                    f"BETA_BEAM_Y_MEAN_MM={job['beam']['y_mean_mm']}",
+                    f"BETA_BEAM_X_SIGMA_MM={job['beam']['x_sigma_mm']}",
+                    f"BETA_BEAM_Y_SIGMA_MM={job['beam']['y_sigma_mm']}",
+                    f"BETA_BEAM_X_MAX_ABS_MM={job['beam']['x_max_abs_mm']}",
+                    f"BETA_BEAM_Y_MAX_ABS_MM={job['beam']['y_max_abs_mm']}",
+                ] if manifest["schema"] == SCHEMA_V7 else []
             ),
             *(
                 [
@@ -810,9 +938,9 @@ def bsub_command(manifest: dict[str, Any], job: dict[str, Any]) -> list[str]:
             geometry["photon_counter"],
         ]
     )
-    if manifest["schema"] in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6}:
+    if manifest["schema"] in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6, SCHEMA_V7}:
         command.append(str(geometry["bgo_z_offset_cm"]))
-    if manifest["schema"] in {SCHEMA_V4, SCHEMA_V6}:
+    if manifest["schema"] in {SCHEMA_V4, SCHEMA_V6, SCHEMA_V7}:
         command.extend(
             [str(geometry["theta_min_deg"]), str(geometry["theta_max_deg"])]
         )
@@ -988,12 +1116,14 @@ if (meta && meta->GetEntries() == 1) {
   double neutronScale=-1,inelasticBias=-1,pionInelasticXSScale=-1,seed=-1;
   double thetaMin=-1,thetaMax=-1,rMin=-1,thickness=-1,bgoZOffset=-1;
   double pcPb=-1,pcScinti=-1,pcZFront=-1,pcDownInner=-1,pcDownOuter=-1,pcUpInner=-1,pcUpOuter=-1;
-  int beamOverlay=-1,beamOnly=-1;
+  int beamOverlay=-1,beamOnly=-1,beamFixedMultiplicity=-1;
   double beamMomentum=-1,targetAreal=-1,targetDensity=-1,targetRadius=-1,targetLength=-1,pimMomentum=-1,pi0Momentum=-1;
+  double beamMean=-1,bgoGate=-1,hodoGate=-1,beamXMean=-1,beamYMean=-1,beamXSigma=-1,beamYSigma=-1,beamXMax=-1,beamYMax=-1;
   int geometryMode=-1,photonCounterMode=-1,pcNLayers=-1;
   char segmentation[128]={0},primary[128]={0},output[1024]={0};
   char geometry[128]={0},geometryModel[256]={0},photonCounter[128]={0};
   char beamParticle[128]={0},beamPhaseSpaceModel[256]={0},beamTimeReference[256]={0},targetMaterial[128]={0};
+  char beamMultiplicityMode[128]={0},beamProfileModel[128]={0},detectorGateTimeReference[256]={0};
   auto bindMeta=[&](const char *name, void *value){if(meta->GetBranch(name)) meta->SetBranchAddress(name,value);};
   if(meta->GetBranch("nLayer")) meta->SetBranchAddress("nLayer",&nLayer);
   if(meta->GetBranch("nSector")) meta->SetBranchAddress("nSector",&nSector);
@@ -1034,6 +1164,14 @@ if (meta && meta->GetEntries() == 1) {
   bindMeta("targetDensity_g_cm3",&targetDensity); bindMeta("targetRadius_mm",&targetRadius);
   bindMeta("targetLength_mm",&targetLength); bindMeta("pimMomentum_MeV_c",&pimMomentum);
   bindMeta("pi0Momentum_MeV_c",&pi0Momentum);
+  bindMeta("beamMultiplicityMode",&beamMultiplicityMode);
+  bindMeta("beamFixedMultiplicity",&beamFixedMultiplicity);
+  bindMeta("beamMeanPerBgoGate",&beamMean); bindMeta("bgoGateWidth_ns",&bgoGate);
+  bindMeta("hodoGateWidth_ns",&hodoGate); bindMeta("beamProfileModel",&beamProfileModel);
+  bindMeta("beamXMean_mm",&beamXMean); bindMeta("beamYMean_mm",&beamYMean);
+  bindMeta("beamXSigma_mm",&beamXSigma); bindMeta("beamYSigma_mm",&beamYSigma);
+  bindMeta("beamXMaxAbs_mm",&beamXMax); bindMeta("beamYMaxAbs_mm",&beamYMax);
+  bindMeta("detectorGateTimeReference",&detectorGateTimeReference);
   meta->GetEntry(0);
   std::cout << std::setprecision(17);
   std::cout << "META\tnLayer\t" << nLayer << std::endl;
@@ -1076,6 +1214,14 @@ if (meta && meta->GetEntries() == 1) {
   dumpMeta("targetDensity_g_cm3",targetDensity); dumpMeta("targetRadius_mm",targetRadius);
   dumpMeta("targetLength_mm",targetLength); dumpMeta("pimMomentum_MeV_c",pimMomentum);
   dumpMeta("pi0Momentum_MeV_c",pi0Momentum);
+  dumpMeta("beamMultiplicityMode",beamMultiplicityMode);
+  dumpMeta("beamFixedMultiplicity",beamFixedMultiplicity);
+  dumpMeta("beamMeanPerBgoGate",beamMean); dumpMeta("bgoGateWidth_ns",bgoGate);
+  dumpMeta("hodoGateWidth_ns",hodoGate); dumpMeta("beamProfileModel",beamProfileModel);
+  dumpMeta("beamXMean_mm",beamXMean); dumpMeta("beamYMean_mm",beamYMean);
+  dumpMeta("beamXSigma_mm",beamXSigma); dumpMeta("beamYSigma_mm",beamYSigma);
+  dumpMeta("beamXMaxAbs_mm",beamXMax); dumpMeta("beamYMaxAbs_mm",beamYMax);
+  dumpMeta("detectorGateTimeReference",detectorGateTimeReference);
   meta->ResetBranchAddresses();
 }
 auto dumpVectorSizes = [](TTree *tree, const char *treeName, std::initializer_list<const char *> names) {
@@ -1168,25 +1314,42 @@ def validate_inspection(
     schema_branches = {
         tree: set(branches) for tree, branches in EXPECTED_BRANCHES.items()
     }
-    if schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6}:
+    if schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6, SCHEMA_V7}:
         schema_branches["runmeta"].add("bgoZOffset_cm")
+    if schema == SCHEMA_V7:
+        schema_branches["evt"].update(RATE_EVT_BRANCHES)
+        schema_branches["runmeta"].update(RATE_RUNMETA_BRANCHES)
     for tree, expected_branches in schema_branches.items():
         entry_raw = inspection["trees"].get(tree)
         if entry_raw in {None, "MISSING"}:
             errors.append(f"missing tree: {tree}")
             continue
         actual_branches = inspection["branches"].get(tree, set())
-        optional = OPTIONAL_PC_GAMMA_BRANCHES if tree == "evt" else set()
+        optional = (OPTIONAL_PC_GAMMA_BRANCHES if tree == "evt" else set()) | (
+            OPTIONAL_RATE_BRANCHES.get(tree, set()) if schema != SCHEMA_V7 else set()
+        )
         missing = sorted(expected_branches - actual_branches)
         extra = sorted(actual_branches - expected_branches - optional)
-        optional_present = actual_branches & optional
-        incomplete_optional = bool(optional_present and optional_present != optional)
-        if missing or extra or incomplete_optional:
+        pc_optional_present = actual_branches & (
+            OPTIONAL_PC_GAMMA_BRANCHES if tree == "evt" else set()
+        )
+        incomplete_pc_optional = bool(
+            pc_optional_present and pc_optional_present != OPTIONAL_PC_GAMMA_BRANCHES
+        )
+        rate_optional_set = OPTIONAL_RATE_BRANCHES.get(tree, set()) \
+            if schema != SCHEMA_V7 else set()
+        rate_optional_present = actual_branches & rate_optional_set
+        incomplete_rate_optional = bool(
+            rate_optional_present and rate_optional_present != rate_optional_set
+        )
+        if missing or extra or incomplete_pc_optional or incomplete_rate_optional:
             errors.append(f"schema mismatch in {tree}: missing={missing}, extra={extra}")
-            if incomplete_optional:
+            if incomplete_pc_optional:
                 errors.append(
                     "incomplete optional PC gamma-entrance branch set in evt"
                 )
+            if incomplete_rate_optional:
+                errors.append(f"incomplete optional rate-overlay branch set in {tree}")
 
     for tree in ("evt", "calarr", "th", "tlc"):
         raw = inspection["trees"].get(tree)
@@ -1232,7 +1395,7 @@ def validate_inspection(
         "photonCounter": geometry["photon_counter"],
         "pcNLayers": str(geometry.get("pc_n_layers", 8)),
     }
-    if schema == SCHEMA_V6:
+    if schema in {SCHEMA_V6, SCHEMA_V7}:
         overlay = job["primary"] in {
             "beam", "e_beam", "pim_beam", "pi0_beam"
         }
@@ -1243,6 +1406,13 @@ def validate_inspection(
             "beamPhaseSpaceModel": "on_axis_pencil_beam",
             "beamTimeReference": "target_center_t0",
             "targetMaterial": job["target"]["material"],
+        })
+    if schema == SCHEMA_V7:
+        expected_meta.update({
+            "beamMultiplicityMode": job["beam"]["multiplicity_mode"],
+            "beamProfileModel": job["beam"]["profile_model"],
+            "detectorGateTimeReference":
+                "full_width_rectangular_centered_on_target_signal_t0",
         })
     for key, expected in expected_meta.items():
         if meta.get(key) != expected:
@@ -1280,7 +1450,7 @@ def validate_inspection(
         "pcUpThetaOuter_deg": geometry.get("pc_up_theta_outer_deg", 36.0),
         **(
             {"bgoZOffset_cm": geometry["bgo_z_offset_cm"]}
-            if schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6} else {}
+            if schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6, SCHEMA_V7} else {}
         ),
         **(
             {
@@ -1294,7 +1464,22 @@ def validate_inspection(
                 "pimMomentum_MeV_c": job["signal"]["pim_momentum_mev_c"],
                 "pi0Momentum_MeV_c": job["signal"]["pi0_momentum_mev_c"],
             }
-            if schema == SCHEMA_V6 else {}
+            if schema in {SCHEMA_V6, SCHEMA_V7} else {}
+        ),
+        **(
+            {
+                "beamFixedMultiplicity": job["beam"]["fixed_multiplicity"],
+                "beamMeanPerBgoGate": job["beam"]["mean_per_bgo_gate"],
+                "bgoGateWidth_ns": job["beam"]["bgo_gate_width_ns"],
+                "hodoGateWidth_ns": job["beam"]["hodo_gate_width_ns"],
+                "beamXMean_mm": job["beam"]["x_mean_mm"],
+                "beamYMean_mm": job["beam"]["y_mean_mm"],
+                "beamXSigma_mm": job["beam"]["x_sigma_mm"],
+                "beamYSigma_mm": job["beam"]["y_sigma_mm"],
+                "beamXMaxAbs_mm": job["beam"]["x_max_abs_mm"],
+                "beamYMaxAbs_mm": job["beam"]["y_max_abs_mm"],
+            }
+            if schema == SCHEMA_V7 else {}
         ),
     }.items():
         if not float_equal(meta.get(key), expected):
