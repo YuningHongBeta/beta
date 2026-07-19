@@ -295,6 +295,74 @@ class RunManagerTests(unittest.TestCase):
         self.assertIn("BETA_BEAM_MULTIPLICITY_MODE=poisson", command)
         self.assertIn("BETA_HODO_GATE_WIDTH_NS=4.0", command)
 
+    def test_v7_accepts_published_bgoegg_without_theta_override(self):
+        content = base_manifest()
+        content["schema"] = rm.SCHEMA_V7
+        content["primaries"] = ["e_beam"]
+        content["beam"] = {
+            "particle": "kaon-", "momentum_mev_c": 1500,
+            "multiplicity_mode": "poisson", "fixed_multiplicity": 1,
+            "mean_per_bgo_gate": 0.595, "bgo_gate_width_ns": 1000,
+            "hodo_gate_width_ns": 10,
+            "profile_model": "independent_truncated_gaussian",
+            "x_mean_mm": 0, "y_mean_mm": 0,
+            "x_sigma_mm": 24, "y_sigma_mm": 5,
+            "x_max_abs_mm": 60, "y_max_abs_mm": 20,
+        }
+        content["target"] = {
+            "material": "C13_100pct", "areal_density_g_cm2": 20,
+            "density_g_cm3": 1.0, "radius_mm": 15,
+        }
+        content["signal"] = {
+            "pim_momentum_mev_c": 105.4, "pi0_momentum_mev_c": 100,
+        }
+        content["geometries"] = [{
+            "name": "extended31_zm10", "n_layer": 31, "n_sector": 60,
+            "segmentation": "bgoegg_published",
+            "geometry_mode": "bgoegg_frustum", "photon_counter": "none",
+            "bgo_z_offset_cm": -10,
+        }]
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = rm.load_manifest(self.write_manifest(directory, content))
+            jobs = rm.expand_jobs(manifest, Path(directory) / "state.json")
+        command = rm.bsub_command(manifest, jobs[0])
+        self.assertEqual(command[-5:], [
+            "bgoegg_published", "e_beam", "bgoegg_frustum", "none", "-10.0",
+        ])
+        self.assertFalse(any(arg.startswith("BETA_BGO_THETA_") for arg in command))
+
+    def test_v7_published_bgoegg_rejects_theta_override(self):
+        content = base_manifest()
+        content["schema"] = rm.SCHEMA_V7
+        content["beam"] = {
+            "particle": "kaon-", "momentum_mev_c": 1500,
+            "multiplicity_mode": "poisson", "fixed_multiplicity": 1,
+            "mean_per_bgo_gate": 0.595, "bgo_gate_width_ns": 1000,
+            "hodo_gate_width_ns": 10,
+            "profile_model": "independent_truncated_gaussian",
+            "x_mean_mm": 0, "y_mean_mm": 0,
+            "x_sigma_mm": 24, "y_sigma_mm": 5,
+            "x_max_abs_mm": 60, "y_max_abs_mm": 20,
+        }
+        content["target"] = {
+            "material": "C13_100pct", "areal_density_g_cm2": 20,
+            "density_g_cm3": 1.0, "radius_mm": 15,
+        }
+        content["signal"] = {
+            "pim_momentum_mev_c": 105.4, "pi0_momentum_mev_c": 100,
+        }
+        content["geometries"] = [{
+            "name": "extended31_zm10", "n_layer": 31, "n_sector": 60,
+            "segmentation": "bgoegg_published",
+            "geometry_mode": "bgoegg_frustum", "photon_counter": "none",
+            "bgo_z_offset_cm": -10,
+            "theta_min_deg": 5.336, "theta_max_deg": 168,
+        }]
+        with tempfile.TemporaryDirectory() as directory:
+            path = self.write_manifest(directory, content)
+            with self.assertRaisesRegex(rm.RunManagerError, "overrides are not allowed"):
+                rm.load_manifest(path)
+
     def test_v5_rejects_endcap_inside_frustum_extent(self):
         content = base_manifest()
         content["schema"] = rm.SCHEMA_V5

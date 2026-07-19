@@ -1,0 +1,36 @@
+schema: beta-bgo-th-tlc-rate-overlay-v7
+tag: hong_k18_bgoegg31_rate_high_lam1p25_s8502026
+build_dir: build_rateoverlay
+events: 100000
+seed: 8502026
+threads: 2
+
+# Conservative high-rate sensitivity point; all geometry, beam-profile, and
+# analysis inputs match the nominal sample.
+beam:
+  particle: kaon-
+  momentum_mev_c: 1500
+  multiplicity_mode: poisson
+  fixed_multiplicity: 1
+  mean_per_bgo_gate: 1.25
+  bgo_gate_width_ns: 1000
+  hodo_gate_width_ns: 10
+  profile_model: independent_truncated_gaussian
+  x_mean_mm: 0
+  y_mean_mm: 0
+  x_sigma_mm: 24
+  y_sigma_mm: 5
+  x_max_abs_mm: 60
+  y_max_abs_mm: 20
+target: {material: C13_100pct, areal_density_g_cm2: 20, density_g_cm3: 1.0, radius_mm: 15}
+signal: {pim_momentum_mev_c: 105.4, pi0_momentum_mev_c: 100}
+geometries:
+  - name: extended31_zm10
+    n_layer: 31
+    n_sector: 60
+    segmentation: bgoegg_published
+    geometry_mode: bgoegg_frustum
+    photon_counter: none
+    bgo_z_offset_cm: -10
+primaries: [e_beam, pim_beam, pi0_beam]
+lsf: {queue: l, wall_minutes: 720, memory_mb: 4096}

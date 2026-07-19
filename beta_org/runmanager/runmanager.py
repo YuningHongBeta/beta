@@ -489,7 +489,8 @@ def load_manifest(path: Path) -> dict[str, Any]:
         if (schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6, SCHEMA_V7}
                 and "bgo_z_offset_cm" not in item):
             missing_geometry.append("bgo_z_offset_cm")
-        if schema in {SCHEMA_V4, SCHEMA_V6, SCHEMA_V7}:
+        if (schema in {SCHEMA_V4, SCHEMA_V6, SCHEMA_V7}
+                and item.get("geometry_mode") != "bgoegg_frustum"):
             for field in ("theta_min_deg", "theta_max_deg"):
                 if field not in item:
                     missing_geometry.append(field)
@@ -537,6 +538,11 @@ def load_manifest(path: Path) -> dict[str, Any]:
             if n_sector != 60 or n_layer not in {22, 31}:
                 raise RunManagerError(
                     f"{name}.bgoegg_frustum requires n_sector=60 and n_layer=22 or 31"
+                )
+            if "theta_min_deg" in item or "theta_max_deg" in item:
+                raise RunManagerError(
+                    f"{name}.bgoegg_frustum uses its published theta range; "
+                    "theta_min_deg/theta_max_deg overrides are not allowed"
                 )
         elif segmentation == "bgoegg_published":
             raise RunManagerError(
@@ -940,7 +946,8 @@ def bsub_command(manifest: dict[str, Any], job: dict[str, Any]) -> list[str]:
     )
     if manifest["schema"] in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6, SCHEMA_V7}:
         command.append(str(geometry["bgo_z_offset_cm"]))
-    if manifest["schema"] in {SCHEMA_V4, SCHEMA_V6, SCHEMA_V7}:
+    if (manifest["schema"] in {SCHEMA_V4, SCHEMA_V6, SCHEMA_V7}
+            and geometry["geometry_mode"] != "bgoegg_frustum"):
         command.extend(
             [str(geometry["theta_min_deg"]), str(geometry["theta_max_deg"])]
         )
