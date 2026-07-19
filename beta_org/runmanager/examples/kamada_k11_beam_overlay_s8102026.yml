@@ -1,5 +1,5 @@
 schema: beta-bgo-th-tlc-beam-overlay-v6
-tag: kamada_k11_overlay_s8102026
+tag: kamada_k11_overlay_s8102026b
 build_dir: build_beamoverlay
 events: 100000
 seed: 8102026
@@ -34,5 +34,5 @@ primaries: [e, pim, pi0, beam, e_beam, pim_beam, pi0_beam]
 
 lsf:
   queue: s
-  wall_minutes: 480
+  wall_minutes: 240
   memory_mb: 4096

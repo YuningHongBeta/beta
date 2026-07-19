@@ -1,5 +1,5 @@
 schema: beta-bgo-th-tlc-beam-overlay-v6
-tag: hong_k18_overlay_s8202026
+tag: hong_k18_overlay_s8202026b
 build_dir: build_beamoverlay
 events: 100000
 seed: 8202026
@@ -35,5 +35,5 @@ primaries: [e, pim, pi0, beam, e_beam, pim_beam, pi0_beam]
 
 lsf:
   queue: s
-  wall_minutes: 480
+  wall_minutes: 240
   memory_mb: 4096
