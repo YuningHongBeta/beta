@@ -14,6 +14,7 @@ import re
 import shlex
 import subprocess
 import sys
+import tempfile
 from typing import Any
 
 import yaml
@@ -26,7 +27,8 @@ SCHEMA_V2 = "beta-bgo-th-tlc-pc-v2"
 SCHEMA_V3 = "beta-bgo-th-tlc-pc-offset-v3"
 SCHEMA_V4 = "beta-bgo-th-tlc-pc-coverage-v4"
 SCHEMA_V5 = "beta-bgo-th-tlc-pc-design-v5"
-SUPPORTED_SCHEMAS = {SCHEMA_V2, SCHEMA_V3, SCHEMA_V4, SCHEMA_V5}
+SCHEMA_V6 = "beta-bgo-th-tlc-beam-overlay-v6"
+SUPPORTED_SCHEMAS = {SCHEMA_V2, SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6}
 # Backward-compatible name used by the v2 tests and external helpers.
 EXPECTED_SCHEMA = SCHEMA_V2
 SUPPORTED_EVENTS = {100_000, 2_000_000}
@@ -58,6 +60,10 @@ EXPECTED_BRANCHES = {
         "photonCounter", "pcNLayers", "pcPbThickness_mm",
         "pcScintiThickness_mm", "pcZFront_cm", "pcDownThetaInner_deg",
         "pcDownThetaOuter_deg", "pcUpThetaInner_deg", "pcUpThetaOuter_deg",
+        "beamOverlay", "beamOnly", "beamParticle", "beamMomentum_MeV_c",
+        "beamPhaseSpaceModel", "beamTimeReference", "targetMaterial",
+        "targetArealDensity_g_cm2", "targetDensity_g_cm3", "targetRadius_mm",
+        "targetLength_mm", "pimMomentum_MeV_c", "pi0Momentum_MeV_c",
     },
     "th": {
         "eventID", "dE_MeV", "time_ns", "timeLeft_ns", "timeRight_ns",
@@ -228,12 +234,13 @@ def load_manifest(path: Path) -> dict[str, Any]:
 
     allowed = {
         "schema", "tag", "build_dir", "events", "seed", "threads",
-        "geometries", "primaries", "lsf",
+        "geometries", "primaries", "beam", "target", "signal", "lsf",
     }
     unknown = sorted(set(raw) - allowed)
     if unknown:
         raise RunManagerError(f"unknown manifest fields: {', '.join(unknown)}")
-    missing = sorted(allowed - {"lsf"} - set(raw))
+    conditionally_optional = {"lsf", "beam", "target", "signal"}
+    missing = sorted(allowed - conditionally_optional - set(raw))
     if missing:
         raise RunManagerError(f"missing manifest fields: {', '.join(missing)}")
 
@@ -266,12 +273,95 @@ def load_manifest(path: Path) -> dict[str, Any]:
     if not isinstance(primary_raw, list) or not primary_raw:
         raise RunManagerError("primaries must be a non-empty list")
     primaries: list[str] = []
+    allowed_primaries = {"e", "pim", "pi0"}
+    if schema == SCHEMA_V6:
+        allowed_primaries |= {"beam", "e_beam", "pim_beam", "pi0_beam"}
     for item in primary_raw:
-        if item not in {"e", "pim", "pi0"}:
+        if item not in allowed_primaries:
             raise RunManagerError(f"unsupported primary: {item!r}")
         if item in primaries:
             raise RunManagerError(f"duplicate primary: {item}")
         primaries.append(item)
+
+    beam: dict[str, Any] | None = None
+    target: dict[str, Any] | None = None
+    signal: dict[str, Any] | None = None
+    if schema == SCHEMA_V6:
+        beam_raw = raw.get("beam")
+        target_raw = raw.get("target")
+        signal_raw = raw.get("signal")
+        if not isinstance(beam_raw, dict):
+            raise RunManagerError("schema v6 requires a beam mapping")
+        if not isinstance(target_raw, dict):
+            raise RunManagerError("schema v6 requires a target mapping")
+        if not isinstance(signal_raw, dict):
+            raise RunManagerError("schema v6 requires a signal mapping")
+        unknown_beam = sorted(set(beam_raw) - {"particle", "momentum_mev_c"})
+        if unknown_beam:
+            raise RunManagerError(f"unknown beam fields: {', '.join(unknown_beam)}")
+        if set(beam_raw) != {"particle", "momentum_mev_c"}:
+            raise RunManagerError("beam requires particle and momentum_mev_c")
+        particle = beam_raw["particle"]
+        if particle not in {"pi+", "pi-", "kaon+", "kaon-"}:
+            raise RunManagerError("beam.particle must be pi+, pi-, kaon+, or kaon-")
+        beam = {
+            "particle": particle,
+            "momentum_mev_c": require_float(
+                beam_raw["momentum_mev_c"], "beam.momentum_mev_c", 1.0, 10000.0
+            ),
+            "phase_space_model": "on_axis_pencil_beam",
+        }
+        unknown_target = sorted(set(target_raw) - {
+            "material", "areal_density_g_cm2", "density_g_cm3", "radius_mm"
+        })
+        if unknown_target:
+            raise RunManagerError(
+                f"unknown target fields: {', '.join(unknown_target)}"
+            )
+        required_target = {
+            "material", "areal_density_g_cm2", "density_g_cm3", "radius_mm"
+        }
+        if set(target_raw) != required_target:
+            raise RunManagerError(
+                "target requires material, areal_density_g_cm2, density_g_cm3, and radius_mm"
+            )
+        material = target_raw["material"]
+        if material not in {"Li6_90pct", "C13_100pct"}:
+            raise RunManagerError("target.material must be Li6_90pct or C13_100pct")
+        areal = require_float(
+            target_raw["areal_density_g_cm2"],
+            "target.areal_density_g_cm2", 0.001, 100.0,
+        )
+        density = require_float(
+            target_raw["density_g_cm3"], "target.density_g_cm3", 0.001, 30.0
+        )
+        radius = require_float(target_raw["radius_mm"], "target.radius_mm", 0.1, 15.0)
+        if 10.0 * areal / density >= 600.0:
+            raise RunManagerError("target length must be smaller than 600 mm")
+        target = {
+            "material": material,
+            "areal_density_g_cm2": areal,
+            "density_g_cm3": density,
+            "radius_mm": radius,
+        }
+        if set(signal_raw) != {"pim_momentum_mev_c", "pi0_momentum_mev_c"}:
+            raise RunManagerError(
+                "signal requires pim_momentum_mev_c and pi0_momentum_mev_c"
+            )
+        signal = {
+            "pim_momentum_mev_c": require_float(
+                signal_raw["pim_momentum_mev_c"],
+                "signal.pim_momentum_mev_c", 0.01, 1000.0,
+            ),
+            "pi0_momentum_mev_c": require_float(
+                signal_raw["pi0_momentum_mev_c"],
+                "signal.pi0_momentum_mev_c", 0.01, 1000.0,
+            ),
+        }
+    elif "beam" in raw or "target" in raw or "signal" in raw:
+        raise RunManagerError(
+            f"beam/target/signal mappings require schema {SCHEMA_V6}"
+        )
 
     geometry_raw = raw["geometries"]
     if not isinstance(geometry_raw, list) or not geometry_raw:
@@ -302,9 +392,9 @@ def load_manifest(path: Path) -> dict[str, Any]:
                 "geometry_mode", "photon_counter",
             } - set(item)
         )
-        if schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5} and "bgo_z_offset_cm" not in item:
+        if schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6} and "bgo_z_offset_cm" not in item:
             missing_geometry.append("bgo_z_offset_cm")
-        if schema == SCHEMA_V4:
+        if schema in {SCHEMA_V4, SCHEMA_V6}:
             for field in ("theta_min_deg", "theta_max_deg"):
                 if field not in item:
                     missing_geometry.append(field)
@@ -463,7 +553,7 @@ def load_manifest(path: Path) -> dict[str, Any]:
                     f"{name}.upstream photon counter intersects BGOegg: "
                     f"z_front={pc_z_front_cm}, extent={upstream_extent_cm} cm"
                 )
-        if schema != SCHEMA_V4 and (
+        if schema not in {SCHEMA_V4, SCHEMA_V6} and (
             "theta_min_deg" in item or "theta_max_deg" in item
         ):
             raise RunManagerError(
@@ -542,6 +632,9 @@ def load_manifest(path: Path) -> dict[str, Any]:
         "threads": threads,
         "geometries": geometries,
         "primaries": primaries,
+        "beam": beam,
+        "target": target,
+        "signal": signal,
         "lsf": lsf,
     }
 
@@ -596,6 +689,9 @@ def expand_jobs(manifest: dict[str, Any], state_file: Path) -> list[dict[str, An
                     "events": manifest["events"],
                     "seed": manifest["seed"],
                     "threads": manifest["threads"],
+                    "beam": manifest.get("beam"),
+                    "target": manifest.get("target"),
+                    "signal": manifest.get("signal"),
                     "output_stem": output_stem,
                     "output_root": str(build_dir / f"{output_stem}.root"),
                     "stdout": str(logs / f"{geometry['name']}_{primary}.out"),
@@ -682,6 +778,18 @@ def bsub_command(manifest: dict[str, Any], job: dict[str, Any]) -> list[str]:
             f"BETA_EVENTS={job['events']}",
             *(
                 [
+                    f"BETA_BEAM_PARTICLE={manifest['beam']['particle']}",
+                    f"BETA_BEAM_MOMENTUM_MEV_C={manifest['beam']['momentum_mev_c']}",
+                    f"BETA_TARGET_MATERIAL={manifest['target']['material']}",
+                    f"BETA_TARGET_AREAL_DENSITY_G_CM2={manifest['target']['areal_density_g_cm2']}",
+                    f"BETA_TARGET_DENSITY_G_CM3={manifest['target']['density_g_cm3']}",
+                    f"BETA_TARGET_RADIUS_MM={manifest['target']['radius_mm']}",
+                    f"BETA_PIM_MOMENTUM_MEV_C={manifest['signal']['pim_momentum_mev_c']}",
+                    f"BETA_PI0_MOMENTUM_MEV_C={manifest['signal']['pi0_momentum_mev_c']}",
+                ] if manifest["schema"] == SCHEMA_V6 else []
+            ),
+            *(
+                [
                     f"BETA_PC_N_LAYERS={geometry['pc_n_layers']}",
                     f"BETA_PC_PB_THICKNESS_MM={geometry['pc_pb_thickness_mm']}",
                     f"BETA_PC_SCINTI_THICKNESS_MM={geometry['pc_scinti_thickness_mm']}",
@@ -702,9 +810,9 @@ def bsub_command(manifest: dict[str, Any], job: dict[str, Any]) -> list[str]:
             geometry["photon_counter"],
         ]
     )
-    if manifest["schema"] in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5}:
+    if manifest["schema"] in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6}:
         command.append(str(geometry["bgo_z_offset_cm"]))
-    if manifest["schema"] == SCHEMA_V4:
+    if manifest["schema"] in {SCHEMA_V4, SCHEMA_V6}:
         command.extend(
             [str(geometry["theta_min_deg"]), str(geometry["theta_max_deg"])]
         )
@@ -880,9 +988,13 @@ if (meta && meta->GetEntries() == 1) {
   double neutronScale=-1,inelasticBias=-1,pionInelasticXSScale=-1,seed=-1;
   double thetaMin=-1,thetaMax=-1,rMin=-1,thickness=-1,bgoZOffset=-1;
   double pcPb=-1,pcScinti=-1,pcZFront=-1,pcDownInner=-1,pcDownOuter=-1,pcUpInner=-1,pcUpOuter=-1;
+  int beamOverlay=-1,beamOnly=-1;
+  double beamMomentum=-1,targetAreal=-1,targetDensity=-1,targetRadius=-1,targetLength=-1,pimMomentum=-1,pi0Momentum=-1;
   int geometryMode=-1,photonCounterMode=-1,pcNLayers=-1;
   char segmentation[128]={0},primary[128]={0},output[1024]={0};
   char geometry[128]={0},geometryModel[256]={0},photonCounter[128]={0};
+  char beamParticle[128]={0},beamPhaseSpaceModel[256]={0},beamTimeReference[256]={0},targetMaterial[128]={0};
+  auto bindMeta=[&](const char *name, void *value){if(meta->GetBranch(name)) meta->SetBranchAddress(name,value);};
   if(meta->GetBranch("nLayer")) meta->SetBranchAddress("nLayer",&nLayer);
   if(meta->GetBranch("nSector")) meta->SetBranchAddress("nSector",&nSector);
   if(meta->GetBranch("segmentationMode")) meta->SetBranchAddress("segmentationMode",&segmentationMode);
@@ -915,6 +1027,13 @@ if (meta && meta->GetEntries() == 1) {
   if(meta->GetBranch("pcDownThetaOuter_deg")) meta->SetBranchAddress("pcDownThetaOuter_deg",&pcDownOuter);
   if(meta->GetBranch("pcUpThetaInner_deg")) meta->SetBranchAddress("pcUpThetaInner_deg",&pcUpInner);
   if(meta->GetBranch("pcUpThetaOuter_deg")) meta->SetBranchAddress("pcUpThetaOuter_deg",&pcUpOuter);
+  bindMeta("beamOverlay",&beamOverlay); bindMeta("beamOnly",&beamOnly);
+  bindMeta("beamParticle",&beamParticle); bindMeta("beamMomentum_MeV_c",&beamMomentum);
+  bindMeta("beamPhaseSpaceModel",&beamPhaseSpaceModel); bindMeta("beamTimeReference",&beamTimeReference);
+  bindMeta("targetMaterial",&targetMaterial); bindMeta("targetArealDensity_g_cm2",&targetAreal);
+  bindMeta("targetDensity_g_cm3",&targetDensity); bindMeta("targetRadius_mm",&targetRadius);
+  bindMeta("targetLength_mm",&targetLength); bindMeta("pimMomentum_MeV_c",&pimMomentum);
+  bindMeta("pi0Momentum_MeV_c",&pi0Momentum);
   meta->GetEntry(0);
   std::cout << std::setprecision(17);
   std::cout << "META\tnLayer\t" << nLayer << std::endl;
@@ -949,6 +1068,15 @@ if (meta && meta->GetEntries() == 1) {
   std::cout << "META\tpcDownThetaOuter_deg\t" << pcDownOuter << std::endl;
   std::cout << "META\tpcUpThetaInner_deg\t" << pcUpInner << std::endl;
   std::cout << "META\tpcUpThetaOuter_deg\t" << pcUpOuter << std::endl;
+  auto dumpMeta=[&](const char *name, const auto &value){if(meta->GetBranch(name)) std::cout << "META\t" << name << "\t" << value << std::endl;};
+  dumpMeta("beamOverlay",beamOverlay); dumpMeta("beamOnly",beamOnly);
+  dumpMeta("beamParticle",beamParticle); dumpMeta("beamMomentum_MeV_c",beamMomentum);
+  dumpMeta("beamPhaseSpaceModel",beamPhaseSpaceModel); dumpMeta("beamTimeReference",beamTimeReference);
+  dumpMeta("targetMaterial",targetMaterial); dumpMeta("targetArealDensity_g_cm2",targetAreal);
+  dumpMeta("targetDensity_g_cm3",targetDensity); dumpMeta("targetRadius_mm",targetRadius);
+  dumpMeta("targetLength_mm",targetLength); dumpMeta("pimMomentum_MeV_c",pimMomentum);
+  dumpMeta("pi0Momentum_MeV_c",pi0Momentum);
+  meta->ResetBranchAddresses();
 }
 auto dumpVectorSizes = [](TTree *tree, const char *treeName, std::initializer_list<const char *> names) {
   if (!tree || tree->GetEntries() < 1) return;
@@ -980,18 +1108,26 @@ gSystem->Exit(0);
 def inspect_root(path: Path, root_command: str = "root") -> dict[str, Any]:
     environment = os.environ.copy()
     environment["BETA_VALIDATE_ROOT"] = str(path)
+    macro_dir = PROJECT_DIR / "tmp" / "runmanager_root_inspect"
+    macro_dir.mkdir(parents=True, exist_ok=True)
+    macro_path: Path | None = None
     try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".C", prefix="inspect_", dir=macro_dir,
+            encoding="utf-8", delete=False,
+        ) as stream:
+            stream.write("{\n" + ROOT_DUMP_CODE + "\n}\n")
+            macro_path = Path(stream.name)
         result = subprocess.run(
-            [root_command, "-l", "-b", "-q", "-e", ROOT_DUMP_CODE],
-            env=environment,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=False,
-            timeout=120,
+            [root_command, "-l", "-b", "-q", str(macro_path)],
+            env=environment, text=True, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, check=False, timeout=120,
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise RunManagerError(f"ROOT inspection failed for {path}: {exc}") from exc
+    finally:
+        if macro_path is not None:
+            macro_path.unlink(missing_ok=True)
     if result.returncode != 0:
         detail = (result.stderr or result.stdout).strip()
         raise RunManagerError(f"ROOT inspection failed for {path}: {detail}")
@@ -1032,7 +1168,7 @@ def validate_inspection(
     schema_branches = {
         tree: set(branches) for tree, branches in EXPECTED_BRANCHES.items()
     }
-    if schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5}:
+    if schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6}:
         schema_branches["runmeta"].add("bgoZOffset_cm")
     for tree, expected_branches in schema_branches.items():
         entry_raw = inspection["trees"].get(tree)
@@ -1096,6 +1232,18 @@ def validate_inspection(
         "photonCounter": geometry["photon_counter"],
         "pcNLayers": str(geometry.get("pc_n_layers", 8)),
     }
+    if schema == SCHEMA_V6:
+        overlay = job["primary"] in {
+            "beam", "e_beam", "pim_beam", "pi0_beam"
+        }
+        expected_meta.update({
+            "beamOverlay": "1" if overlay else "0",
+            "beamOnly": "1" if job["primary"] == "beam" else "0",
+            "beamParticle": job["beam"]["particle"],
+            "beamPhaseSpaceModel": "on_axis_pencil_beam",
+            "beamTimeReference": "target_center_t0",
+            "targetMaterial": job["target"]["material"],
+        })
     for key, expected in expected_meta.items():
         if meta.get(key) != expected:
             errors.append(f"runmeta {key}={meta.get(key)!r}, expected={expected!r}")
@@ -1132,7 +1280,21 @@ def validate_inspection(
         "pcUpThetaOuter_deg": geometry.get("pc_up_theta_outer_deg", 36.0),
         **(
             {"bgoZOffset_cm": geometry["bgo_z_offset_cm"]}
-            if schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5} else {}
+            if schema in {SCHEMA_V3, SCHEMA_V4, SCHEMA_V5, SCHEMA_V6} else {}
+        ),
+        **(
+            {
+                "beamMomentum_MeV_c": job["beam"]["momentum_mev_c"],
+                "targetArealDensity_g_cm2": job["target"]["areal_density_g_cm2"],
+                "targetDensity_g_cm3": job["target"]["density_g_cm3"],
+                "targetRadius_mm": job["target"]["radius_mm"],
+                "targetLength_mm": 10.0
+                    * job["target"]["areal_density_g_cm2"]
+                    / job["target"]["density_g_cm3"],
+                "pimMomentum_MeV_c": job["signal"]["pim_momentum_mev_c"],
+                "pi0Momentum_MeV_c": job["signal"]["pi0_momentum_mev_c"],
+            }
+            if schema == SCHEMA_V6 else {}
         ),
     }.items():
         if not float_equal(meta.get(key), expected):

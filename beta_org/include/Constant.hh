@@ -21,9 +21,11 @@ constexpr G4double ScintiThickness = 1.*cm;
 constexpr G4double calorSizeXY   = 40.*cm; //only used in Box shape
 
 // 目標の穴（半頂角）[deg]
-constexpr G4double thetaHoleDown = 9.698;  // +z側（downstream） 89.8 msr
-constexpr G4double thetaHoleUp   = 5.666;  // -z側（upstream）   30.7 msr（または 6.45deg）
-// constexpr G4double thetaHoleUp   = 9.59;  // -z側（upstream）   87.9 msr for K1.8
+// G4Sphere polar angle is measured from +z.  In beta_org the incident beam
+// enters from +z and travels toward -z, so theta_min is upstream.
+constexpr G4double thetaHoleUp   = 5.666;  // +z側（upstream）   30.7 msr
+constexpr G4double thetaHoleDown = 9.698;  // -z側（downstream） 89.8 msr
+// constexpr G4double thetaHoleUp   = 9.59;  // +z側（upstream） 87.9 msr for K1.8
 
 // 結晶で覆う θ 範囲 [deg]
 constexpr G4double thetaMin = thetaHoleUp;

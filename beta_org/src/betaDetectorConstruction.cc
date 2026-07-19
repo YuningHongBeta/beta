@@ -113,6 +113,7 @@ void betaDetectorConstruction::DefineMaterials()
   // Isotopes (atomic masses are in g/mole)
   auto Li6 = new G4Isotope("Li6", /*Z=*/3, /*N=*/6, 6.0151223 * g / mole);
   auto Li7 = new G4Isotope("Li7", /*Z=*/3, /*N=*/7, 7.0160040 * g / mole);
+  auto C13 = new G4Isotope("C13", /*Z=*/6, /*N=*/13, 13.003354835 * g / mole);
 
   // Element with enriched isotopic composition
   auto elLi_enr = new G4Element("Lithium_enriched", "Li_enr", 2);
@@ -120,9 +121,15 @@ void betaDetectorConstruction::DefineMaterials()
   elLi_enr->AddIsotope(Li7, 10. * perCent);
 
   // Material (single-element)
-  auto rho = 0.47 * g / cm3; // <-- as requested (14 g/cm2 thickness)
+  const auto &config = BetaConfig::Instance();
+  auto rho = config.TargetDensityGCM3() * g / cm3;
   auto matLi_enr = new G4Material("Li6_90pct", rho, 1, kStateSolid);
   matLi_enr->AddElement(elLi_enr, 1);
+
+  auto elC13 = new G4Element("Carbon13_enriched", "C13_enr", 1);
+  elC13->AddIsotope(C13, 100. * perCent);
+  auto matC13 = new G4Material("C13_100pct", rho, 1, kStateSolid);
+  matC13->AddElement(elC13, 1);
 
   // Print materials
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
@@ -151,7 +158,7 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
   // auto TargetMaterial = G4Material::GetMaterial("G4_Li"); // coution! target should be Li6
   auto AirMaterial = G4Material::GetMaterial("G4_AIR");
   auto acrylMaterial = G4Material::GetMaterial("G4_PLEXIGLASS");
-  auto LiTargetMaterial = G4Material::GetMaterial("Li6_90pct");
+  auto TargetMaterial = G4Material::GetMaterial(config.TargetMaterial());
 
   //  if ( ! defaultMaterial || ! absorberMaterial ) {
   //    G4ExceptionDescription msg;
@@ -272,14 +279,14 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
     //    TargetSizeX/2, TargetSizeY/2, TargetThickness/2); // its size
     auto TargetS = new G4Tubs("Target",
                               0,
-                              TargetRadius,
-                              TargetLength / 2,
+                              config.TargetRadiusMm() * mm,
+                              config.TargetLengthMm() * mm / 2,
                               0 * deg,
                               360 * deg);
 
     TargetLV = new G4LogicalVolume(
         TargetS,          // its solid
-        LiTargetMaterial, // its material
+        TargetMaterial,   // its material
         "Target");        // its name
     new G4PVPlacement(
         0,               // no rotation

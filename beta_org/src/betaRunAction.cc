@@ -177,6 +177,19 @@ betaRunAction::betaRunAction(
   man->CreateNtupleDColumn("pcDownThetaOuter_deg");
   man->CreateNtupleDColumn("pcUpThetaInner_deg");
   man->CreateNtupleDColumn("pcUpThetaOuter_deg");
+  man->CreateNtupleIColumn("beamOverlay");
+  man->CreateNtupleIColumn("beamOnly");
+  man->CreateNtupleSColumn("beamParticle");
+  man->CreateNtupleDColumn("beamMomentum_MeV_c");
+  man->CreateNtupleSColumn("beamPhaseSpaceModel");
+  man->CreateNtupleSColumn("beamTimeReference");
+  man->CreateNtupleSColumn("targetMaterial");
+  man->CreateNtupleDColumn("targetArealDensity_g_cm2");
+  man->CreateNtupleDColumn("targetDensity_g_cm3");
+  man->CreateNtupleDColumn("targetRadius_mm");
+  man->CreateNtupleDColumn("targetLength_mm");
+  man->CreateNtupleDColumn("pimMomentum_MeV_c");
+  man->CreateNtupleDColumn("pi0Momentum_MeV_c");
   if (BetaConfig::Instance().BgoZOffsetConfigured())
     man->CreateNtupleDColumn("bgoZOffset_cm");
   man->FinishNtuple();
@@ -268,8 +281,21 @@ void betaRunAction::BeginOfRunAction(const G4Run *)
     man->FillNtupleDColumn(4, 40, config.PCDownThetaOuterDeg());
     man->FillNtupleDColumn(4, 41, config.PCUpThetaInnerDeg());
     man->FillNtupleDColumn(4, 42, config.PCUpThetaOuterDeg());
+    man->FillNtupleIColumn(4, 43, config.BeamOverlay() ? 1 : 0);
+    man->FillNtupleIColumn(4, 44, config.BeamOnly() ? 1 : 0);
+    man->FillNtupleSColumn(4, 45, config.BeamParticle());
+    man->FillNtupleDColumn(4, 46, config.BeamMomentumMeVC());
+    man->FillNtupleSColumn(4, 47, "on_axis_pencil_beam");
+    man->FillNtupleSColumn(4, 48, "target_center_t0");
+    man->FillNtupleSColumn(4, 49, config.TargetMaterial());
+    man->FillNtupleDColumn(4, 50, config.TargetArealDensityGCM2());
+    man->FillNtupleDColumn(4, 51, config.TargetDensityGCM3());
+    man->FillNtupleDColumn(4, 52, config.TargetRadiusMm());
+    man->FillNtupleDColumn(4, 53, config.TargetLengthMm());
+    man->FillNtupleDColumn(4, 54, config.PiMinusMomentumMeVC());
+    man->FillNtupleDColumn(4, 55, config.PiZeroMomentumMeVC());
     if (config.BgoZOffsetConfigured())
-      man->FillNtupleDColumn(4, 43, config.BgoZOffsetCm());
+      man->FillNtupleDColumn(4, 56, config.BgoZOffsetCm());
     man->AddNtupleRow(4);
   }
 

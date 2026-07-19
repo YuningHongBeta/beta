@@ -6,7 +6,12 @@ Upgraded from Cal_src (v10) with configurable π⁻ absorption physics and more 
 ## Physics
 
 - **Primary**: Lambda 3-body beta decay (Λ → p e⁻ ν̄) — electron energy spectrum sampled via Dalitz-plot rejection (Källén function)
-- **Alternative primaries**: π⁻ or π⁰ at fixed momentum (`/gen/mode e|pim|pi0`)
+- **Alternative primaries**: π⁻ or π⁰ at configurable fixed momentum.
+- **Correlated beam overlay**: `beam`, `e_beam`, `pim_beam`, and `pi0_beam`
+  generate an incident beam primary in the same Geant4 event. The beam starts
+  at the upstream `+z` target face (the `theta_min` opening) and travels toward
+  `-z`; it is timed to cross the target center at
+  `t=0`, shared with the signal vertex.
 - **Physics**: tuned INCLXX+GEM baseline (`PhysicsFlag=4`): BGO π⁻
   inelastic XS ×1.65, π⁻-origin neutron yield ×3 at/above 20 MeV and ×0.5
   below 20 MeV, and nuclear-like gamma yield ×0.5. These parameters are fixed
@@ -112,7 +117,15 @@ Geometry/readout scan controls are environment variables:
   `[-10,10]` cm. The target, TH, TLC, and photon counters remain fixed.
 - `BETA_N_LAYER`, `BETA_N_SECTOR`: BGO theta/phi segmentation (default 15x15).
 - `BETA_SEGMENTATION`: `uniform_theta` or `equal_solid_angle`.
-- `BETA_PRIMARY`: `e`, `pim`, or `pi0`.
+- `BETA_PRIMARY`: clean `e`, `pim`, `pi0`; beam-only `beam`; or correlated
+  overlay `e_beam`, `pim_beam`, `pi0_beam`.
+- `BETA_BEAM_PARTICLE`, `BETA_BEAM_MOMENTUM_MEV_C`: incident beam species and
+  momentum. The v6 runmanager manifests use 1.1 GeV/c π⁺ for the Kamada K1.1
+  reference and 1.5 GeV/c K⁻ for the Hong Appendix-C K1.8 reference.
+- `BETA_TARGET_MATERIAL`, `BETA_TARGET_AREAL_DENSITY_G_CM2`,
+  `BETA_TARGET_DENSITY_G_CM3`, `BETA_TARGET_RADIUS_MM`: target transport model.
+- `BETA_PIM_MOMENTUM_MEV_C`, `BETA_PI0_MOMENTUM_MEV_C`: generated decay-
+  background momenta; the Kamada-reference manifests use 105.4 and 100 MeV/c.
 - `BETA_OUTPUT`: output path without `.root`.
 - `BETA_WRITE_CALHIT=0`: suppress the large per-hit tree during geometry scans;
   the event-level `calarr` vector remains available.
@@ -121,6 +134,14 @@ Geometry/readout scan controls are environment variables:
 Every output contains a `runmeta` tree with the geometry/counter modes and
 dimensions, primary, seed, and fixed physics parameters. The tuned INCL physics
 parameters are not scan axes.
+
+The initial overlay is a correlated, on-axis pencil-beam diagnostic. It does
+not yet include the beam-profile tails, multiple beam particles within the BGO
+integration time, spill structure, electronics dead time, or accidental
+pile-up. The Hong K1.8 manifest uses pure enriched 13C at 1.0 g/cm3 as an
+explicit proxy because Appendix C gives 20 g/cm2 but not the scintillator
+composition or density. These limitations prevent interpreting the result as
+an absolute detector rate prediction.
 
 Example BGOegg-envelope run:
 

@@ -218,6 +218,47 @@ class RunManagerTests(unittest.TestCase):
         self.assertIn("BETA_PC_Z_FRONT_CM=52.0", command)
         self.assertEqual(command[-1], "-10.0")
 
+    def test_v6_beam_overlay_manifest_and_command(self):
+        content = base_manifest()
+        content["schema"] = rm.SCHEMA_V6
+        content["primaries"] = ["e", "beam", "e_beam"]
+        content["beam"] = {"particle": "pi+", "momentum_mev_c": 1100}
+        content["target"] = {
+            "material": "Li6_90pct",
+            "areal_density_g_cm2": 14.1,
+            "density_g_cm3": 0.47,
+            "radius_mm": 15,
+        }
+        content["signal"] = {
+            "pim_momentum_mev_c": 105.4,
+            "pi0_momentum_mev_c": 100,
+        }
+        for geometry in content["geometries"]:
+            geometry["bgo_z_offset_cm"] = 0
+            geometry["theta_min_deg"] = 5.666
+            geometry["theta_max_deg"] = 170.302
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = rm.load_manifest(self.write_manifest(directory, content))
+            jobs = rm.expand_jobs(manifest, Path(directory) / "state.json")
+        command = rm.bsub_command(manifest, jobs[-1])
+        self.assertIn("BETA_BEAM_PARTICLE=pi+", command)
+        self.assertIn("BETA_BEAM_MOMENTUM_MEV_C=1100.0", command)
+        self.assertIn("BETA_TARGET_MATERIAL=Li6_90pct", command)
+        self.assertIn("BETA_PIM_MOMENTUM_MEV_C=105.4", command)
+        self.assertEqual(command[-2:], ["5.666", "170.302"])
+
+    def test_v6_requires_beam_target_and_signal(self):
+        content = base_manifest()
+        content["schema"] = rm.SCHEMA_V6
+        for geometry in content["geometries"]:
+            geometry["bgo_z_offset_cm"] = 0
+            geometry["theta_min_deg"] = 5.666
+            geometry["theta_max_deg"] = 170.302
+        with tempfile.TemporaryDirectory() as directory:
+            path = self.write_manifest(directory, content)
+            with self.assertRaisesRegex(rm.RunManagerError, "beam mapping"):
+                rm.load_manifest(path)
+
     def test_v5_rejects_endcap_inside_frustum_extent(self):
         content = base_manifest()
         content["schema"] = rm.SCHEMA_V5

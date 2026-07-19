@@ -33,6 +33,26 @@ public:
   const std::string &Segmentation() const { return fSegmentation; }
   const std::string &Output() const { return fOutput; }
   const std::string &Primary() const { return fPrimary; }
+  bool BeamOverlay() const
+  {
+    return fPrimary == "beam" ||
+           fPrimary == "e_beam" ||
+           fPrimary == "pim_beam" ||
+           fPrimary == "pi0_beam";
+  }
+  bool BeamOnly() const { return fPrimary == "beam"; }
+  const std::string &BeamParticle() const { return fBeamParticle; }
+  double BeamMomentumMeVC() const { return fBeamMomentumMeVC; }
+  double PiMinusMomentumMeVC() const { return fPiMinusMomentumMeVC; }
+  double PiZeroMomentumMeVC() const { return fPiZeroMomentumMeVC; }
+  const std::string &TargetMaterial() const { return fTargetMaterial; }
+  double TargetArealDensityGCM2() const { return fTargetArealDensityGCM2; }
+  double TargetDensityGCM3() const { return fTargetDensityGCM3; }
+  double TargetRadiusMm() const { return fTargetRadiusMm; }
+  double TargetLengthMm() const
+  {
+    return 10.0 * fTargetArealDensityGCM2 / fTargetDensityGCM3;
+  }
   bool WriteCalHit() const { return fWriteCalHit; }
   int Threads() const { return fThreads; }
   long Seed() const { return fSeed; }
@@ -181,6 +201,20 @@ private:
             fGeometry == "bgoegg_frustum" ? "bgoegg_published" : "uniform_theta")),
         fOutput(ReadString("BETA_OUTPUT", "output/beta")),
         fPrimary(ReadString("BETA_PRIMARY", "e")),
+        fBeamParticle(ReadString("BETA_BEAM_PARTICLE", "pi+")),
+        fBeamMomentumMeVC(ReadDouble(
+            "BETA_BEAM_MOMENTUM_MEV_C", 1100.0, 1.0, 10000.0)),
+        fPiMinusMomentumMeVC(ReadDouble(
+            "BETA_PIM_MOMENTUM_MEV_C", 100.0, 0.01, 1000.0)),
+        fPiZeroMomentumMeVC(ReadDouble(
+            "BETA_PI0_MOMENTUM_MEV_C", 100.0, 0.01, 1000.0)),
+        fTargetMaterial(ReadString("BETA_TARGET_MATERIAL", "Li6_90pct")),
+        fTargetArealDensityGCM2(ReadDouble(
+            "BETA_TARGET_AREAL_DENSITY_G_CM2", 14.1, 0.001, 100.0)),
+        fTargetDensityGCM3(ReadDouble(
+            "BETA_TARGET_DENSITY_G_CM3", 0.47, 0.001, 30.0)),
+        fTargetRadiusMm(ReadDouble(
+            "BETA_TARGET_RADIUS_MM", 15.0, 0.1, 15.0)),
         fWriteCalHit(ReadBool("BETA_WRITE_CALHIT", true)),
         fThreads(ReadInt("BETA_THREADS", 8, 1, 256)),
         fSeed(ReadInt("BETA_SEED", 6302026, 1, 2147483647))
@@ -243,10 +277,10 @@ private:
     if (!BGOeggGeometry() && fBgoZOffsetCm != 0.0)
       throw std::runtime_error(
           "BETA_BGO_Z_OFFSET_CM requires a BGOegg geometry");
-    if (!BGOeggEnvelope() &&
+    if (BGOeggFrustum() &&
         (fThetaMinConfigured || fThetaMaxConfigured))
       throw std::runtime_error(
-          "BGO theta overrides require BETA_GEOMETRY=bgoegg_envelope");
+          "BGO theta overrides are not supported for published BGOegg frusta");
     if (fThetaMinDeg >= fThetaMaxDeg)
       throw std::runtime_error(
           "BETA_BGO_THETA_MIN_DEG must be less than BETA_BGO_THETA_MAX_DEG");
@@ -265,8 +299,22 @@ private:
       throw std::runtime_error("BGOegg published frusta require BETA_N_SECTOR=60");
     if (BGOeggFrustum() && fNLayer != 22 && fNLayer != 31)
       throw std::runtime_error("BGOegg published frusta support BETA_N_LAYER=22 or 31");
-    if (fPrimary != "e" && fPrimary != "pim" && fPrimary != "pi0")
-      throw std::runtime_error("BETA_PRIMARY must be e, pim, or pi0");
+    if (fPrimary != "e" && fPrimary != "pim" && fPrimary != "pi0" &&
+        fPrimary != "beam" && fPrimary != "e_beam" &&
+        fPrimary != "pim_beam" && fPrimary != "pi0_beam")
+      throw std::runtime_error(
+          "BETA_PRIMARY must be e, pim, pi0, beam, e_beam, pim_beam, or pi0_beam");
+    if (fBeamParticle != "pi+" && fBeamParticle != "pi-" &&
+        fBeamParticle != "kaon+" && fBeamParticle != "kaon-")
+      throw std::runtime_error(
+          "BETA_BEAM_PARTICLE must be pi+, pi-, kaon+, or kaon-");
+    if (fTargetMaterial != "Li6_90pct" &&
+        fTargetMaterial != "C13_100pct")
+      throw std::runtime_error(
+          "BETA_TARGET_MATERIAL must be Li6_90pct or C13_100pct");
+    if (TargetLengthMm() >= 600.0)
+      throw std::runtime_error(
+          "Configured target length must be smaller than the 600 mm TH/TLC length");
     if (NCells() > 20000)
       throw std::runtime_error("BETA_N_LAYER * BETA_N_SECTOR exceeds 20000");
   }
@@ -292,6 +340,14 @@ private:
   std::string fSegmentation;
   std::string fOutput;
   std::string fPrimary;
+  std::string fBeamParticle;
+  double fBeamMomentumMeVC;
+  double fPiMinusMomentumMeVC;
+  double fPiZeroMomentumMeVC;
+  std::string fTargetMaterial;
+  double fTargetArealDensityGCM2;
+  double fTargetDensityGCM3;
+  double fTargetRadiusMm;
   bool fWriteCalHit;
   int fThreads;
   long fSeed;

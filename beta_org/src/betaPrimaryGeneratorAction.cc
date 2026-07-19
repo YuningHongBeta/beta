@@ -1,9 +1,11 @@
 #include "betaPrimaryGeneratorAction.hh"
 #include "BetaConfig.hh"
+#include "Constant.hh"
 
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4PhysicalConstants.hh"
 #include "G4Event.hh"
 #include "G4ThreeVector.hh"
 #include "G4RandomDirection.hh"
@@ -42,10 +44,10 @@ betaPrimaryGeneratorAction::betaPrimaryGeneratorAction()
   fGun->SetParticlePosition(G4ThreeVector(0,0,0));
   fGun->SetParticleMomentumDirection(G4RandomDirection());
 
-  // ---- set up messenger: /gen/mode [e|pim|pi0]
+  // ---- set up messenger: clean, beam-only, or signal+beam modes
   fMessenger = new G4GenericMessenger(this, "/gen/", "Primary generator control");
   fMessenger->DeclareMethod("mode", &betaPrimaryGeneratorAction::SetMode)
-    .SetGuidance("Select primary: e (Lambda->p e nu 3body), pim (pi- 100MeV/c), pi0 (pi0 100MeV/c)")
+    .SetGuidance("Select primary: e|pim|pi0|beam|e_beam|pim_beam|pi0_beam")
     .SetParameterName("mode", false);
 
   // ---- masses for e-spectrum
@@ -95,6 +97,7 @@ void betaPrimaryGeneratorAction::SetMode(const G4String& modeStr)
 {
   G4String m = modeStr;
   m.toLower();
+  fOverlayBeam = false;
 
   if (m == "e" || m == "electron") {
     fMode = Mode::kElectronLambda3Body;
@@ -102,9 +105,22 @@ void betaPrimaryGeneratorAction::SetMode(const G4String& modeStr)
     fMode = Mode::kPiMinus100MeV;
   } else if (m == "pi0") {
     fMode = Mode::kPiZero100MeV;
+  } else if (m == "beam") {
+    fMode = Mode::kBeamOnly;
+    fOverlayBeam = true;
+  } else if (m == "e_beam") {
+    fMode = Mode::kElectronLambda3Body;
+    fOverlayBeam = true;
+  } else if (m == "pim_beam") {
+    fMode = Mode::kPiMinus100MeV;
+    fOverlayBeam = true;
+  } else if (m == "pi0_beam") {
+    fMode = Mode::kPiZero100MeV;
+    fOverlayBeam = true;
   } else {
     G4Exception("betaPrimaryGeneratorAction::SetMode", "Gen001", JustWarning,
-                ("Unknown mode: " + modeStr + " (use e|pim|pi0)").c_str());
+                ("Unknown mode: " + modeStr +
+                 " (use e|pim|pi0|beam|e_beam|pim_beam|pi0_beam)").c_str());
     fMode = Mode::kElectronLambda3Body;
   }
 }
@@ -115,6 +131,7 @@ G4String betaPrimaryGeneratorAction::GetMode() const
     case Mode::kElectronLambda3Body: return "e";
     case Mode::kPiMinus100MeV:       return "pim";
     case Mode::kPiZero100MeV:        return "pi0";
+    case Mode::kBeamOnly:            return "beam";
   }
   return "e";
 }
@@ -131,7 +148,9 @@ void betaPrimaryGeneratorAction::GeneratePionFixedP(const G4String& pname)
 
   fGun->SetParticleDefinition(part);
 
-  const G4double p = fFixedP * MeV;          // 100 MeV/c を c=1で扱う
+  const auto &config = BetaConfig::Instance();
+  const G4double p = (pname == "pi-" ? config.PiMinusMomentumMeVC()
+                                         : config.PiZeroMomentumMeVC()) * MeV;
   const G4double m = part->GetPDGMass();
   const G4double E = std::sqrt(p*p + m*m);  // total energy
   const G4double Ek = E - m;
@@ -192,20 +211,57 @@ void betaPrimaryGeneratorAction::GenerateElectronLambda3Body()
   fGun->SetParticleMomentumDirection(p_e.unit());
 }
 
-void betaPrimaryGeneratorAction::GeneratePrimaries(G4Event* evt)
+void betaPrimaryGeneratorAction::GenerateIncidentBeam(G4Event* evt)
 {
-  switch (fMode) {
-    case Mode::kElectronLambda3Body:
-      GenerateElectronLambda3Body();
-      break;
-    case Mode::kPiMinus100MeV:
-      GeneratePionFixedP("pi-");
-      break;
-    case Mode::kPiZero100MeV:
-      GeneratePionFixedP("pi0");
-      break;
+  const auto &config = BetaConfig::Instance();
+  auto* part = G4ParticleTable::GetParticleTable()->FindParticle(
+      config.BeamParticle());
+  if (!part) {
+    G4Exception("betaPrimaryGeneratorAction::GenerateIncidentBeam", "Gen003",
+                FatalException,
+                ("Beam particle not found: " + config.BeamParticle()).c_str());
+    return;
   }
 
-  fGun->SetParticlePosition(G4ThreeVector(0,0,0));
+  const G4double momentum = config.BeamMomentumMeVC() * MeV;
+  const G4double mass = part->GetPDGMass();
+  const G4double totalEnergy = std::sqrt(momentum * momentum + mass * mass);
+  const G4double beta = momentum / totalEnergy;
+  const G4double upstreamDistance =
+      config.TargetLengthMm() * mm / 2 + 0.1 * mm;
+
+  fGun->SetParticleDefinition(part);
+  fGun->SetParticleEnergy(totalEnergy - mass);
+  // In this geometry theta_min is the upstream/beam-entrance opening (+z).
+  fGun->SetParticleMomentumDirection(G4ThreeVector(0., 0., -1.));
+  fGun->SetParticlePosition(G4ThreeVector(0., 0., upstreamDistance));
+  // Define t=0 at the target center, where the clean signal vertex is placed.
+  fGun->SetParticleTime(-upstreamDistance / (beta * c_light));
   fGun->GeneratePrimaryVertex(evt);
+}
+
+void betaPrimaryGeneratorAction::GeneratePrimaries(G4Event* evt)
+{
+  if (fMode != Mode::kBeamOnly) {
+    switch (fMode) {
+      case Mode::kElectronLambda3Body:
+        GenerateElectronLambda3Body();
+        break;
+      case Mode::kPiMinus100MeV:
+        GeneratePionFixedP("pi-");
+        break;
+      case Mode::kPiZero100MeV:
+        GeneratePionFixedP("pi0");
+        break;
+      case Mode::kBeamOnly:
+        break;
+    }
+
+    fGun->SetParticlePosition(G4ThreeVector(0,0,0));
+    fGun->SetParticleTime(0.0);
+    fGun->GeneratePrimaryVertex(evt);
+  }
+
+  if (fOverlayBeam)
+    GenerateIncidentBeam(evt);
 }

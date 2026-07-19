@@ -1,0 +1,38 @@
+schema: beta-bgo-th-tlc-beam-overlay-v6
+tag: kamada_k11_overlay_s8102026
+build_dir: build_beamoverlay
+events: 100000
+seed: 8102026
+threads: 8
+
+# Kamada thesis baseline: K1.1, 1.1 GeV/c pi+, 6Li target.
+# Clean and overlay samples share the same signal seed and geometry.
+beam:
+  particle: pi+
+  momentum_mev_c: 1100
+target:
+  material: Li6_90pct
+  areal_density_g_cm2: 14.1
+  density_g_cm3: 0.47
+  radius_mm: 15
+signal:
+  pim_momentum_mev_c: 105.4
+  pi0_momentum_mev_c: 100
+
+geometries:
+  - name: u15x15_t1
+    n_layer: 15
+    n_sector: 15
+    segmentation: uniform_theta
+    geometry_mode: current
+    photon_counter: none
+    bgo_z_offset_cm: 0
+    theta_min_deg: 5.666
+    theta_max_deg: 170.302
+
+primaries: [e, pim, pi0, beam, e_beam, pim_beam, pi0_beam]
+
+lsf:
+  queue: s
+  wall_minutes: 480
+  memory_mb: 4096

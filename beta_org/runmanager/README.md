@@ -6,10 +6,11 @@ the E63 analyzer runmanager and it does not change physics.
 
 ## Manifest contract
 
-The accepted schema is exactly `beta-bgo-th-tlc-pc-v2`. Unknown manifest fields,
+The accepted schemas are enumerated in `runmanager.py`; unknown manifest fields,
 unknown schemas, modified manifests with existing state, unsupported geometry,
-and any event count other than 100,000 are rejected. The fixed event count is
-intentional: `run_bgo_sample.sh` executes the checked-in 100k macro.
+and event counts outside the checked-in 100k/2M macros are rejected.
+`beta-bgo-th-tlc-beam-overlay-v6` adds explicit `beam`, `target`, and `signal`
+mappings and accepts clean, beam-only, and same-event overlay primaries.
 
 Relative `build_dir` paths are resolved from `beta_org/`, not from the manifest
 directory. `geometries` and `primaries` form a Cartesian product. The current
@@ -82,6 +83,8 @@ Validation requires a non-zombie, non-recovered ROOT file and checks:
 - BGO vector length `n_layer*n_sector` and TH/TLC vector length 30;
 - manifest geometry mode, segmentation, photon-counter mode, primary, seed,
   and output path;
+- for v6, beam species/momentum, overlay flag, target material/areal density/
+  density/derived length, and π⁻/π⁰ generator momenta;
 - fixed `physicsFlag=4`, `neutronScale=2`, `inelasticBias=3`, and
   `pionInelasticXSScale=1.65`.
 
