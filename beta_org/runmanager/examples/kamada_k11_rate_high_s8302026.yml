@@ -1,0 +1,31 @@
+schema: beta-bgo-th-tlc-rate-overlay-v7
+tag: kamada_k11_rate_high_lam20_s8302026
+build_dir: build_rateoverlay
+events: 20000
+seed: 8302026
+threads: 2
+
+# Rate sensitivity: twice the Kamada-inspired nominal 10 MHz in a 1 us window.
+beam:
+  particle: pi+
+  momentum_mev_c: 1100
+  multiplicity_mode: poisson
+  fixed_multiplicity: 1
+  mean_per_bgo_gate: 20
+  bgo_gate_width_ns: 1000
+  hodo_gate_width_ns: 10
+  profile_model: pencil
+  x_mean_mm: 0
+  y_mean_mm: 0
+  x_sigma_mm: 0
+  y_sigma_mm: 0
+  x_max_abs_mm: 0
+  y_max_abs_mm: 0
+target: {material: Li6_90pct, areal_density_g_cm2: 14.1, density_g_cm3: 0.47, radius_mm: 15}
+signal: {pim_momentum_mev_c: 105.4, pi0_momentum_mev_c: 100}
+geometries:
+  - {name: u15x15_t1, n_layer: 15, n_sector: 15, segmentation: uniform_theta,
+     geometry_mode: current, photon_counter: none, bgo_z_offset_cm: 0,
+     theta_min_deg: 5.666, theta_max_deg: 170.302}
+primaries: [e_beam, pim_beam, pi0_beam]
+lsf: {queue: l, wall_minutes: 720, memory_mb: 4096}

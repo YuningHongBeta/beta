@@ -1,0 +1,32 @@
+schema: beta-bgo-th-tlc-rate-overlay-v7
+tag: hong_k18_profile_widetail_s8402026
+build_dir: build_rateoverlay
+events: 100000
+seed: 8402026
+threads: 2
+
+# Tail sensitivity: the same Gaussian proxy with effectively inactive
+# truncation. This is not claimed as the measured Hong/Yamamoto tail shape.
+beam:
+  particle: kaon-
+  momentum_mev_c: 1500
+  multiplicity_mode: poisson
+  fixed_multiplicity: 1
+  mean_per_bgo_gate: 0.595
+  bgo_gate_width_ns: 1000
+  hodo_gate_width_ns: 10
+  profile_model: independent_truncated_gaussian
+  x_mean_mm: 0
+  y_mean_mm: 0
+  x_sigma_mm: 24
+  y_sigma_mm: 5
+  x_max_abs_mm: 1000
+  y_max_abs_mm: 1000
+target: {material: C13_100pct, areal_density_g_cm2: 20, density_g_cm3: 1.0, radius_mm: 15}
+signal: {pim_momentum_mev_c: 105.4, pi0_momentum_mev_c: 100}
+geometries:
+  - {name: u15x15_hole87p9msr_t1, n_layer: 15, n_sector: 15,
+     segmentation: uniform_theta, geometry_mode: current, photon_counter: none,
+     bgo_z_offset_cm: 0, theta_min_deg: 9.59510523, theta_max_deg: 170.302}
+primaries: [e_beam, pim_beam, pi0_beam]
+lsf: {queue: l, wall_minutes: 720, memory_mb: 4096}
