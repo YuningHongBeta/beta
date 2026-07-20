@@ -1,0 +1,197 @@
+{
+  "status": "complete",
+  "analysis": "bgoc_qda5_confirm_v1",
+  "decision": "five-variable QDA frozen after the seed7302026 audit",
+  "geometry": "current BGOC 15x15 uniform-theta, z=0",
+  "bgo_cell_threshold_MeV": 3.0,
+  "model": {
+    "method": "QDA",
+    "features": [
+      "sumE",
+      "maxE",
+      "allRmsDeg",
+      "isolatedEFrac4",
+      "local3x3Frac"
+    ],
+    "energy_transform": "log1p for sumE and maxE",
+    "standardization": "pooled fit-sample mean and standard deviation",
+    "covariance_regularization": 0.2,
+    "score": "log((L_pim + L_pi0)/2) - log(L_e)",
+    "acceptance": "score < threshold"
+  },
+  "split": {
+    "fit": "seed6302026 eventID mod 4 == 0; 25,000/species",
+    "cut_selection": "seed6302026 eventID mod 4 == 2; 25,000/species",
+    "confirmation": "seed9302026; all 100,000/species"
+  },
+  "target": {
+    "pim_reject": 0.88448,
+    "pi0_reject": 0.98448
+  },
+  "threshold": -3.3583471441541786,
+  "training_validation": {
+    "e_keep": 0.60148,
+    "pim_reject": 0.88452,
+    "pi0_reject": 0.98716,
+    "e_keep_95ci": [
+      0.5953959027725957,
+      0.6075329155194442
+    ],
+    "pim_reject_95ci": [
+      0.8804990543338231,
+      0.8884227944014469
+    ],
+    "pi0_reject_95ci": [
+      0.9856876780066326,
+      0.9884826325880678
+    ],
+    "counts": {
+      "electron": 25000,
+      "pim": 25000,
+      "pi0": 25000
+    }
+  },
+  "confirmation_all": {
+    "e_keep": 0.60353,
+    "pim_reject": 0.88466,
+    "pi0_reject": 0.9882,
+    "e_keep_95ci": [
+      0.6004942637800372,
+      0.6065577824008714
+    ],
+    "pim_reject_95ci": [
+      0.8826653843783872,
+      0.8866250636458406
+    ],
+    "pi0_reject_95ci": [
+      0.9875117112285239,
+      0.9888507822083501
+    ],
+    "counts": {
+      "electron": 100000,
+      "pim": 100000,
+      "pi0": 100000
+    }
+  },
+  "reference_quadratic_ridge": {
+    "role": "previous 23-variable model evaluated on the same new seed; not used to retune QDA5",
+    "features": [
+      "maxE",
+      "sumE",
+      "nHit",
+      "nCl4",
+      "nCl8",
+      "cl1Sum4",
+      "cl2Sum4",
+      "cl1Size4",
+      "cl1MaxFrac4",
+      "cl1RmsDeg4",
+      "allRmsDeg",
+      "cl2OverCl1",
+      "isolatedEFrac4",
+      "seed15NCl4",
+      "seed15Cl1Sum4",
+      "seed15Cl1Size4",
+      "e2OverE1",
+      "nHit2T",
+      "sum2T",
+      "local3x3Frac",
+      "meanHitE",
+      "thetaSpan",
+      "phiSpan"
+    ],
+    "threshold": 0.28788710039436477,
+    "training_validation": {
+      "e_keep": 0.61076,
+      "pim_reject": 0.88452,
+      "pi0_reject": 0.98688,
+      "e_keep_95ci": [
+        0.6046994563770574,
+        0.6167865104541048
+      ],
+      "pim_reject_95ci": [
+        0.8804990543338231,
+        0.8884227944014469
+      ],
+      "pi0_reject_95ci": [
+        0.9853928112119292,
+        0.9882175854182287
+      ],
+      "counts": {
+        "electron": 25000,
+        "pim": 25000,
+        "pi0": 25000
+      }
+    },
+    "confirmation_all": {
+      "e_keep": 0.61437,
+      "pim_reject": 0.88402,
+      "pi0_reject": 0.98794,
+      "e_keep_95ci": [
+        0.6113488476951696,
+        0.6173823656894581
+      ],
+      "pim_reject_95ci": [
+        0.8820206423937932,
+        0.8859898547992185
+      ],
+      "pi0_reject_95ci": [
+        0.9872444801493331,
+        0.9885980332623595
+      ],
+      "counts": {
+        "electron": 100000,
+        "pim": 100000,
+        "pi0": 100000
+      }
+    }
+  },
+  "source": {
+    "training_bgo2": {
+      "electron": {
+        "path": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgoc_u15x15_feasibility_v1/bgo2/none/training_T3/e.bgo2",
+        "sha256": "56f682f3d207c40c7f6b7d0c36a8a740af5993a21540cc6111db8c0d4be26b83"
+      },
+      "pim": {
+        "path": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgoc_u15x15_feasibility_v1/bgo2/none/training_T3/pim.bgo2",
+        "sha256": "f9774df1f15318565148f3247ae1e1dc355723552d84efa76963157418e69c6d"
+      },
+      "pi0": {
+        "path": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgoc_u15x15_feasibility_v1/bgo2/none/training_T3/pi0.bgo2",
+        "sha256": "2f804495cb7b78126cacae471b50f37a6071bfe8a4eff490a56c49b2f89cc9de"
+      }
+    },
+    "confirmation_root": {
+      "electron": {
+        "path": "/gpfs/home/had/yhong/geant4/beta/beta_org/build_opt/output/scan/bgoc_u15x15_qda5_confirm_s9302026_u15x15_e.root",
+        "sha256": "69265452514a1a886327adfcbbc272d1b14888d58c69207ee1f4afeab0990279"
+      },
+      "pim": {
+        "path": "/gpfs/home/had/yhong/geant4/beta/beta_org/build_opt/output/scan/bgoc_u15x15_qda5_confirm_s9302026_u15x15_pim.root",
+        "sha256": "893625e7c372bc36f39fb929d59416a0d340f6936b5470380e78f7c85abf48d3"
+      },
+      "pi0": {
+        "path": "/gpfs/home/had/yhong/geant4/beta/beta_org/build_opt/output/scan/bgoc_u15x15_qda5_confirm_s9302026_u15x15_pi0.root",
+        "sha256": "65c15a663073533ef14151a5cd7c1e4ff555d659535edb2fdf81effdb728a807"
+      }
+    },
+    "confirmation_bgo2": {
+      "electron": {
+        "path": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgoc_qda5_confirm_s9302026/e.bgo2",
+        "sha256": "75dbdff7d27e904a09e1f354ad3fa6af77f6f76c71e7f57dc1133bdc7c44433f"
+      },
+      "pim": {
+        "path": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgoc_qda5_confirm_s9302026/pim.bgo2",
+        "sha256": "c153f8649a4d0c878bf2020f7f459a28d9efaad3f5ae8c02e8f6b20173f5af2d"
+      },
+      "pi0": {
+        "path": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgoc_qda5_confirm_s9302026/pi0.bgo2",
+        "sha256": "36d68de819d59d7388061f160c09df475daa3ba04c3cb41de0b23a341b49aa92"
+      }
+    },
+    "extractor": {
+      "path": "/gpfs/home/had/yhong/geant4/beta/beta_org/analysis/bgo_extract_features_v2",
+      "sha256": "54f4e897cd67f76d06ee23053bec1ec1369910ef6be92e3d9bcfb52c76562337"
+    }
+  }
+}
