@@ -1,0 +1,25 @@
+schema: beta-bgo-th-tlc-pc-offset-v3
+tag: bgoc_u15x15_pimbdt_confirm_s10302026
+build_dir: build_pimconfirm
+events: 100000
+seed: 10302026
+threads: 1
+
+# Independent confirmation prepared only after freezing BDTG_D3_M1 and the
+# electron-like score cut > 0.480194806111.  pi0 is a guard sample and is not
+# used in BDT training or cut selection.
+geometries:
+  - name: u15x15
+    n_layer: 15
+    n_sector: 15
+    segmentation: uniform_theta
+    geometry_mode: current
+    photon_counter: none
+    bgo_z_offset_cm: 0
+
+primaries: [e, pim, pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096
