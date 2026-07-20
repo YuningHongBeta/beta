@@ -1,0 +1,21 @@
+{
+  "status":"frozen_independent_confirmation",
+  "analysis":"bgoc_pim_bdt_confirm_v1",
+  "objective":"pim reject > 90% and electron keep > 60%",
+  "sample":"seed10302026, 100000 events/species, untouched before model and cut freeze",
+  "model":"analysis/models/bgoc_pim_bdtg_d3_m1_seed6302026.weights.xml",
+  "input_bgo2_directory":"tmp/bgoc_pim_bdt_confirm_s10302026",
+  "score_file_ephemeral":"tmp/bgoc_pim_bdt_confirm_s10302026/scores.bdt1",
+  "method":"BDTG_D3_M1",
+  "threshold":0.480194806111,
+  "cut_rule":"accept electron if score > threshold",
+  "pi0_role":"guard only; not used in training or cut selection",
+  "features":["maxE","sumE","nHit","nCl4","nCl8","cl1Sum4","cl2Sum4","cl1Size4","cl1MaxFrac4","cl1RmsDeg4","allRmsDeg","cl2OverCl1","isolatedEFrac4","seed15NCl4","seed15Cl1Sum4","seed15Cl1Size4","e2OverE1","nHit2T","sum2T","local3x3Frac","meanHitE","thetaSpan","phiSpan"],
+  "metrics":{
+    "electron_keep":{"numerator":60195,"denominator":100000,"value":0.60195,"wilson_95ci":[0.598912268499,0.604979899067]},
+    "pim_reject":{"numerator":90212,"denominator":100000,"value":0.90212,"wilson_95ci":[0.900262788554,0.903946318084]},
+    "pi0_reject":{"numerator":98808,"denominator":100000,"value":0.98808,"wilson_95ci":[0.987388363645,0.988734139011]},
+    "auc_e_pim":0.9029005964
+  },
+  "passes_strict_target":true
+}

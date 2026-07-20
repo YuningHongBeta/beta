@@ -168,6 +168,8 @@ int main(int argc, char **argv) {
         "analysis/results/bgoegg_v1/bgoc_pim_bdt_confirm_s10302026.json";
     const fs::path rootOutput =
         project / "tmp/bgoc_pim_bdt_confirm_s10302026/scores.root";
+    const fs::path scoreOutput =
+        project / "tmp/bgoc_pim_bdt_confirm_s10302026/scores.bdt1";
     fs::create_directories(result.parent_path());
     fs::create_directories(rootOutput.parent_path());
 
@@ -206,6 +208,8 @@ int main(int argc, char **argv) {
          << "  \"objective\":\"pim reject > 90% and electron keep > 60%\",\n"
          << "  \"sample\":\"seed10302026, 100000 events/species, untouched before model and cut freeze\",\n"
          << "  \"model\":\"analysis/models/bgoc_pim_bdtg_d3_m1_seed6302026.weights.xml\",\n"
+         << "  \"input_bgo2_directory\":\"tmp/bgoc_pim_bdt_confirm_s10302026\",\n"
+         << "  \"score_file_ephemeral\":\"tmp/bgoc_pim_bdt_confirm_s10302026/scores.bdt1\",\n"
          << "  \"method\":\"" << kMethod << "\",\n"
          << "  \"threshold\":" << kThreshold << ",\n"
          << "  \"cut_rule\":\"accept electron if score > threshold\",\n"
@@ -225,6 +229,29 @@ int main(int argc, char **argv) {
          << "\n  },\n  \"passes_strict_target\":"
          << ((electronKeep.value > 0.60 && pimReject.value > 0.90) ? "true" : "false")
          << "\n}\n";
+
+    std::ofstream scoreFile(scoreOutput, std::ios::binary);
+    if (!scoreFile) {
+      throw std::runtime_error("cannot create " + scoreOutput.string());
+    }
+    const std::array<char, 4> scoreMagic = {'B', 'D', 'T', '1'};
+    const std::uint32_t scoreVersion = 1;
+    const std::array<std::uint32_t, 3> scoreCounts = {
+        static_cast<std::uint32_t>(electron.size()),
+        static_cast<std::uint32_t>(pim.size()),
+        static_cast<std::uint32_t>(pi0.size())};
+    scoreFile.write(scoreMagic.data(), scoreMagic.size());
+    scoreFile.write(reinterpret_cast<const char *>(&scoreVersion), sizeof(scoreVersion));
+    scoreFile.write(reinterpret_cast<const char *>(scoreCounts.data()),
+                    sizeof(std::uint32_t) * scoreCounts.size());
+    for (const auto *scores : {&electron, &pim, &pi0}) {
+      scoreFile.write(reinterpret_cast<const char *>(scores->data()),
+                      static_cast<std::streamsize>(sizeof(double) * scores->size()));
+    }
+    if (!scoreFile) {
+      throw std::runtime_error("failed writing " + scoreOutput.string());
+    }
+    scoreFile.close();
 
     TFile output(rootOutput.c_str(), "RECREATE");
     if (output.IsZombie()) {
@@ -267,7 +294,7 @@ int main(int argc, char **argv) {
               << "% pass="
               << (electronKeep.value > 0.60 && pimReject.value > 0.90 ? "yes" : "no")
               << '\n'
-              << result << '\n' << rootOutput << '\n';
+              << result << '\n' << rootOutput << '\n' << scoreOutput << '\n';
     return 0;
   } catch (const std::exception &error) {
     std::cerr << "ERROR: " << error.what() << '\n';
