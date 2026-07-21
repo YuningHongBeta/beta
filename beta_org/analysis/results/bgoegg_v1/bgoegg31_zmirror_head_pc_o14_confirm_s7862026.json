@@ -1,0 +1,182 @@
+{
+  "analysis": "BGOegg31 z-mirrored downstream-head PC confirmation",
+  "orientation": {
+    "k18_upstream_bottom_opening_deg": 5.336032242257286,
+    "k18_downstream_head_opening_deg": 12.0,
+    "beta_mapping": "K18 z mirror; beta legacy PCUp at -z is physical downstream"
+  },
+  "selection": "T3 3 MeV/cell; four-neighbour Ncluster == 1; downstream-head PC plastic deposited-energy threshold",
+  "design": {
+    "name": "head_pc_o14",
+    "n_layer": 31,
+    "n_sector": 60,
+    "segmentation": "bgoegg_published",
+    "geometry_mode": "bgoegg_frustum",
+    "photon_counter": "upstream",
+    "bgo_z_offset_cm": -10,
+    "pc_n_layers": 2,
+    "pc_pb_thickness_mm": 6,
+    "pc_scinti_thickness_mm": 4,
+    "pc_z_front_cm": 51.5,
+    "pc_down_theta_inner_deg": 0.01,
+    "pc_down_theta_outer_deg": 12,
+    "pc_up_theta_inner_deg": 0.01,
+    "pc_up_theta_outer_deg": 14
+  },
+  "material": {
+    "stack_thickness_mm": 20.0,
+    "total_pb_mm": 12.0,
+    "total_plastic_mm": 8.0,
+    "approx_radiation_lengths_if_traversed": 2.1571297087534553,
+    "outer_radius_at_back_mm": 133.39048152110166
+  },
+  "pi0_source_root": "/gpfs/group/had/sks/Users/yhong/rootfile/beta/build_bgoegg_frustum_output/scan/bgoegg31_zmirror_head_pc_o14_highstat_s7862026_head_pc_o14_pi0.root",
+  "pi0_bgo_ncluster1": {
+    "value": 0.0109115,
+    "numerator": 21823,
+    "denominator": 2000000,
+    "wilson_95ci": [
+      0.01076845955215682,
+      0.011056419257566919
+    ]
+  },
+  "threshold_scan": [
+    {
+      "threshold_MeV": 0.1,
+      "bgo_and_pc_no_hit": {
+        "value": 0.006553,
+        "numerator": 13106,
+        "denominator": 2000000,
+        "wilson_95ci": [
+          0.006442122311920875,
+          0.006665773240768975
+        ]
+      },
+      "pi0_to_beta_percent": 2.1843333333333335,
+      "pim_to_beta_percent": 0.7601625,
+      "pi_total_to_beta_percent": 2.9444958333333333,
+      "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+        2.9075366039736252,
+        2.9820869135896584
+      ]
+    },
+    {
+      "threshold_MeV": 0.2,
+      "bgo_and_pc_no_hit": {
+        "value": 0.006579,
+        "numerator": 13158,
+        "denominator": 2000000,
+        "wilson_95ci": [
+          0.006467902121983032,
+          0.00669199333082908
+        ]
+      },
+      "pi0_to_beta_percent": 2.193,
+      "pim_to_beta_percent": 0.7601625,
+      "pi_total_to_beta_percent": 2.9531625,
+      "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+        2.916129873994344,
+        2.9908269436096933
+      ]
+    },
+    {
+      "threshold_MeV": 0.5,
+      "bgo_and_pc_no_hit": {
+        "value": 0.0066345,
+        "numerator": 13269,
+        "denominator": 2000000,
+        "wilson_95ci": [
+          0.006522933580756275,
+          0.006747961658855282
+        ]
+      },
+      "pi0_to_beta_percent": 2.2115,
+      "pim_to_beta_percent": 0.7601625,
+      "pi_total_to_beta_percent": 2.9716625,
+      "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+        2.934473693585425,
+        3.0094830529517607
+      ]
+    }
+  ],
+  "electron_source_root": "/gpfs/group/had/sks/Users/yhong/rootfile/beta/build_bgoegg_frustum_output/scan/bgoegg31_zmirror_head_pc_o14_electron_s7872026_head_pc_o14_e.root",
+  "electron_bgo_ncluster1": {
+    "value": 0.66912,
+    "numerator": 66912,
+    "denominator": 100000,
+    "wilson_95ci": [
+      0.6661972311502554,
+      0.6720297759985446
+    ]
+  },
+  "electron_threshold_scan": [
+    {
+      "threshold_MeV": 0.1,
+      "bgo_and_pc_no_hit": {
+        "value": 0.66819,
+        "numerator": 66819,
+        "denominator": 100000,
+        "wilson_95ci": [
+          0.6652652016695568,
+          0.6711018769276325
+        ]
+      },
+      "pc_false_veto_given_bgo": {
+        "value": 0.0013898852223816357,
+        "numerator": 93,
+        "denominator": 66912,
+        "wilson_95ci": [
+          0.0011347873837515847,
+          0.001702230797324724
+        ]
+      }
+    },
+    {
+      "threshold_MeV": 0.2,
+      "bgo_and_pc_no_hit": {
+        "value": 0.66827,
+        "numerator": 66827,
+        "denominator": 100000,
+        "wilson_95ci": [
+          0.6653453757435456,
+          0.6711816967075458
+        ]
+      },
+      "pc_false_veto_given_bgo": {
+        "value": 0.0012703252032520325,
+        "numerator": 85,
+        "denominator": 66912,
+        "wilson_95ci": [
+          0.0010275650014795296,
+          0.0015703468685770445
+        ]
+      }
+    },
+    {
+      "threshold_MeV": 0.5,
+      "bgo_and_pc_no_hit": {
+        "value": 0.66843,
+        "numerator": 66843,
+        "denominator": 100000,
+        "wilson_95ci": [
+          0.6655057241765477,
+          0.6713413359823476
+        ]
+      },
+      "pc_false_veto_given_bgo": {
+        "value": 0.0010312051649928264,
+        "numerator": 69,
+        "denominator": 66912,
+        "wilson_95ci": [
+          0.0008149860309016071,
+          0.001304713217115499
+        ]
+      }
+    }
+  ],
+  "scope": {
+    "pim_term_source": "/gpfs/home/had/yhong/geant4/beta/beta_org/analysis/results/bgoegg_v1/bgoegg31_zmirror_head_pc_size_scan_s7852026.json",
+    "reference_factors": "Hong/Kamada TH, TLC, delta-z and branching ratios",
+    "not_included": "optical/electronic response, pile-up, support/readout material, and K18 momentum-resolution change"
+  }
+}

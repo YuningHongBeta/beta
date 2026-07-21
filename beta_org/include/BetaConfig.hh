@@ -252,9 +252,6 @@ private:
         fPhotonCounter != "upstream" && fPhotonCounter != "two_sided")
       throw std::runtime_error(
           "BETA_PHOTON_COUNTER must be none, downstream, upstream, or two_sided");
-    if (!BGOeggGeometry() && fPhotonCounter != "none")
-      throw std::runtime_error(
-          "BETA_PHOTON_COUNTER collars require a BGOegg geometry");
     if (fPCPbThicknessMm == 0.0 && fPCScintiThicknessMm == 0.0)
       throw std::runtime_error("Photon counter requires non-zero layer thickness");
     if (fPCDownThetaInnerDeg >= fPCDownThetaOuterDeg ||
@@ -299,6 +296,10 @@ private:
         throw std::runtime_error(
             "Upstream photon counter intersects the published BGOegg frusta");
     }
+    if (!BGOeggGeometry() && fPhotonCounter != "none" &&
+        fPCZFrontCm <= RMinCm() + ThicknessCm() + 0.05)
+      throw std::runtime_error(
+          "Photon counter intersects the current spherical BGOC");
     if (!BGOeggGeometry() && fBgoZOffsetCm != 0.0)
       throw std::runtime_error(
           "BETA_BGO_Z_OFFSET_CM requires a BGOegg geometry");

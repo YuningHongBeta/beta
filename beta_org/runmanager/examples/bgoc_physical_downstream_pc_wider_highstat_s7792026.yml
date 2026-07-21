@@ -1,0 +1,46 @@
+schema: beta-bgo-th-tlc-pc-design-v5
+tag: bgoc_physical_downstream_pc_wider_highstat_s7792026
+build_dir: build_bgoegg_frustum
+events: 2000000
+seed: 7792026
+threads: 8
+
+# High-statistics check of wider, lower-X0 candidates from s7782026.
+geometries:
+  - &pb5
+    name: physical_down_z510_o24_2_pb5_sc5
+    n_layer: 15
+    n_sector: 15
+    segmentation: uniform_theta
+    geometry_mode: current
+    photon_counter: upstream
+    bgo_z_offset_cm: 0
+    pc_n_layers: 2
+    pc_pb_thickness_mm: 5
+    pc_scinti_thickness_mm: 5
+    pc_z_front_cm: 51
+    pc_down_theta_inner_deg: 0.01
+    pc_down_theta_outer_deg: 12
+    pc_up_theta_inner_deg: 0.01
+    pc_up_theta_outer_deg: 24
+  - <<: *pb5
+    name: physical_down_z510_o36_2_pb5_sc5
+    pc_up_theta_outer_deg: 36
+
+  - &pb3
+    <<: *pb5
+    name: physical_down_z510_o36_3_pb3_sc3p5
+    pc_n_layers: 3
+    pc_pb_thickness_mm: 3
+    pc_scinti_thickness_mm: 3.5
+    pc_up_theta_outer_deg: 36
+  - <<: *pb3
+    name: physical_down_z510_o54_3_pb3_sc3p5
+    pc_up_theta_outer_deg: 54
+
+primaries: [pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096

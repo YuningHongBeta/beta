@@ -8,9 +8,10 @@
 namespace BGOeggGeometry
 {
 // Ideal no-gap crystal geometry from ELPH Annual Report 2010, pp. 62--65,
-// equations (1), (2), (8), and (10).  The 31-layer layout preserves the
-// published segment-size rule by extending forward types 13F--17F and
-// backward types 09B--12B.
+// equations (1), (2), (8), and (10).  The 31-ring shape keeps the published
+// five forward and four backward extensions.  beta_org is the z-mirror of the
+// K18 installation: its +z beam entrance is the long bottom/small opening and
+// its -z downstream side is the short head/large opening.
 struct Ring
 {
   double thetaLowDeg;

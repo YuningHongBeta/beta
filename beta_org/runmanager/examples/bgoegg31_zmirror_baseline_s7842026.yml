@@ -1,0 +1,24 @@
+schema: beta-bgo-th-tlc-pc-offset-v3
+tag: bgoegg31_zmirror_baseline_s7842026
+build_dir: build_bgoegg_frustum
+events: 100000
+seed: 7842026
+threads: 4
+
+# beta is the z-mirrored coordinate partner of K18.  bgo_z_offset=-10 cm
+# corresponds to the K18 egg centre 10 cm downstream of the physical target.
+geometries:
+  - name: zmirror31_zm10_no_pc
+    n_layer: 31
+    n_sector: 60
+    segmentation: bgoegg_published
+    geometry_mode: bgoegg_frustum
+    photon_counter: none
+    bgo_z_offset_cm: -10
+
+primaries: [e, pim, pi0]
+
+lsf:
+  queue: s
+  wall_minutes: 240
+  memory_mb: 4096

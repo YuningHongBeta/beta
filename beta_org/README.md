@@ -21,7 +21,8 @@ Upgraded from Cal_src (v10) with configurable π⁻ absorption physics and more 
 ## Detector geometry
 
 - Spherical BGO calorimeter: R_min=30 cm, thickness=20 cm, 15 layers × 15 sectors
-- Beam-hole openings: upstream 5.7° (30.7 msr), downstream 9.7° (89.8 msr)
+- Beam-hole openings: physical upstream `+z` 5.7° (30.7 msr), physical
+  downstream/scattered-particle side `-z` 9.7° (89.8 msr)
 - Enriched ⁶Li target (90%, cylindrical, r=1.5 cm, L=30 cm) at center
 - TH hodoscope: plastic scintillator, r=1.5–2.1 cm, z=-300–+300 mm,
   30 segments
@@ -34,8 +35,16 @@ coverage only. It does **not** model the exact BGOegg trapezoidal crystals,
 forward prolate-spheroid inner face, support, gaps, PMTs, or services, and must
 not be used as an engineering geometry.
 
+The exact 31-ring BGOegg uses five added rings on its long/small-opening side
+and four on its short/large-opening side.  In beta coordinates the long bottom
+is the physical upstream `+z` side (5.336-degree opening); the short head is the
+physical downstream `-z` side (12-degree opening).  K18 mirrors the complete
+ring geometry in z so its bottom is upstream and its head/downstream PC are at
+K18 `+z`.
+
 `BETA_PHOTON_COUNTER=downstream|upstream|two_sided` adds unsegmented conical
-Pb/plastic endcap annuli. The default is `8 x (1 mm Pb + 5 mm plastic)` starting
+Pb/plastic endcaps to the current spherical BGOC or a BGOegg geometry. The
+default is `8 x (1 mm Pb + 5 mm plastic)` starting
 at `|z|=52 cm`; layer count, thickness, z, and the two angular ranges are
 environment-configurable. For exact BGOegg frusta the configuration rejects an
 endcap whose front face is not beyond the outermost BGO vertex. The v5
@@ -43,6 +52,13 @@ runmanager schema requires every design parameter explicitly. The `evt` tree
 stores the plastic deposits as `EdepPCDown_MeV`, `EdepPCUp_MeV`, and their sum
 `EdepPC_MeV`. Optical response, electronics threshold, segmentation, timing,
 pile-up, supports, PMTs, services, and real background are absent.
+
+The `Down`/`Up` PC names are legacy geometry labels and are opposite to the
+physical beam direction used here: `PCDown` is placed at `+z` (physical
+upstream, small opening), while `PCUp` is placed at `-z` (physical downstream,
+large opening).  A K18 `+z`-downstream design must therefore be evaluated with
+the beta `PCUp` branches and then mirrored in z.  Do not infer the physical side
+from the branch name alone.
 
 TH and TLC are sensitive detectors. The `th` tree stores per-segment deposited
 energy, earliest step-midpoint deposit time, and analytic arrival times at both

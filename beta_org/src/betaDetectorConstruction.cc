@@ -392,6 +392,8 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
       pcScintiVis->SetVisibility(true);
       fVisAttributes.push_back(pcScintiVis);
 
+      // Legacy PCDown means the +z endcap.  The incident beam travels +z ->
+      // -z, so this is physically upstream (the small BGOC opening).
       if (config.HasDownstreamPhotonCounter())
       {
         const G4double tanInner =
@@ -431,6 +433,8 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
         }
       }
 
+      // Legacy PCUp means the -z endcap and is physically downstream (the
+      // large BGOC opening).  Keep the names for ROOT compatibility.
       if (config.HasUpstreamPhotonCounter())
       {
         const G4double tanInner = std::tan(config.PCUpThetaInnerDeg() * deg);

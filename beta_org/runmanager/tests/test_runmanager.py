@@ -111,13 +111,42 @@ class RunManagerTests(unittest.TestCase):
                 with self.assertRaisesRegex(rm.RunManagerError, field):
                     rm.load_manifest(path)
 
-    def test_current_geometry_rejects_photon_counter(self):
+    def test_current_geometry_requires_v5_for_photon_counter(self):
         content = base_manifest()
         content["geometries"][0]["photon_counter"] = "downstream"
         with tempfile.TemporaryDirectory() as directory:
             path = self.write_manifest(directory, content)
-            with self.assertRaisesRegex(rm.RunManagerError, "BGOegg geometry"):
+            with self.assertRaisesRegex(rm.RunManagerError, "pc-design-v5"):
                 rm.load_manifest(path)
+
+    def test_v5_accepts_current_bgoc_endcap(self):
+        content = base_manifest()
+        content["schema"] = rm.SCHEMA_V5
+        content["geometries"] = [{
+            "name": "current_bgoc_pc",
+            "n_layer": 15,
+            "n_sector": 15,
+            "segmentation": "uniform_theta",
+            "geometry_mode": "current",
+            "photon_counter": "downstream",
+            "bgo_z_offset_cm": 0,
+            "pc_n_layers": 2,
+            "pc_pb_thickness_mm": 3,
+            "pc_scinti_thickness_mm": 5,
+            "pc_z_front_cm": 52,
+            "pc_down_theta_inner_deg": 0.01,
+            "pc_down_theta_outer_deg": 24,
+            "pc_up_theta_inner_deg": 0.01,
+            "pc_up_theta_outer_deg": 12,
+        }]
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = rm.load_manifest(self.write_manifest(directory, content))
+            jobs = rm.expand_jobs(manifest, Path(directory) / "state.json")
+        command = rm.bsub_command(manifest, jobs[0])
+        self.assertIn("BETA_PC_N_LAYERS=2", command)
+        self.assertEqual(command[-5:], [
+            "uniform_theta", "e", "current", "downstream", "0.0",
+        ])
 
     def test_v3_offset_manifest_and_command(self):
         content = base_manifest()
@@ -165,7 +194,7 @@ class RunManagerTests(unittest.TestCase):
             jobs = rm.expand_jobs(manifest, Path(directory) / "state.json")
         geometry = jobs[0]["geometry"]
         self.assertAlmostEqual(geometry["theta_min_deg"], 5.336032242257286)
-        self.assertEqual(geometry["theta_max_deg"], 168.0)
+        self.assertAlmostEqual(geometry["theta_max_deg"], 168.0)
         command = rm.bsub_command(manifest, jobs[0])
         self.assertEqual(command[-5:], [
             "bgoegg_published", "e", "bgoegg_frustum", "none", "-10.0",
@@ -204,7 +233,7 @@ class RunManagerTests(unittest.TestCase):
             "pc_n_layers": 8,
             "pc_pb_thickness_mm": 1,
             "pc_scinti_thickness_mm": 5,
-            "pc_z_front_cm": 52,
+            "pc_z_front_cm": 70,
             "pc_down_theta_inner_deg": 3,
             "pc_down_theta_outer_deg": 6,
             "pc_up_theta_inner_deg": 3,
@@ -215,7 +244,7 @@ class RunManagerTests(unittest.TestCase):
             jobs = rm.expand_jobs(manifest, Path(directory) / "state.json")
         command = rm.bsub_command(manifest, jobs[0])
         self.assertIn("BETA_PC_N_LAYERS=8", command)
-        self.assertIn("BETA_PC_Z_FRONT_CM=52.0", command)
+        self.assertIn("BETA_PC_Z_FRONT_CM=70.0", command)
         self.assertEqual(command[-1], "-10.0")
 
     def test_v6_beam_overlay_manifest_and_command(self):

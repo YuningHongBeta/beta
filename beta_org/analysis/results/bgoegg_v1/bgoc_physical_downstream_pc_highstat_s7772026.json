@@ -1,0 +1,695 @@
+{
+  "analysis": "thin downstream-only Photon Counter screening",
+  "selection": "geometry_mode=current; 3 MeV/cell; four-neighbour Ncluster == 1; stand-alone downstream plastic Edep >= 0.5 MeV veto",
+  "target": {
+    "pi_total_to_beta_percent": 4.0,
+    "required_pc_veto_given_current_bgoc": 0.4653301320528215
+  },
+  "selection_policy": "choose the thinnest non-reference point below 4% in BGO-conditional screening; for current BGOC use the directly correlated BGO-and-PC survival; require independent high-statistics confirmation",
+  "selected_screening_candidate": {
+    "geometry": "physical_down_z510_o24_2_pb6_sc4",
+    "beta_pc_mode": "upstream",
+    "design": {
+      "name": "physical_down_z510_o24_2_pb6_sc4",
+      "n_layer": 15,
+      "n_sector": 15,
+      "segmentation": "uniform_theta",
+      "geometry_mode": "current",
+      "photon_counter": "upstream",
+      "bgo_z_offset_cm": 0,
+      "pc_n_layers": 2,
+      "pc_pb_thickness_mm": 6,
+      "pc_scinti_thickness_mm": 4,
+      "pc_z_front_cm": 51,
+      "pc_down_theta_inner_deg": 0.01,
+      "pc_down_theta_outer_deg": 12,
+      "pc_up_theta_inner_deg": 0.01,
+      "pc_up_theta_outer_deg": 24
+    },
+    "source_root": "/gpfs/group/had/sks/Users/yhong/rootfile/beta/build_bgoegg_frustum_output/scan/bgoc_physical_downstream_pc_highstat_s7772026_physical_down_z510_o24_2_pb6_sc4_pi0.root",
+    "source_features": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgoc_physical_downstream_pc_highstat_s7772026/physical_down_z510_o24_2_pb6_sc4/pi0.bgo2",
+    "bgo_ncluster1_count": 32928,
+    "full_pre_pc_count": 175,
+    "bgo_conditional": {
+      "gamma_intercept": {
+        "value": 0.7098821671525753,
+        "numerator": 23375,
+        "denominator": 32928,
+        "wilson_95ci": [
+          0.7049562203267219,
+          0.7147591489848786
+        ]
+      },
+      "effective_pc_veto": {
+        "value": 0.46650267249757044,
+        "numerator": 15361,
+        "denominator": 32928,
+        "wilson_95ci": [
+          0.4611185079334735,
+          0.4718946519058124
+        ]
+      },
+      "response_given_intercept": {
+        "value": 0.6503529411764706,
+        "numerator": 15202,
+        "denominator": 23375,
+        "wilson_95ci": [
+          0.6442155846181854,
+          0.656440887704484
+        ]
+      }
+    },
+    "full_pre_pc_diagnostic": {
+      "gamma_intercept": {
+        "value": 0.7257142857142858,
+        "numerator": 127,
+        "denominator": 175,
+        "wilson_95ci": [
+          0.6552984641092497,
+          0.7864335622393227
+        ]
+      },
+      "effective_pc_veto": {
+        "value": 0.5085714285714286,
+        "numerator": 89,
+        "denominator": 175,
+        "wilson_95ci": [
+          0.43511810162912384,
+          0.5816565322828471
+        ]
+      }
+    },
+    "material": {
+      "stack_thickness_mm": 20.0,
+      "total_pb_mm": 12.0,
+      "total_plastic_mm": 8.0,
+      "approx_radiation_lengths_if_traversed": 2.1571297087534553,
+      "outer_radius_at_back_mm": 235.97120321352418
+    },
+    "bgoc_transfer_screening": {
+      "pi0_to_beta_percent": 2.9626884920634935,
+      "pim_to_beta_percent": 1.0308000000000002,
+      "pi_total_to_beta_percent": 3.9934884920634937,
+      "passes_total_below_4_percent": true
+    },
+    "bgoc_direct_screening": {
+      "generated_count": 2000000,
+      "bgo_and_pc_no_hit_count": 17567,
+      "joint_survival": 0.0087835,
+      "joint_survival_measurement": {
+        "value": 0.0087835,
+        "numerator": 17567,
+        "denominator": 2000000,
+        "wilson_95ci": [
+          0.00865512450359454,
+          0.008913762480737867
+        ]
+      },
+      "effective_pc_veto_vs_no_pc_bgoc": 0.4727791116446579,
+      "pi0_to_beta_percent": 2.9278333333333335,
+      "pi0_to_beta_percent_pc_mc_stat_only_95ci": [
+        2.88504150119818,
+        2.9712541602459557
+      ],
+      "pim_to_beta_percent": 1.0308000000000002,
+      "pi_total_to_beta_percent": 3.9586333333333337,
+      "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+        3.91584150119818,
+        4.002054160245956
+      ],
+      "passes_total_below_4_percent": true,
+      "threshold_scan": [
+        {
+          "threshold_MeV": 0.0,
+          "bgo_and_pc_no_hit_count": 17147,
+          "pi_total_to_beta_percent": 3.888633333333334,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            3.8463555165037677,
+            3.93154041384197
+          ]
+        },
+        {
+          "threshold_MeV": 0.05,
+          "bgo_and_pc_no_hit_count": 17228,
+          "pi_total_to_beta_percent": 3.902133333333334,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            3.859755886388598,
+            3.945139992097546
+          ]
+        },
+        {
+          "threshold_MeV": 0.1,
+          "bgo_and_pc_no_hit_count": 17265,
+          "pi_total_to_beta_percent": 3.9083000000000006,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            3.865877122965663,
+            3.9513520651648633
+          ]
+        },
+        {
+          "threshold_MeV": 0.2,
+          "bgo_and_pc_no_hit_count": 17354,
+          "pi_total_to_beta_percent": 3.9231333333333342,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            3.880601382681651,
+            3.9662944151340125
+          ]
+        },
+        {
+          "threshold_MeV": 0.5,
+          "bgo_and_pc_no_hit_count": 17567,
+          "pi_total_to_beta_percent": 3.9586333333333337,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            3.91584150119818,
+            4.002054160245956
+          ]
+        },
+        {
+          "threshold_MeV": 1.0,
+          "bgo_and_pc_no_hit_count": 20403,
+          "pi_total_to_beta_percent": 4.4313,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            4.385191279985653,
+            4.47803589906577
+          ]
+        }
+      ]
+    }
+  },
+  "candidates": [
+    {
+      "geometry": "physical_down_z510_o24_3_pb3_sc3p5",
+      "beta_pc_mode": "upstream",
+      "design": {
+        "name": "physical_down_z510_o24_3_pb3_sc3p5",
+        "n_layer": 15,
+        "n_sector": 15,
+        "segmentation": "uniform_theta",
+        "geometry_mode": "current",
+        "photon_counter": "upstream",
+        "bgo_z_offset_cm": 0,
+        "pc_n_layers": 3,
+        "pc_pb_thickness_mm": 3,
+        "pc_scinti_thickness_mm": 3.5,
+        "pc_z_front_cm": 51,
+        "pc_down_theta_inner_deg": 0.01,
+        "pc_down_theta_outer_deg": 12,
+        "pc_up_theta_inner_deg": 0.01,
+        "pc_up_theta_outer_deg": 24
+      },
+      "source_root": "/gpfs/group/had/sks/Users/yhong/rootfile/beta/build_bgoegg_frustum_output/scan/bgoc_physical_downstream_pc_highstat_s7772026_physical_down_z510_o24_3_pb3_sc3p5_pi0.root",
+      "source_features": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgoc_physical_downstream_pc_highstat_s7772026/physical_down_z510_o24_3_pb3_sc3p5/pi0.bgo2",
+      "bgo_ncluster1_count": 32844,
+      "full_pre_pc_count": 175,
+      "bgo_conditional": {
+        "gamma_intercept": {
+          "value": 0.7168737060041408,
+          "numerator": 23545,
+          "denominator": 32844,
+          "wilson_95ci": [
+            0.7119762904665707,
+            0.7217203960526737
+          ]
+        },
+        "effective_pc_veto": {
+          "value": 0.4340214346608208,
+          "numerator": 14255,
+          "denominator": 32844,
+          "wilson_95ci": [
+            0.4286693244993757,
+            0.4393889768220894
+          ]
+        },
+        "response_given_intercept": {
+          "value": 0.5954979825865364,
+          "numerator": 14021,
+          "denominator": 23545,
+          "wilson_95ci": [
+            0.5892138822869476,
+            0.6017509262308641
+          ]
+        }
+      },
+      "full_pre_pc_diagnostic": {
+        "gamma_intercept": {
+          "value": 0.6857142857142857,
+          "numerator": 120,
+          "denominator": 175,
+          "wilson_95ci": [
+            0.6135709283262377,
+            0.749879473099803
+          ]
+        },
+        "effective_pc_veto": {
+          "value": 0.4,
+          "numerator": 70,
+          "denominator": 175,
+          "wilson_95ci": [
+            0.3303166455778638,
+            0.4739792921158066
+          ]
+        }
+      },
+      "material": {
+        "stack_thickness_mm": 19.5,
+        "total_pb_mm": 9.0,
+        "total_plastic_mm": 10.5,
+        "approx_radiation_lengths_if_traversed": 1.628452985076758,
+        "outer_radius_at_back_mm": 235.74858887086992
+      },
+      "bgoc_transfer_screening": {
+        "pi0_to_beta_percent": 3.143067632850243,
+        "pim_to_beta_percent": 1.0308000000000002,
+        "pi_total_to_beta_percent": 4.173867632850243,
+        "passes_total_below_4_percent": false
+      },
+      "bgoc_direct_screening": {
+        "generated_count": 2000000,
+        "bgo_and_pc_no_hit_count": 18589,
+        "joint_survival": 0.0092945,
+        "joint_survival_measurement": {
+          "value": 0.0092945,
+          "numerator": 18589,
+          "denominator": 2000000,
+          "wilson_95ci": [
+            0.009162449479255878,
+            0.009428435542094844
+          ]
+        },
+        "effective_pc_veto_vs_no_pc_bgoc": 0.4421068427370949,
+        "pi0_to_beta_percent": 3.098166666666667,
+        "pi0_to_beta_percent_pc_mc_stat_only_95ci": [
+          3.054149826418626,
+          3.142811847364948
+        ],
+        "pim_to_beta_percent": 1.0308000000000002,
+        "pi_total_to_beta_percent": 4.128966666666667,
+        "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+          4.084949826418626,
+          4.173611847364948
+        ],
+        "passes_total_below_4_percent": false,
+        "threshold_scan": [
+          {
+            "threshold_MeV": 0.0,
+            "bgo_and_pc_no_hit_count": 18440,
+            "pi_total_to_beta_percent": 4.104133333333334,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              4.0602928963807345,
+              4.148602206132217
+            ]
+          },
+          {
+            "threshold_MeV": 0.05,
+            "bgo_and_pc_no_hit_count": 18470,
+            "pi_total_to_beta_percent": 4.109133333333334,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              4.065257320196354,
+              4.153637763109341
+            ]
+          },
+          {
+            "threshold_MeV": 0.1,
+            "bgo_and_pc_no_hit_count": 18484,
+            "pi_total_to_beta_percent": 4.111466666666667,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              4.067574061474754,
+              4.155987679534222
+            ]
+          },
+          {
+            "threshold_MeV": 0.2,
+            "bgo_and_pc_no_hit_count": 18507,
+            "pi_total_to_beta_percent": 4.1153,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              4.071380150449036,
+              4.159848242501042
+            ]
+          },
+          {
+            "threshold_MeV": 0.5,
+            "bgo_and_pc_no_hit_count": 18589,
+            "pi_total_to_beta_percent": 4.128966666666667,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              4.084949826418626,
+              4.173611847364948
+            ]
+          },
+          {
+            "threshold_MeV": 1.0,
+            "bgo_and_pc_no_hit_count": 19660,
+            "pi_total_to_beta_percent": 4.307466666666667,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              4.262202694117418,
+              4.353358293967075
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "geometry": "physical_down_z510_o12_3_pb3_sc3p5",
+      "beta_pc_mode": "upstream",
+      "design": {
+        "name": "physical_down_z510_o12_3_pb3_sc3p5",
+        "n_layer": 15,
+        "n_sector": 15,
+        "segmentation": "uniform_theta",
+        "geometry_mode": "current",
+        "photon_counter": "upstream",
+        "bgo_z_offset_cm": 0,
+        "pc_n_layers": 3,
+        "pc_pb_thickness_mm": 3,
+        "pc_scinti_thickness_mm": 3.5,
+        "pc_z_front_cm": 51,
+        "pc_down_theta_inner_deg": 0.01,
+        "pc_down_theta_outer_deg": 12,
+        "pc_up_theta_inner_deg": 0.01,
+        "pc_up_theta_outer_deg": 12
+      },
+      "source_root": "/gpfs/group/had/sks/Users/yhong/rootfile/beta/build_bgoegg_frustum_output/scan/bgoc_physical_downstream_pc_highstat_s7772026_physical_down_z510_o12_3_pb3_sc3p5_pi0.root",
+      "source_features": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgoc_physical_downstream_pc_highstat_s7772026/physical_down_z510_o12_3_pb3_sc3p5/pi0.bgo2",
+      "bgo_ncluster1_count": 33034,
+      "full_pre_pc_count": 165,
+      "bgo_conditional": {
+        "gamma_intercept": {
+          "value": 0.7092692377550402,
+          "numerator": 23430,
+          "denominator": 33034,
+          "wilson_95ci": [
+            0.7043482594347881,
+            0.7141415507192173
+          ]
+        },
+        "effective_pc_veto": {
+          "value": 0.43437064842283707,
+          "numerator": 14349,
+          "denominator": 33034,
+          "wilson_95ci": [
+            0.4290333877940291,
+            0.4397231710930122
+          ]
+        },
+        "response_given_intercept": {
+          "value": 0.6019206145966709,
+          "numerator": 14103,
+          "denominator": 23430,
+          "wilson_95ci": [
+            0.5956365801372488,
+            0.6081712338053632
+          ]
+        }
+      },
+      "full_pre_pc_diagnostic": {
+        "gamma_intercept": {
+          "value": 0.7151515151515152,
+          "numerator": 118,
+          "denominator": 165,
+          "wilson_95ci": [
+            0.6420014429554517,
+            0.7785113889989348
+          ]
+        },
+        "effective_pc_veto": {
+          "value": 0.45454545454545453,
+          "numerator": 75,
+          "denominator": 165,
+          "wilson_95ci": [
+            0.3804661903811977,
+            0.5306930704735094
+          ]
+        }
+      },
+      "material": {
+        "stack_thickness_mm": 19.5,
+        "total_pb_mm": 9.0,
+        "total_plastic_mm": 10.5,
+        "approx_radiation_lengths_if_traversed": 1.628452985076758,
+        "outer_radius_at_back_mm": 112.54869940427672
+      },
+      "bgoc_transfer_screening": {
+        "pi0_to_beta_percent": 3.1411283324251795,
+        "pim_to_beta_percent": 1.0308000000000002,
+        "pi_total_to_beta_percent": 4.17192833242518,
+        "passes_total_below_4_percent": false
+      },
+      "bgoc_direct_screening": {
+        "generated_count": 2000000,
+        "bgo_and_pc_no_hit_count": 18685,
+        "joint_survival": 0.0093425,
+        "joint_survival_measurement": {
+          "value": 0.0093425,
+          "numerator": 18685,
+          "denominator": 2000000,
+          "wilson_95ci": [
+            0.009210109666195706,
+            0.009476775170765348
+          ]
+        },
+        "effective_pc_veto_vs_no_pc_bgoc": 0.43922569027611047,
+        "pi0_to_beta_percent": 3.114166666666667,
+        "pi0_to_beta_percent_pc_mc_stat_only_95ci": [
+          3.070036555398569,
+          3.158925056921783
+        ],
+        "pim_to_beta_percent": 1.0308000000000002,
+        "pi_total_to_beta_percent": 4.144966666666667,
+        "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+          4.100836555398569,
+          4.189725056921783
+        ],
+        "passes_total_below_4_percent": false,
+        "threshold_scan": [
+          {
+            "threshold_MeV": 0.0,
+            "bgo_and_pc_no_hit_count": 18558,
+            "pi_total_to_beta_percent": 4.123800000000001,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              4.07981980105993,
+              4.168408559237812
+            ]
+          },
+          {
+            "threshold_MeV": 0.05,
+            "bgo_and_pc_no_hit_count": 18579,
+            "pi_total_to_beta_percent": 4.1273,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              4.083294976094204,
+              4.171933370758455
+            ]
+          },
+          {
+            "threshold_MeV": 0.1,
+            "bgo_and_pc_no_hit_count": 18593,
+            "pi_total_to_beta_percent": 4.1296333333333335,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              4.085611767463412,
+              4.174283237092528
+            ]
+          },
+          {
+            "threshold_MeV": 0.2,
+            "bgo_and_pc_no_hit_count": 18621,
+            "pi_total_to_beta_percent": 4.1343,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              4.090245369400832,
+              4.178982950561668
+            ]
+          },
+          {
+            "threshold_MeV": 0.5,
+            "bgo_and_pc_no_hit_count": 18685,
+            "pi_total_to_beta_percent": 4.144966666666667,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              4.100836555398569,
+              4.189725056921783
+            ]
+          },
+          {
+            "threshold_MeV": 1.0,
+            "bgo_and_pc_no_hit_count": 19846,
+            "pi_total_to_beta_percent": 4.338466666666667,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              4.292989701156772,
+              4.384571167842725
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "geometry": "physical_down_z510_o24_2_pb6_sc4",
+      "beta_pc_mode": "upstream",
+      "design": {
+        "name": "physical_down_z510_o24_2_pb6_sc4",
+        "n_layer": 15,
+        "n_sector": 15,
+        "segmentation": "uniform_theta",
+        "geometry_mode": "current",
+        "photon_counter": "upstream",
+        "bgo_z_offset_cm": 0,
+        "pc_n_layers": 2,
+        "pc_pb_thickness_mm": 6,
+        "pc_scinti_thickness_mm": 4,
+        "pc_z_front_cm": 51,
+        "pc_down_theta_inner_deg": 0.01,
+        "pc_down_theta_outer_deg": 12,
+        "pc_up_theta_inner_deg": 0.01,
+        "pc_up_theta_outer_deg": 24
+      },
+      "source_root": "/gpfs/group/had/sks/Users/yhong/rootfile/beta/build_bgoegg_frustum_output/scan/bgoc_physical_downstream_pc_highstat_s7772026_physical_down_z510_o24_2_pb6_sc4_pi0.root",
+      "source_features": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/bgoc_physical_downstream_pc_highstat_s7772026/physical_down_z510_o24_2_pb6_sc4/pi0.bgo2",
+      "bgo_ncluster1_count": 32928,
+      "full_pre_pc_count": 175,
+      "bgo_conditional": {
+        "gamma_intercept": {
+          "value": 0.7098821671525753,
+          "numerator": 23375,
+          "denominator": 32928,
+          "wilson_95ci": [
+            0.7049562203267219,
+            0.7147591489848786
+          ]
+        },
+        "effective_pc_veto": {
+          "value": 0.46650267249757044,
+          "numerator": 15361,
+          "denominator": 32928,
+          "wilson_95ci": [
+            0.4611185079334735,
+            0.4718946519058124
+          ]
+        },
+        "response_given_intercept": {
+          "value": 0.6503529411764706,
+          "numerator": 15202,
+          "denominator": 23375,
+          "wilson_95ci": [
+            0.6442155846181854,
+            0.656440887704484
+          ]
+        }
+      },
+      "full_pre_pc_diagnostic": {
+        "gamma_intercept": {
+          "value": 0.7257142857142858,
+          "numerator": 127,
+          "denominator": 175,
+          "wilson_95ci": [
+            0.6552984641092497,
+            0.7864335622393227
+          ]
+        },
+        "effective_pc_veto": {
+          "value": 0.5085714285714286,
+          "numerator": 89,
+          "denominator": 175,
+          "wilson_95ci": [
+            0.43511810162912384,
+            0.5816565322828471
+          ]
+        }
+      },
+      "material": {
+        "stack_thickness_mm": 20.0,
+        "total_pb_mm": 12.0,
+        "total_plastic_mm": 8.0,
+        "approx_radiation_lengths_if_traversed": 2.1571297087534553,
+        "outer_radius_at_back_mm": 235.97120321352418
+      },
+      "bgoc_transfer_screening": {
+        "pi0_to_beta_percent": 2.9626884920634935,
+        "pim_to_beta_percent": 1.0308000000000002,
+        "pi_total_to_beta_percent": 3.9934884920634937,
+        "passes_total_below_4_percent": true
+      },
+      "bgoc_direct_screening": {
+        "generated_count": 2000000,
+        "bgo_and_pc_no_hit_count": 17567,
+        "joint_survival": 0.0087835,
+        "joint_survival_measurement": {
+          "value": 0.0087835,
+          "numerator": 17567,
+          "denominator": 2000000,
+          "wilson_95ci": [
+            0.00865512450359454,
+            0.008913762480737867
+          ]
+        },
+        "effective_pc_veto_vs_no_pc_bgoc": 0.4727791116446579,
+        "pi0_to_beta_percent": 2.9278333333333335,
+        "pi0_to_beta_percent_pc_mc_stat_only_95ci": [
+          2.88504150119818,
+          2.9712541602459557
+        ],
+        "pim_to_beta_percent": 1.0308000000000002,
+        "pi_total_to_beta_percent": 3.9586333333333337,
+        "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+          3.91584150119818,
+          4.002054160245956
+        ],
+        "passes_total_below_4_percent": true,
+        "threshold_scan": [
+          {
+            "threshold_MeV": 0.0,
+            "bgo_and_pc_no_hit_count": 17147,
+            "pi_total_to_beta_percent": 3.888633333333334,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              3.8463555165037677,
+              3.93154041384197
+            ]
+          },
+          {
+            "threshold_MeV": 0.05,
+            "bgo_and_pc_no_hit_count": 17228,
+            "pi_total_to_beta_percent": 3.902133333333334,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              3.859755886388598,
+              3.945139992097546
+            ]
+          },
+          {
+            "threshold_MeV": 0.1,
+            "bgo_and_pc_no_hit_count": 17265,
+            "pi_total_to_beta_percent": 3.9083000000000006,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              3.865877122965663,
+              3.9513520651648633
+            ]
+          },
+          {
+            "threshold_MeV": 0.2,
+            "bgo_and_pc_no_hit_count": 17354,
+            "pi_total_to_beta_percent": 3.9231333333333342,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              3.880601382681651,
+              3.9662944151340125
+            ]
+          },
+          {
+            "threshold_MeV": 0.5,
+            "bgo_and_pc_no_hit_count": 17567,
+            "pi_total_to_beta_percent": 3.9586333333333337,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              3.91584150119818,
+              4.002054160245956
+            ]
+          },
+          {
+            "threshold_MeV": 1.0,
+            "bgo_and_pc_no_hit_count": 20403,
+            "pi_total_to_beta_percent": 4.4313,
+            "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+              4.385191279985653,
+              4.47803589906577
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "scope": {
+    "screening_only": true,
+    "not_included": "K18 accepted-track material crossing, momentum-resolution loss, supports/readout, rate, pile-up, and BGOC end-to-end correlation"
+  }
+}

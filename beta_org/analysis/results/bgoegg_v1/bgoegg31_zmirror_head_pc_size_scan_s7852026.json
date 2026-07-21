@@ -1,0 +1,1077 @@
+{
+  "analysis": "corrected BGOegg31 downstream-head PC outer-size scan",
+  "orientation": {
+    "beta_upstream_bottom_opening_deg": 5.336032242257286,
+    "beta_downstream_head_opening_deg": 12.0,
+    "k18_mapping": "z mirror: bottom upstream -z, head downstream +z"
+  },
+  "selection": "T3 3 MeV/cell; four-neighbour Ncluster == 1; physical downstream head-side PC; plastic Edep threshold scan",
+  "baseline": {
+    "measurements": {
+      "e": {
+        "value": 0.66975,
+        "numerator": 66975,
+        "denominator": 100000,
+        "wilson_95ci": [
+          0.6668286132666785,
+          0.6726583454815995
+        ]
+      },
+      "pim": {
+        "value": 0.20271,
+        "numerator": 20271,
+        "denominator": 100000,
+        "wilson_95ci": [
+          0.2002297525135045,
+          0.20521308715497516
+        ]
+      },
+      "pi0": {
+        "value": 0.01136,
+        "numerator": 1136,
+        "denominator": 100000,
+        "wilson_95ci": [
+          0.010721679564078223,
+          0.012035860802586933
+        ]
+      }
+    },
+    "pi0_no_pc_to_beta_percent": 3.786666666666667,
+    "pim_to_beta_percent": 0.7601625,
+    "pi_total_no_pc_to_beta_percent": 4.546829166666667
+  },
+  "selection_policy": "screening: among central totals below 4% at 0.2 MeV, choose the smallest PC outer angle within 0.02 percentage point of the best screening total (the saturated plateau); independent high-statistics confirmation required",
+  "minimum_below_4_percent_candidate": {
+    "geometry": "head_pc_o12",
+    "design": {
+      "name": "head_pc_o12",
+      "n_layer": 31,
+      "n_sector": 60,
+      "segmentation": "bgoegg_published",
+      "geometry_mode": "bgoegg_frustum",
+      "photon_counter": "upstream",
+      "bgo_z_offset_cm": -10,
+      "pc_n_layers": 2,
+      "pc_pb_thickness_mm": 6,
+      "pc_scinti_thickness_mm": 4,
+      "pc_z_front_cm": 51.5,
+      "pc_down_theta_inner_deg": 0.01,
+      "pc_down_theta_outer_deg": 12,
+      "pc_up_theta_inner_deg": 0.01,
+      "pc_up_theta_outer_deg": 12
+    },
+    "source_root": "/gpfs/group/had/sks/Users/yhong/rootfile/beta/build_bgoegg_frustum_output/scan/bgoegg31_zmirror_head_pc_size_scan_s7852026_head_pc_o12_pi0.root",
+    "bgo_ncluster1": {
+      "value": 0.0111,
+      "numerator": 1110,
+      "denominator": 100000,
+      "wilson_95ci": [
+        0.010469160770720978,
+        0.01176839957076272
+      ]
+    },
+    "gamma_intercept_given_bgo": {
+      "value": 0.5801801801801801,
+      "numerator": 644,
+      "denominator": 1110,
+      "wilson_95ci": [
+        0.5509189336371234,
+        0.6088883698084331
+      ]
+    },
+    "pc_veto_given_bgo_at_0p2_MeV": {
+      "value": 0.4009009009009009,
+      "numerator": 445,
+      "denominator": 1110,
+      "wilson_95ci": [
+        0.37245975632332967,
+        0.43002559896867903
+      ]
+    },
+    "threshold_scan": [
+      {
+        "threshold_MeV": 0.1,
+        "bgo_and_pc_no_hit": {
+          "value": 0.00661,
+          "numerator": 661,
+          "denominator": 100000,
+          "wilson_95ci": [
+            0.00612636779965251,
+            0.007131537491582185
+          ]
+        },
+        "pi0_to_beta_percent": 2.2033333333333336,
+        "pim_to_beta_percent": 0.7601625,
+        "pi_total_to_beta_percent": 2.9634958333333334,
+        "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+          2.80228509988417,
+          3.1373416638607283
+        ]
+      },
+      {
+        "threshold_MeV": 0.2,
+        "bgo_and_pc_no_hit": {
+          "value": 0.00665,
+          "numerator": 665,
+          "denominator": 100000,
+          "wilson_95ci": [
+            0.006164860225082967,
+            0.00717304199310272
+          ]
+        },
+        "pi0_to_beta_percent": 2.216666666666667,
+        "pim_to_beta_percent": 0.7601625,
+        "pi_total_to_beta_percent": 2.9768291666666666,
+        "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+          2.815115908360989,
+          3.1511764977009067
+        ]
+      },
+      {
+        "threshold_MeV": 0.5,
+        "bgo_and_pc_no_hit": {
+          "value": 0.00668,
+          "numerator": 668,
+          "denominator": 100000,
+          "wilson_95ci": [
+            0.006193732570182839,
+            0.007204167343216094
+          ]
+        },
+        "pi0_to_beta_percent": 2.226666666666667,
+        "pim_to_beta_percent": 0.7601625,
+        "pi_total_to_beta_percent": 2.986829166666667,
+        "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+          2.8247400233942797,
+          3.1615516144053646
+        ]
+      }
+    ],
+    "material": {
+      "stack_thickness_mm": 20.0,
+      "total_pb_mm": 12.0,
+      "total_plastic_mm": 8.0,
+      "approx_radiation_lengths_if_traversed": 2.1571297087534553,
+      "outer_radius_at_back_mm": 113.71776049346184
+    }
+  },
+  "selected_screening_candidate": {
+    "geometry": "head_pc_o14",
+    "design": {
+      "name": "head_pc_o14",
+      "n_layer": 31,
+      "n_sector": 60,
+      "segmentation": "bgoegg_published",
+      "geometry_mode": "bgoegg_frustum",
+      "photon_counter": "upstream",
+      "bgo_z_offset_cm": -10,
+      "pc_n_layers": 2,
+      "pc_pb_thickness_mm": 6,
+      "pc_scinti_thickness_mm": 4,
+      "pc_z_front_cm": 51.5,
+      "pc_down_theta_inner_deg": 0.01,
+      "pc_down_theta_outer_deg": 12,
+      "pc_up_theta_inner_deg": 0.01,
+      "pc_up_theta_outer_deg": 14
+    },
+    "source_root": "/gpfs/group/had/sks/Users/yhong/rootfile/beta/build_bgoegg_frustum_output/scan/bgoegg31_zmirror_head_pc_size_scan_s7852026_head_pc_o14_pi0.root",
+    "bgo_ncluster1": {
+      "value": 0.01045,
+      "numerator": 1045,
+      "denominator": 100000,
+      "wilson_95ci": [
+        0.009838268977075505,
+        0.011099341301454551
+      ]
+    },
+    "gamma_intercept_given_bgo": {
+      "value": 0.5712918660287082,
+      "numerator": 597,
+      "denominator": 1045,
+      "wilson_95ci": [
+        0.5410791869680605,
+        0.6009823217060284
+      ]
+    },
+    "pc_veto_given_bgo_at_0p2_MeV": {
+      "value": 0.3875598086124402,
+      "numerator": 405,
+      "denominator": 1045,
+      "wilson_95ci": [
+        0.3584842118545956,
+        0.41745904627687497
+      ]
+    },
+    "threshold_scan": [
+      {
+        "threshold_MeV": 0.1,
+        "bgo_and_pc_no_hit": {
+          "value": 0.00638,
+          "numerator": 638,
+          "denominator": 100000,
+          "wilson_95ci": [
+            0.005905127891933796,
+            0.0068927950693326865
+          ]
+        },
+        "pi0_to_beta_percent": 2.126666666666667,
+        "pim_to_beta_percent": 0.7601625,
+        "pi_total_to_beta_percent": 2.886829166666667,
+        "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+          2.7285384639779324,
+          3.057760856444229
+        ]
+      },
+      {
+        "threshold_MeV": 0.2,
+        "bgo_and_pc_no_hit": {
+          "value": 0.0064,
+          "numerator": 640,
+          "denominator": 100000,
+          "wilson_95ci": [
+            0.005924359834840766,
+            0.006913561589901214
+          ]
+        },
+        "pi0_to_beta_percent": 2.1333333333333337,
+        "pim_to_beta_percent": 0.7601625,
+        "pi_total_to_beta_percent": 2.8934958333333336,
+        "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+          2.734949111613589,
+          3.0646830299670715
+        ]
+      },
+      {
+        "threshold_MeV": 0.5,
+        "bgo_and_pc_no_hit": {
+          "value": 0.00648,
+          "numerator": 648,
+          "denominator": 100000,
+          "wilson_95ci": [
+            0.006001299745117387,
+            0.006996615533526577
+          ]
+        },
+        "pi0_to_beta_percent": 2.16,
+        "pim_to_beta_percent": 0.7601625,
+        "pi_total_to_beta_percent": 2.9201625,
+        "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+          2.7605957483724626,
+          3.0923676778421925
+        ]
+      }
+    ],
+    "material": {
+      "stack_thickness_mm": 20.0,
+      "total_pb_mm": 12.0,
+      "total_plastic_mm": 8.0,
+      "approx_radiation_lengths_if_traversed": 2.1571297087534553,
+      "outer_radius_at_back_mm": 133.39048152110166
+    }
+  },
+  "candidates": [
+    {
+      "geometry": "head_pc_o12",
+      "design": {
+        "name": "head_pc_o12",
+        "n_layer": 31,
+        "n_sector": 60,
+        "segmentation": "bgoegg_published",
+        "geometry_mode": "bgoegg_frustum",
+        "photon_counter": "upstream",
+        "bgo_z_offset_cm": -10,
+        "pc_n_layers": 2,
+        "pc_pb_thickness_mm": 6,
+        "pc_scinti_thickness_mm": 4,
+        "pc_z_front_cm": 51.5,
+        "pc_down_theta_inner_deg": 0.01,
+        "pc_down_theta_outer_deg": 12,
+        "pc_up_theta_inner_deg": 0.01,
+        "pc_up_theta_outer_deg": 12
+      },
+      "source_root": "/gpfs/group/had/sks/Users/yhong/rootfile/beta/build_bgoegg_frustum_output/scan/bgoegg31_zmirror_head_pc_size_scan_s7852026_head_pc_o12_pi0.root",
+      "bgo_ncluster1": {
+        "value": 0.0111,
+        "numerator": 1110,
+        "denominator": 100000,
+        "wilson_95ci": [
+          0.010469160770720978,
+          0.01176839957076272
+        ]
+      },
+      "gamma_intercept_given_bgo": {
+        "value": 0.5801801801801801,
+        "numerator": 644,
+        "denominator": 1110,
+        "wilson_95ci": [
+          0.5509189336371234,
+          0.6088883698084331
+        ]
+      },
+      "pc_veto_given_bgo_at_0p2_MeV": {
+        "value": 0.4009009009009009,
+        "numerator": 445,
+        "denominator": 1110,
+        "wilson_95ci": [
+          0.37245975632332967,
+          0.43002559896867903
+        ]
+      },
+      "threshold_scan": [
+        {
+          "threshold_MeV": 0.1,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00661,
+            "numerator": 661,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.00612636779965251,
+              0.007131537491582185
+            ]
+          },
+          "pi0_to_beta_percent": 2.2033333333333336,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.9634958333333334,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.80228509988417,
+            3.1373416638607283
+          ]
+        },
+        {
+          "threshold_MeV": 0.2,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00665,
+            "numerator": 665,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.006164860225082967,
+              0.00717304199310272
+            ]
+          },
+          "pi0_to_beta_percent": 2.216666666666667,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.9768291666666666,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.815115908360989,
+            3.1511764977009067
+          ]
+        },
+        {
+          "threshold_MeV": 0.5,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00668,
+            "numerator": 668,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.006193732570182839,
+              0.007204167343216094
+            ]
+          },
+          "pi0_to_beta_percent": 2.226666666666667,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.986829166666667,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.8247400233942797,
+            3.1615516144053646
+          ]
+        }
+      ],
+      "material": {
+        "stack_thickness_mm": 20.0,
+        "total_pb_mm": 12.0,
+        "total_plastic_mm": 8.0,
+        "approx_radiation_lengths_if_traversed": 2.1571297087534553,
+        "outer_radius_at_back_mm": 113.71776049346184
+      }
+    },
+    {
+      "geometry": "head_pc_o14",
+      "design": {
+        "name": "head_pc_o14",
+        "n_layer": 31,
+        "n_sector": 60,
+        "segmentation": "bgoegg_published",
+        "geometry_mode": "bgoegg_frustum",
+        "photon_counter": "upstream",
+        "bgo_z_offset_cm": -10,
+        "pc_n_layers": 2,
+        "pc_pb_thickness_mm": 6,
+        "pc_scinti_thickness_mm": 4,
+        "pc_z_front_cm": 51.5,
+        "pc_down_theta_inner_deg": 0.01,
+        "pc_down_theta_outer_deg": 12,
+        "pc_up_theta_inner_deg": 0.01,
+        "pc_up_theta_outer_deg": 14
+      },
+      "source_root": "/gpfs/group/had/sks/Users/yhong/rootfile/beta/build_bgoegg_frustum_output/scan/bgoegg31_zmirror_head_pc_size_scan_s7852026_head_pc_o14_pi0.root",
+      "bgo_ncluster1": {
+        "value": 0.01045,
+        "numerator": 1045,
+        "denominator": 100000,
+        "wilson_95ci": [
+          0.009838268977075505,
+          0.011099341301454551
+        ]
+      },
+      "gamma_intercept_given_bgo": {
+        "value": 0.5712918660287082,
+        "numerator": 597,
+        "denominator": 1045,
+        "wilson_95ci": [
+          0.5410791869680605,
+          0.6009823217060284
+        ]
+      },
+      "pc_veto_given_bgo_at_0p2_MeV": {
+        "value": 0.3875598086124402,
+        "numerator": 405,
+        "denominator": 1045,
+        "wilson_95ci": [
+          0.3584842118545956,
+          0.41745904627687497
+        ]
+      },
+      "threshold_scan": [
+        {
+          "threshold_MeV": 0.1,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00638,
+            "numerator": 638,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.005905127891933796,
+              0.0068927950693326865
+            ]
+          },
+          "pi0_to_beta_percent": 2.126666666666667,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.886829166666667,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.7285384639779324,
+            3.057760856444229
+          ]
+        },
+        {
+          "threshold_MeV": 0.2,
+          "bgo_and_pc_no_hit": {
+            "value": 0.0064,
+            "numerator": 640,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.005924359834840766,
+              0.006913561589901214
+            ]
+          },
+          "pi0_to_beta_percent": 2.1333333333333337,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.8934958333333336,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.734949111613589,
+            3.0646830299670715
+          ]
+        },
+        {
+          "threshold_MeV": 0.5,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00648,
+            "numerator": 648,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.006001299745117387,
+              0.006996615533526577
+            ]
+          },
+          "pi0_to_beta_percent": 2.16,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.9201625,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.7605957483724626,
+            3.0923676778421925
+          ]
+        }
+      ],
+      "material": {
+        "stack_thickness_mm": 20.0,
+        "total_pb_mm": 12.0,
+        "total_plastic_mm": 8.0,
+        "approx_radiation_lengths_if_traversed": 2.1571297087534553,
+        "outer_radius_at_back_mm": 133.39048152110166
+      }
+    },
+    {
+      "geometry": "head_pc_o16",
+      "design": {
+        "name": "head_pc_o16",
+        "n_layer": 31,
+        "n_sector": 60,
+        "segmentation": "bgoegg_published",
+        "geometry_mode": "bgoegg_frustum",
+        "photon_counter": "upstream",
+        "bgo_z_offset_cm": -10,
+        "pc_n_layers": 2,
+        "pc_pb_thickness_mm": 6,
+        "pc_scinti_thickness_mm": 4,
+        "pc_z_front_cm": 51.5,
+        "pc_down_theta_inner_deg": 0.01,
+        "pc_down_theta_outer_deg": 12,
+        "pc_up_theta_inner_deg": 0.01,
+        "pc_up_theta_outer_deg": 16
+      },
+      "source_root": "/gpfs/group/had/sks/Users/yhong/rootfile/beta/build_bgoegg_frustum_output/scan/bgoegg31_zmirror_head_pc_size_scan_s7852026_head_pc_o16_pi0.root",
+      "bgo_ncluster1": {
+        "value": 0.01044,
+        "numerator": 1044,
+        "denominator": 100000,
+        "wilson_95ci": [
+          0.009828567663814944,
+          0.011089043382977365
+        ]
+      },
+      "gamma_intercept_given_bgo": {
+        "value": 0.5718390804597702,
+        "numerator": 597,
+        "denominator": 1044,
+        "wilson_95ci": [
+          0.5416146302859078,
+          0.6015367966187114
+        ]
+      },
+      "pc_veto_given_bgo_at_0p2_MeV": {
+        "value": 0.38697318007662834,
+        "numerator": 404,
+        "denominator": 1044,
+        "wilson_95ci": [
+          0.35789424615027804,
+          0.41688084218645466
+        ]
+      },
+      "threshold_scan": [
+        {
+          "threshold_MeV": 0.1,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00638,
+            "numerator": 638,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.005905127891933796,
+              0.0068927950693326865
+            ]
+          },
+          "pi0_to_beta_percent": 2.126666666666667,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.886829166666667,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.7285384639779324,
+            3.057760856444229
+          ]
+        },
+        {
+          "threshold_MeV": 0.2,
+          "bgo_and_pc_no_hit": {
+            "value": 0.0064,
+            "numerator": 640,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.005924359834840766,
+              0.006913561589901214
+            ]
+          },
+          "pi0_to_beta_percent": 2.1333333333333337,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.8934958333333336,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.734949111613589,
+            3.0646830299670715
+          ]
+        },
+        {
+          "threshold_MeV": 0.5,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00648,
+            "numerator": 648,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.006001299745117387,
+              0.006996615533526577
+            ]
+          },
+          "pi0_to_beta_percent": 2.16,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.9201625,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.7605957483724626,
+            3.0923676778421925
+          ]
+        }
+      ],
+      "material": {
+        "stack_thickness_mm": 20.0,
+        "total_pb_mm": 12.0,
+        "total_plastic_mm": 8.0,
+        "approx_radiation_lengths_if_traversed": 2.1571297087534553,
+        "outer_radius_at_back_mm": 153.40878138096224
+      }
+    },
+    {
+      "geometry": "head_pc_o20",
+      "design": {
+        "name": "head_pc_o20",
+        "n_layer": 31,
+        "n_sector": 60,
+        "segmentation": "bgoegg_published",
+        "geometry_mode": "bgoegg_frustum",
+        "photon_counter": "upstream",
+        "bgo_z_offset_cm": -10,
+        "pc_n_layers": 2,
+        "pc_pb_thickness_mm": 6,
+        "pc_scinti_thickness_mm": 4,
+        "pc_z_front_cm": 51.5,
+        "pc_down_theta_inner_deg": 0.01,
+        "pc_down_theta_outer_deg": 12,
+        "pc_up_theta_inner_deg": 0.01,
+        "pc_up_theta_outer_deg": 20
+      },
+      "source_root": "/gpfs/group/had/sks/Users/yhong/rootfile/beta/build_bgoegg_frustum_output/scan/bgoegg31_zmirror_head_pc_size_scan_s7852026_head_pc_o20_pi0.root",
+      "bgo_ncluster1": {
+        "value": 0.01104,
+        "numerator": 1104,
+        "denominator": 100000,
+        "wilson_95ci": [
+          0.010410900007266698,
+          0.01170666494379051
+        ]
+      },
+      "gamma_intercept_given_bgo": {
+        "value": 0.5797101449275363,
+        "numerator": 640,
+        "denominator": 1104,
+        "wilson_95ci": [
+          0.5503661722684939,
+          0.6085013250603689
+        ]
+      },
+      "pc_veto_given_bgo_at_0p2_MeV": {
+        "value": 0.39945652173913043,
+        "numerator": 441,
+        "denominator": 1104,
+        "wilson_95ci": [
+          0.3709616553685172,
+          0.4286486605007582
+        ]
+      },
+      "threshold_scan": [
+        {
+          "threshold_MeV": 0.1,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00659,
+            "numerator": 659,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.006107123327769415,
+              0.007110783499989783
+            ]
+          },
+          "pi0_to_beta_percent": 2.196666666666667,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.956829166666667,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.7958702759231384,
+            3.130423666663261
+          ]
+        },
+        {
+          "threshold_MeV": 0.2,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00663,
+            "numerator": 663,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.006145613433827945,
+              0.007152290320882245
+            ]
+          },
+          "pi0_to_beta_percent": 2.21,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.9701625,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.808700311275982,
+            3.144259273627415
+          ]
+        },
+        {
+          "threshold_MeV": 0.5,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00667,
+            "numerator": 667,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.006184108168243877,
+              0.007193792513417307
+            ]
+          },
+          "pi0_to_beta_percent": 2.2233333333333336,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.9834958333333335,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.8215318894146257,
+            3.158093337805769
+          ]
+        }
+      ],
+      "material": {
+        "stack_thickness_mm": 20.0,
+        "total_pb_mm": 12.0,
+        "total_plastic_mm": 8.0,
+        "approx_radiation_lengths_if_traversed": 2.1571297087534553,
+        "outer_radius_at_back_mm": 194.72407533241827
+      }
+    },
+    {
+      "geometry": "head_pc_o24",
+      "design": {
+        "name": "head_pc_o24",
+        "n_layer": 31,
+        "n_sector": 60,
+        "segmentation": "bgoegg_published",
+        "geometry_mode": "bgoegg_frustum",
+        "photon_counter": "upstream",
+        "bgo_z_offset_cm": -10,
+        "pc_n_layers": 2,
+        "pc_pb_thickness_mm": 6,
+        "pc_scinti_thickness_mm": 4,
+        "pc_z_front_cm": 51.5,
+        "pc_down_theta_inner_deg": 0.01,
+        "pc_down_theta_outer_deg": 12,
+        "pc_up_theta_inner_deg": 0.01,
+        "pc_up_theta_outer_deg": 24
+      },
+      "source_root": "/gpfs/group/had/sks/Users/yhong/rootfile/beta/build_bgoegg_frustum_output/scan/bgoegg31_zmirror_head_pc_size_scan_s7852026_head_pc_o24_pi0.root",
+      "bgo_ncluster1": {
+        "value": 0.01104,
+        "numerator": 1104,
+        "denominator": 100000,
+        "wilson_95ci": [
+          0.010410900007266698,
+          0.01170666494379051
+        ]
+      },
+      "gamma_intercept_given_bgo": {
+        "value": 0.5797101449275363,
+        "numerator": 640,
+        "denominator": 1104,
+        "wilson_95ci": [
+          0.5503661722684939,
+          0.6085013250603689
+        ]
+      },
+      "pc_veto_given_bgo_at_0p2_MeV": {
+        "value": 0.39945652173913043,
+        "numerator": 441,
+        "denominator": 1104,
+        "wilson_95ci": [
+          0.3709616553685172,
+          0.4286486605007582
+        ]
+      },
+      "threshold_scan": [
+        {
+          "threshold_MeV": 0.1,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00659,
+            "numerator": 659,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.006107123327769415,
+              0.007110783499989783
+            ]
+          },
+          "pi0_to_beta_percent": 2.196666666666667,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.956829166666667,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.7958702759231384,
+            3.130423666663261
+          ]
+        },
+        {
+          "threshold_MeV": 0.2,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00663,
+            "numerator": 663,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.006145613433827945,
+              0.007152290320882245
+            ]
+          },
+          "pi0_to_beta_percent": 2.21,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.9701625,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.808700311275982,
+            3.144259273627415
+          ]
+        },
+        {
+          "threshold_MeV": 0.5,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00667,
+            "numerator": 667,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.006184108168243877,
+              0.007193792513417307
+            ]
+          },
+          "pi0_to_beta_percent": 2.2233333333333336,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.9834958333333335,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.8215318894146257,
+            3.158093337805769
+          ]
+        }
+      ],
+      "material": {
+        "stack_thickness_mm": 20.0,
+        "total_pb_mm": 12.0,
+        "total_plastic_mm": 8.0,
+        "approx_radiation_lengths_if_traversed": 2.1571297087534553,
+        "outer_radius_at_back_mm": 238.19734664006688
+      }
+    },
+    {
+      "geometry": "head_pc_o30",
+      "design": {
+        "name": "head_pc_o30",
+        "n_layer": 31,
+        "n_sector": 60,
+        "segmentation": "bgoegg_published",
+        "geometry_mode": "bgoegg_frustum",
+        "photon_counter": "upstream",
+        "bgo_z_offset_cm": -10,
+        "pc_n_layers": 2,
+        "pc_pb_thickness_mm": 6,
+        "pc_scinti_thickness_mm": 4,
+        "pc_z_front_cm": 51.5,
+        "pc_down_theta_inner_deg": 0.01,
+        "pc_down_theta_outer_deg": 12,
+        "pc_up_theta_inner_deg": 0.01,
+        "pc_up_theta_outer_deg": 30
+      },
+      "source_root": "/gpfs/group/had/sks/Users/yhong/rootfile/beta/build_bgoegg_frustum_output/scan/bgoegg31_zmirror_head_pc_size_scan_s7852026_head_pc_o30_pi0.root",
+      "bgo_ncluster1": {
+        "value": 0.01052,
+        "numerator": 1052,
+        "denominator": 100000,
+        "wilson_95ci": [
+          0.009906182278381517,
+          0.011171422622312776
+        ]
+      },
+      "gamma_intercept_given_bgo": {
+        "value": 0.5741444866920152,
+        "numerator": 604,
+        "denominator": 1052,
+        "wilson_95ci": [
+          0.544047819449422,
+          0.6037016354490832
+        ]
+      },
+      "pc_veto_given_bgo_at_0p2_MeV": {
+        "value": 0.38783269961977185,
+        "numerator": 408,
+        "denominator": 1052,
+        "wilson_95ci": [
+          0.3588475289894898,
+          0.4176340648820025
+        ]
+      },
+      "threshold_scan": [
+        {
+          "threshold_MeV": 0.1,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00642,
+            "numerator": 642,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.0059435929972397996,
+              0.0069343268909776755
+            ]
+          },
+          "pi0_to_beta_percent": 2.1400000000000006,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.9001625000000004,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.7413601657466002,
+            3.071604796992559
+          ]
+        },
+        {
+          "threshold_MeV": 0.2,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00644,
+            "numerator": 644,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.005962827373481904,
+              0.006955090978211068
+            ]
+          },
+          "pi0_to_beta_percent": 2.146666666666667,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.906829166666667,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.7477716244939683,
+            3.0785261594036895
+          ]
+        },
+        {
+          "threshold_MeV": 0.5,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00652,
+            "numerator": 652,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.006039776905420889,
+              0.00703813530017407
+            ]
+          },
+          "pi0_to_beta_percent": 2.1733333333333333,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.933495833333333,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.7734214684736296,
+            3.106207600058023
+          ]
+        }
+      ],
+      "material": {
+        "stack_thickness_mm": 20.0,
+        "total_pb_mm": 12.0,
+        "total_plastic_mm": 8.0,
+        "approx_radiation_lengths_if_traversed": 2.1571297087534553,
+        "outer_radius_at_back_mm": 308.8823940164498
+      }
+    },
+    {
+      "geometry": "head_pc_o36",
+      "design": {
+        "name": "head_pc_o36",
+        "n_layer": 31,
+        "n_sector": 60,
+        "segmentation": "bgoegg_published",
+        "geometry_mode": "bgoegg_frustum",
+        "photon_counter": "upstream",
+        "bgo_z_offset_cm": -10,
+        "pc_n_layers": 2,
+        "pc_pb_thickness_mm": 6,
+        "pc_scinti_thickness_mm": 4,
+        "pc_z_front_cm": 51.5,
+        "pc_down_theta_inner_deg": 0.01,
+        "pc_down_theta_outer_deg": 12,
+        "pc_up_theta_inner_deg": 0.01,
+        "pc_up_theta_outer_deg": 36
+      },
+      "source_root": "/gpfs/group/had/sks/Users/yhong/rootfile/beta/build_bgoegg_frustum_output/scan/bgoegg31_zmirror_head_pc_size_scan_s7852026_head_pc_o36_pi0.root",
+      "bgo_ncluster1": {
+        "value": 0.01051,
+        "numerator": 1051,
+        "denominator": 100000,
+        "wilson_95ci": [
+          0.009896479939451587,
+          0.011161125729504959
+        ]
+      },
+      "gamma_intercept_given_bgo": {
+        "value": 0.5756422454804948,
+        "numerator": 605,
+        "denominator": 1051,
+        "wilson_95ci": [
+          0.5455393746800672,
+          0.6051941774290441
+        ]
+      },
+      "pc_veto_given_bgo_at_0p2_MeV": {
+        "value": 0.390104662226451,
+        "numerator": 410,
+        "denominator": 1051,
+        "wilson_95ci": [
+          0.36106656350911476,
+          0.41994318153991234
+        ]
+      },
+      "threshold_scan": [
+        {
+          "threshold_MeV": 0.1,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00639,
+            "numerator": 639,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.00591474371059599,
+              0.0069031784824082395
+            ]
+          },
+          "pi0_to_beta_percent": 2.1300000000000003,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.8901625,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.7317437368653303,
+            3.06122199413608
+          ]
+        },
+        {
+          "threshold_MeV": 0.2,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00641,
+            "numerator": 641,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.0059339762639578665,
+              0.00692394439252186
+            ]
+          },
+          "pi0_to_beta_percent": 2.1366666666666667,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.8968291666666666,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.7381545879859557,
+            3.0681439641739536
+          ]
+        },
+        {
+          "threshold_MeV": 0.5,
+          "bgo_and_pc_no_hit": {
+            "value": 0.00649,
+            "numerator": 649,
+            "denominator": 100000,
+            "wilson_95ci": [
+              0.006010918587972147,
+              0.007006995922409567
+            ]
+          },
+          "pi0_to_beta_percent": 2.1633333333333336,
+          "pim_to_beta_percent": 0.7601625,
+          "pi_total_to_beta_percent": 2.9234958333333334,
+          "pi_total_to_beta_percent_pc_mc_stat_only_95ci": [
+            2.763802029324049,
+            3.0958278074698558
+          ]
+        }
+      ],
+      "material": {
+        "stack_thickness_mm": 20.0,
+        "total_pb_mm": 12.0,
+        "total_plastic_mm": 8.0,
+        "approx_radiation_lengths_if_traversed": 2.1571297087534553,
+        "outer_radius_at_back_mm": 388.7002524828681
+      }
+    }
+  ],
+  "scope": {
+    "screening_only": true,
+    "reference_factors": "Hong/Kamada TH, TLC, delta-z and branching ratios",
+    "not_included": "optical/electronic response, pile-up, support/readout material, and K18 momentum-resolution change"
+  }
+}

@@ -159,7 +159,6 @@ def bgoegg_frustum_z_extents_cm(
     for type_index in range(backward_count):
         low = math.pi / 2.0 + type_index * delta
         rings.append((low, low + delta, 200.0))
-
     z_values = [
         z_offset_cm + 0.1 * radius_mm * math.cos(theta)
         for low, high, front_radius_mm in rings
@@ -554,9 +553,10 @@ def load_manifest(path: Path) -> dict[str, Any]:
                 f"{name}.photon_counter must be none, downstream, upstream, or two_sided"
             )
         egg_geometry = geometry_mode in {"bgoegg_envelope", "bgoegg_frustum"}
-        if not egg_geometry and photon_counter != "none":
+        if (not egg_geometry and photon_counter != "none"
+                and schema != SCHEMA_V5):
             raise RunManagerError(
-                f"{name}.photon_counter collars require a BGOegg geometry"
+                f"{name}.current BGOC photon_counter requires schema {SCHEMA_V5}"
             )
         if (geometry_mode == "bgoegg_frustum" and photon_counter != "none"
                 and schema != SCHEMA_V5):
@@ -634,25 +634,32 @@ def load_manifest(path: Path) -> dict[str, Any]:
                 f"{name}.photon_counter exceeds the world radial boundary"
             )
         if schema == SCHEMA_V5:
-            if geometry_mode != "bgoegg_frustum":
+            if geometry_mode not in {"current", "bgoegg_frustum"}:
                 raise RunManagerError(
-                    f"{name}: schema {SCHEMA_V5} requires geometry_mode=bgoegg_frustum"
+                    f"{name}: schema {SCHEMA_V5} requires geometry_mode=current "
+                    "or bgoegg_frustum"
                 )
-            downstream_extent_cm, upstream_extent_cm = bgoegg_frustum_z_extents_cm(
-                n_layer, bgo_z_offset_cm
-            )
             clearance_cm = 0.05
-            if (photon_counter in {"downstream", "two_sided"}
-                    and pc_z_front_cm <= downstream_extent_cm + clearance_cm):
-                raise RunManagerError(
-                    f"{name}.downstream photon counter intersects BGOegg: "
-                    f"z_front={pc_z_front_cm}, extent={downstream_extent_cm} cm"
+            if geometry_mode == "bgoegg_frustum":
+                downstream_extent_cm, upstream_extent_cm = bgoegg_frustum_z_extents_cm(
+                    n_layer, bgo_z_offset_cm
                 )
-            if (photon_counter in {"upstream", "two_sided"}
-                    and pc_z_front_cm <= upstream_extent_cm + clearance_cm):
+                if (photon_counter in {"downstream", "two_sided"}
+                        and pc_z_front_cm <= downstream_extent_cm + clearance_cm):
+                    raise RunManagerError(
+                        f"{name}.downstream photon counter intersects BGOegg: "
+                        f"z_front={pc_z_front_cm}, extent={downstream_extent_cm} cm"
+                    )
+                if (photon_counter in {"upstream", "two_sided"}
+                        and pc_z_front_cm <= upstream_extent_cm + clearance_cm):
+                    raise RunManagerError(
+                        f"{name}.upstream photon counter intersects BGOegg: "
+                        f"z_front={pc_z_front_cm}, extent={upstream_extent_cm} cm"
+                    )
+            elif photon_counter != "none" and pc_z_front_cm <= 50.0 + clearance_cm:
                 raise RunManagerError(
-                    f"{name}.upstream photon counter intersects BGOegg: "
-                    f"z_front={pc_z_front_cm}, extent={upstream_extent_cm} cm"
+                    f"{name}.photon counter intersects current spherical BGOC: "
+                    f"z_front={pc_z_front_cm}, extent=50.0 cm"
                 )
         if schema not in {SCHEMA_V4, SCHEMA_V6, SCHEMA_V7} and (
             "theta_min_deg" in item or "theta_max_deg" in item
