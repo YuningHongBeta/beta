@@ -107,6 +107,9 @@ public:
   double PCUpThetaOuterDeg() const { return fPCUpThetaOuterDeg; }
   double PCSquareHoleMm() const { return fPCSquareHoleMm; }
   bool HasPCSquareHole() const { return fPCSquareHoleMm > 0.0; }
+  double PCCircularHoleMm() const { return fPCCircularHoleMm; }
+  bool HasPCCircularHole() const { return fPCCircularHoleMm > 0.0; }
+  bool HasPCHole() const { return HasPCSquareHole() || HasPCCircularHole(); }
   bool BgoZOffsetConfigured() const { return fBgoZOffsetConfigured; }
   double BgoZOffsetCm() const { return fBgoZOffsetCm; }
   double RMinCm() const { return BGOeggGeometry() ? 20.0 : 30.0; }
@@ -196,6 +199,8 @@ private:
             "BETA_PC_UP_THETA_OUTER_DEG", 36.0, 0.02, 85.0)),
         fPCSquareHoleMm(ReadDouble(
             "BETA_PC_SQUARE_HOLE_MM", 0.0, 0.0, 1000.0)),
+        fPCCircularHoleMm(ReadDouble(
+            "BETA_PC_CIRCULAR_HOLE_MM", 0.0, 0.0, 1000.0)),
         fBgoZOffsetConfigured(std::getenv("BETA_BGO_Z_OFFSET_CM") != nullptr),
         fBgoZOffsetCm(ReadDouble("BETA_BGO_Z_OFFSET_CM", 0.0, -10.0, 10.0)),
         fThetaMinConfigured(std::getenv("BETA_BGO_THETA_MIN_DEG") != nullptr),
@@ -258,7 +263,10 @@ private:
           "BETA_PHOTON_COUNTER must be none, downstream, upstream, or two_sided");
     if (fPCPbThicknessMm == 0.0 && fPCScintiThicknessMm == 0.0)
       throw std::runtime_error("Photon counter requires non-zero layer thickness");
-    if (!HasPCSquareHole() &&
+    if (HasPCSquareHole() && HasPCCircularHole())
+      throw std::runtime_error(
+          "Set only one of BETA_PC_SQUARE_HOLE_MM and BETA_PC_CIRCULAR_HOLE_MM");
+    if (!HasPCHole() &&
         (fPCDownThetaInnerDeg >= fPCDownThetaOuterDeg ||
          fPCUpThetaInnerDeg >= fPCUpThetaOuterDeg))
       throw std::runtime_error(
@@ -378,6 +386,7 @@ private:
   double fPCUpThetaInnerDeg;
   double fPCUpThetaOuterDeg;
   double fPCSquareHoleMm;
+  double fPCCircularHoleMm;
   bool fBgoZOffsetConfigured;
   double fBgoZOffsetCm;
   bool fThetaMinConfigured;

@@ -167,11 +167,11 @@ std::vector<double> evaluateFile(
 
 SampleScores evaluateSample(
     const fs::path &directory, const GeometrySpec &geometry, bool includePc,
-    int split, TMVA::Reader &reader,
+    const std::string &sampleTag, int split, TMVA::Reader &reader,
     std::array<float, kMaximumFeatureCount> &values) {
   const auto path = [&](const std::string &species) {
     return directory /
-        (geometry.prefix + "_balanced_pc3_h60_s7232026_" + species + ".bgo2");
+        (geometry.prefix + "_" + sampleTag + "_" + species + ".bgo2");
   };
   return {evaluateFile(path("e"), geometry, includePc, split, reader, values),
           evaluateFile(path("pim"), geometry, includePc, split, reader, values),
@@ -286,12 +286,13 @@ double thresholdForTotalRequirement(const SampleScores &scores, bool upper) {
 }
 
 Counts baselineCounts(const fs::path &directory,
-                      const GeometrySpec &geometry, int split) {
+                      const GeometrySpec &geometry,
+                      const std::string &sampleTag, int split) {
   const auto countSpecies = [&](const std::string &species, bool keep) {
     std::uint64_t selected = 0;
     std::uint64_t total = 0;
     const fs::path path = directory /
-        (geometry.prefix + "_balanced_pc3_h60_s7232026_" + species + ".bgo2");
+        (geometry.prefix + "_" + sampleTag + "_" + species + ".bgo2");
     forEachRow(path, geometry,
                [&](std::int64_t eventId, const std::vector<float> &row) {
       if ((eventId & 3) != split) return;
@@ -356,22 +357,28 @@ void writeScores(const fs::path &path, const SampleScores &scores,
 
 int main(int argc, char **argv) {
   try {
-    if (argc != 4 && argc != 5) {
+    if (argc < 4 || argc > 7) {
       std::cerr << "usage: balanced_pc3_pim_bdt_study PROJECT INPUT_BGO2_DIR "
-                   "SCRATCH_WORK_DIR\n";
+                   "SCRATCH_WORK_DIR [RUN_MODE [SAMPLE_TAG [OUTPUT_TAG]]]\n";
       return 2;
     }
     const fs::path project = fs::path(argv[1]);
     const fs::path inputs = fs::path(argv[2]);
     const fs::path work = fs::path(argv[3]);
-    const std::string runMode = argc == 5 ? std::string(argv[4]) : "--train-all";
-    if (runMode != "--train-all" && runMode != "--reuse" &&
+    const std::string runMode = argc >= 5 ? std::string(argv[4]) : "--train-all";
+    const std::string sampleTag = argc >= 6
+        ? std::string(argv[5]) : "balanced_pc3_h60_s7232026";
+    const std::string outputTag = argc >= 7
+        ? std::string(argv[6]) : "balanced_pc3_pim_bdt_s7232026";
+    if (runMode != "--train-all" && runMode != "--train-weighted" &&
+        runMode != "--reuse" &&
         runMode != "--train-missing") {
-      throw std::runtime_error("run mode must be --train-all, --reuse, or --train-missing");
+      throw std::runtime_error(
+          "run mode must be --train-all, --train-weighted, --reuse, or --train-missing");
     }
     const fs::path models = project / "analysis/models";
     const fs::path result = project /
-        "analysis/results/bgoegg_v1/balanced_pc3_pim_bdt_s7232026.json";
+        ("analysis/results/bgoegg_v1/" + outputTag + ".json");
     fs::create_directories(work);
     fs::create_directories(models);
     fs::create_directories(result.parent_path());
@@ -381,7 +388,8 @@ int main(int argc, char **argv) {
     if (!json) throw std::runtime_error("cannot create " + result.string());
     json << std::setprecision(12);
     json << "{\n  \"status\":\"within-seed untouched-test study\",\n"
-         << "  \"tag\":\"balanced_pc3_pim_bdt_s7232026\",\n"
+         << "  \"tag\":\"" << outputTag << "\",\n"
+         << "  \"sample_tag\":\"" << sampleTag << "\",\n"
          << "  \"split\":{\"training\":\"eventID mod4 0 or 1, 50000/species\","
          << "\"validation\":\"eventID mod4 2, 25000/species\","
          << "\"test\":\"eventID mod4 3, 25000/species\"},\n"
@@ -400,8 +408,8 @@ int main(int argc, char **argv) {
     for (std::size_t geometryIndex = 0; geometryIndex < kGeometries.size();
          ++geometryIndex) {
       const auto &geometry = kGeometries[geometryIndex];
-      const Counts validationBaseline = baselineCounts(inputs, geometry, 2);
-      const Counts testBaseline = baselineCounts(inputs, geometry, 3);
+      const Counts validationBaseline = baselineCounts(inputs, geometry, sampleTag, 2);
+      const Counts testBaseline = baselineCounts(inputs, geometry, sampleTag, 3);
       if (geometryIndex) json << ",\n";
       json << "    \"" << geometry.name << "\":{\n      \"baseline_validation\":";
       writeCounts(json, validationBaseline);
@@ -409,7 +417,9 @@ int main(int argc, char **argv) {
       writeCounts(json, testBaseline);
       json << ",\n      \"models\":{\n";
 
-      for (int modelIndex = 0; modelIndex < 3; ++modelIndex) {
+      bool wroteModel = false;
+      const int firstModel = runMode == "--train-weighted" ? 2 : 0;
+      for (int modelIndex = firstModel; modelIndex < 3; ++modelIndex) {
         const bool includePc = modelIndex != 0;
         const bool weightedTotal = modelIndex == 2;
         const std::string featureSet = modelIndex == 0
@@ -420,16 +430,21 @@ int main(int argc, char **argv) {
         fs::create_directories(modelWork);
         const auto inputPath = [&](const std::string &species) {
           return inputs / (geometry.prefix +
-              "_balanced_pc3_h60_s7232026_" + species + ".bgo2");
+              "_" + sampleTag + "_" + species + ".bgo2");
         };
         const fs::path trainingRoot = modelWork / "tmva_training.root";
         const fs::path generatedWeight = modelWork / "dataset/weights" /
             (factoryPrefix + geometry.prefix + "_" + featureSet + "_" + kMethod +
              ".weights.xml");
-        const fs::path savedWeight = models /
-            ("balanced_pc3_" + geometry.prefix + "_" + featureSet +
-             "_bdtg_s7232026.weights.xml");
+        const std::string savedWeightName =
+            outputTag == "balanced_pc3_pim_bdt_s7232026"
+            ? ("balanced_pc3_" + geometry.prefix + "_" + featureSet +
+               "_bdtg_s7232026.weights.xml")
+            : (outputTag + "_" + geometry.prefix + "_" + featureSet +
+               ".weights.xml");
+        const fs::path savedWeight = models / savedWeightName;
         const bool trainThis = runMode == "--train-all" ||
+            runMode == "--train-weighted" ||
             (runMode == "--train-missing" && !fs::exists(savedWeight));
         if (runMode == "--reuse" && !fs::exists(savedWeight)) {
           throw std::runtime_error("missing saved weight " + savedWeight.string());
@@ -497,11 +512,11 @@ int main(int argc, char **argv) {
         }
         reader.BookMVA(kMethod, savedWeight.c_str());
         const SampleScores train = evaluateSample(
-            inputs, geometry, includePc, 0, reader, values);
+            inputs, geometry, includePc, sampleTag, 0, reader, values);
         const SampleScores validation = evaluateSample(
-            inputs, geometry, includePc, 2, reader, values);
+            inputs, geometry, includePc, sampleTag, 2, reader, values);
         const SampleScores test = evaluateSample(
-            inputs, geometry, includePc, 3, reader, values);
+            inputs, geometry, includePc, sampleTag, 3, reader, values);
         const double targetKeep = static_cast<double>(validationBaseline.electronKeep) /
                                   validationBaseline.denominator;
         const double threshold =
@@ -516,7 +531,8 @@ int main(int argc, char **argv) {
             work / (geometry.prefix + "_" + featureSet + "_test.bdt2");
         writeScores(scorePath, test, threshold);
 
-        if (modelIndex) json << ",\n";
+        if (wroteModel) json << ",\n";
+        wroteModel = true;
         json << "        \"" << featureSet << "\":{\"n_features\":"
              << nFeature << ",\"training_background\":\""
              << (weightedTotal

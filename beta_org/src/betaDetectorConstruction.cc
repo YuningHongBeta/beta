@@ -395,13 +395,15 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
 
       const G4double pcSquareHoleHalf =
           config.HasPCSquareHole() ? config.PCSquareHoleMm() / 2. * mm : 0.;
+      const G4double pcCircularHoleRadius =
+          config.HasPCCircularHole() ? config.PCCircularHoleMm() / 2. * mm : 0.;
 
       // Legacy PCDown means the +z endcap.  The incident beam travels +z ->
       // -z, so this is physically upstream (the small BGOC opening).
       if (config.HasDownstreamPhotonCounter())
       {
         const G4double tanInner =
-            config.HasPCSquareHole() ? 0. :
+            config.HasPCHole() ? 0. :
             std::tan(config.PCDownThetaInnerDeg() * deg);
         const G4double tanOuter =
             std::tan(config.PCDownThetaOuterDeg() * deg);
@@ -434,6 +436,17 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
             pcScintiS = new G4SubtractionSolid(
                 "PCScintiS_" + suffix, pcScintiCons, holeSc);
           }
+          else if (config.HasPCCircularHole())
+          {
+            auto holePb = new G4Tubs("PCCircularHolePb_" + suffix,
+                0., pcCircularHoleRadius, pcPbThickness, 0.*deg, 360.*deg);
+            pcPbS = new G4SubtractionSolid(
+                "PCLeadS_" + suffix, pcPbCons, holePb);
+            auto holeSc = new G4Tubs("PCCircularHoleSc_" + suffix,
+                0., pcCircularHoleRadius, pcScintiThickness, 0.*deg, 360.*deg);
+            pcScintiS = new G4SubtractionSolid(
+                "PCScintiS_" + suffix, pcScintiCons, holeSc);
+          }
           auto pcPbLV = new G4LogicalVolume(
               pcPbS, G4Material::GetMaterial("G4_Pb"),
               "PCLeadLV_" + suffix);
@@ -456,7 +469,7 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
       if (config.HasUpstreamPhotonCounter())
       {
         const G4double tanInner =
-            config.HasPCSquareHole() ? 0. :
+            config.HasPCHole() ? 0. :
             std::tan(config.PCUpThetaInnerDeg() * deg);
         const G4double tanOuter = std::tan(config.PCUpThetaOuterDeg() * deg);
         for (G4int layer = 0; layer < pcNLayers; ++layer)
@@ -489,6 +502,17 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
             pcUpScintiS = new G4SubtractionSolid(
                 "PCUpScintiS_" + suffix, pcUpScintiCons, holeUpSc);
           }
+          else if (config.HasPCCircularHole())
+          {
+            auto holeUpPb = new G4Tubs("PCUpCircularHolePb_" + suffix,
+                0., pcCircularHoleRadius, pcPbThickness, 0.*deg, 360.*deg);
+            pcUpPbS = new G4SubtractionSolid(
+                "PCUpLeadS_" + suffix, pcUpPbCons, holeUpPb);
+            auto holeUpSc = new G4Tubs("PCUpCircularHoleSc_" + suffix,
+                0., pcCircularHoleRadius, pcScintiThickness, 0.*deg, 360.*deg);
+            pcUpScintiS = new G4SubtractionSolid(
+                "PCUpScintiS_" + suffix, pcUpScintiCons, holeUpSc);
+          }
           auto pcUpPbLV = new G4LogicalVolume(
               pcUpPbS, G4Material::GetMaterial("G4_Pb"),
               "PCUpLeadLV_" + suffix);
@@ -514,6 +538,8 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
              << "--" << config.PCUpThetaOuterDeg();
       if (config.HasPCSquareHole())
         G4cout << " square_hole_mm=" << config.PCSquareHoleMm();
+      if (config.HasPCCircularHole())
+        G4cout << " circular_hole_diameter_mm=" << config.PCCircularHoleMm();
       G4cout << G4endl;
     }
   }
