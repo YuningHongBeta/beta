@@ -1,0 +1,11 @@
+{
+  "status":"independent-seed frozen-cut confirmation",
+  "tag":"balanced_pc3_ml_confirm_s7242026",
+  "development_seed":7232026,
+  "confirmation_seed":7242026,
+  "events_per_species":100000,
+  "branching_requirement":{"beta_br":0.00048,"pi0_factor":3.33333333333333,"pim_factor":0.0375,"formula":"3.33333333333333*pi0_survival + 0.0375*pim_survival","maximum":0.04},
+  "selection":{"BGOC":"T3 nCl4 == 1 and pcUpE_MeV < 0.2","BGOegg31":"BR-weighted BDTG; score > frozen guarded-validation threshold"},
+  "bgoegg31_frozen_threshold":0.953974177251,
+  "results":{"BGOC":{"denominator_per_species":100000,"electron_keep_count":90249,"electron_keep":0.90249,"pim_reject_count":72811,"pim_reject":0.72811,"pi0_reject_count":99147,"pi0_reject":0.99147,"pi_total_to_beta":0.0386292083333,"pi_total_to_beta_mc_stat_upper95":0.0406968288465},"BGOegg31":{"denominator_per_species":100000,"electron_keep_count":73096,"electron_keep":0.73096,"pim_reject_count":87255,"pim_reject":0.87255,"pi0_reject_count":99113,"pi0_reject":0.99113,"pi_total_to_beta":0.0343460416667,"pi_total_to_beta_mc_stat_upper95":0.03642506428}}
+}
