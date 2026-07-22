@@ -1,0 +1,250 @@
+{
+  "tag": "balanced_pc3_hole60_s7232026",
+  "selection": "T3 nCl4 == 1 and physical-downstream PC Edep < 0.2 MeV",
+  "pc": {
+    "side": "physical downstream only (legacy beta branch PCUp)",
+    "layers": 3,
+    "per_layer": "Pb 6 mm + plastic 4 mm",
+    "square_hole_mm": 60
+  },
+  "samples": {
+    "BGOC": {
+      "e": {
+        "root": "/gpfs/home/had/yhong/geant4/beta/beta_org/build_bgoegg_frustum/output/scan/bgoc_balanced_pc3_h60_s7232026_e.root",
+        "cache": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/balanced_pc3_hole60_s7232026/bgoc_balanced_pc3_h60_s7232026_e.bgo2",
+        "n": 100000,
+        "n_bgo_ncluster1": 90331,
+        "n_selected": 90181,
+        "selected_fraction": 0.90181,
+        "selected_wilson95": [
+          0.8999502034589062,
+          0.9036389269955598
+        ],
+        "rejected_fraction": 0.09819,
+        "rejected_wilson95": [
+          0.09636107300444019,
+          0.1000497965410938
+        ],
+        "conditional_pc_veto_count": 150,
+        "conditional_pc_veto_fraction": 0.0016605594978468079,
+        "ncluster_hist_0_1_2_3_4_5plus": [
+          1143,
+          90331,
+          7969,
+          514,
+          39,
+          4
+        ],
+        "pc_edep_quantile_mev": {
+          "0.0": 0.0,
+          "0.5": 0.0,
+          "0.9": 0.0,
+          "0.99": 0.0,
+          "1.0": 15.230459213256836
+        },
+        "threshold_mev_per_bgo_cell": 3,
+        "pc_threshold_mev": 0.2,
+        "geometry_mode": 0,
+        "n_layer": 15,
+        "n_sector": 15
+      },
+      "pim": {
+        "root": "/gpfs/home/had/yhong/geant4/beta/beta_org/build_bgoegg_frustum/output/scan/bgoc_balanced_pc3_h60_s7232026_pim.root",
+        "cache": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/balanced_pc3_hole60_s7232026/bgoc_balanced_pc3_h60_s7232026_pim.bgo2",
+        "n": 100000,
+        "n_bgo_ncluster1": 27971,
+        "n_selected": 27358,
+        "selected_fraction": 0.27358,
+        "selected_wilson95": [
+          0.2708257160398009,
+          0.2763516789541013
+        ],
+        "rejected_fraction": 0.7264200000000001,
+        "rejected_wilson95": [
+          0.7236483210458987,
+          0.7291742839601991
+        ],
+        "conditional_pc_veto_count": 613,
+        "conditional_pc_veto_fraction": 0.02191555539666083,
+        "ncluster_hist_0_1_2_3_4_5plus": [
+          925,
+          27971,
+          29994,
+          19880,
+          11267,
+          9963
+        ],
+        "pc_edep_quantile_mev": {
+          "0.0": 0.0,
+          "0.5": 0.0,
+          "0.9": 0.008186268620193005,
+          "0.99": 1.1322141885757446,
+          "1.0": 36.492034912109375
+        },
+        "threshold_mev_per_bgo_cell": 3,
+        "pc_threshold_mev": 0.2,
+        "geometry_mode": 0,
+        "n_layer": 15,
+        "n_sector": 15
+      },
+      "pi0": {
+        "root": "/gpfs/home/had/yhong/geant4/beta/beta_org/build_bgoegg_frustum/output/scan/bgoc_balanced_pc3_h60_s7232026_pi0.root",
+        "cache": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/balanced_pc3_hole60_s7232026/bgoc_balanced_pc3_h60_s7232026_pi0.bgo2",
+        "n": 100000,
+        "n_bgo_ncluster1": 1672,
+        "n_selected": 864,
+        "selected_fraction": 0.00864,
+        "selected_wilson95": [
+          0.00808496001978835,
+          0.009232789314209257
+        ],
+        "rejected_fraction": 0.99136,
+        "rejected_wilson95": [
+          0.9907672106857908,
+          0.9919150399802117
+        ],
+        "conditional_pc_veto_count": 808,
+        "conditional_pc_veto_fraction": 0.48325358851674644,
+        "ncluster_hist_0_1_2_3_4_5plus": [
+          4,
+          1672,
+          84966,
+          12102,
+          1121,
+          135
+        ],
+        "pc_edep_quantile_mev": {
+          "0.0": 0.0,
+          "0.5": 0.0,
+          "0.9": 0.0,
+          "0.99": 0.7631242275238037,
+          "1.0": 15.028960227966309
+        },
+        "threshold_mev_per_bgo_cell": 3,
+        "pc_threshold_mev": 0.2,
+        "geometry_mode": 0,
+        "n_layer": 15,
+        "n_sector": 15
+      }
+    },
+    "BGOegg31": {
+      "e": {
+        "root": "/gpfs/home/had/yhong/geant4/beta/beta_org/build_bgoegg_frustum/output/scan/bgoegg31_balanced_pc3_h60_s7232026_e.root",
+        "cache": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/balanced_pc3_hole60_s7232026/bgoegg31_balanced_pc3_h60_s7232026_e.bgo2",
+        "n": 100000,
+        "n_bgo_ncluster1": 67111,
+        "n_selected": 67014,
+        "selected_fraction": 0.67014,
+        "selected_wilson95": [
+          0.6672194718245356,
+          0.6730474569615147
+        ],
+        "rejected_fraction": 0.32986000000000004,
+        "rejected_wilson95": [
+          0.3269525430384853,
+          0.33278052817546444
+        ],
+        "conditional_pc_veto_count": 97,
+        "conditional_pc_veto_fraction": 0.0014453666314017076,
+        "ncluster_hist_0_1_2_3_4_5plus": [
+          1131,
+          67111,
+          25762,
+          5118,
+          769,
+          109
+        ],
+        "pc_edep_quantile_mev": {
+          "0.0": 0.0,
+          "0.5": 0.0,
+          "0.9": 0.0,
+          "0.99": 0.0,
+          "1.0": 11.36764907836914
+        },
+        "threshold_mev_per_bgo_cell": 3,
+        "pc_threshold_mev": 0.2,
+        "geometry_mode": 2,
+        "n_layer": 31,
+        "n_sector": 60
+      },
+      "pim": {
+        "root": "/gpfs/home/had/yhong/geant4/beta/beta_org/build_bgoegg_frustum/output/scan/bgoegg31_balanced_pc3_h60_s7232026_pim.root",
+        "cache": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/balanced_pc3_hole60_s7232026/bgoegg31_balanced_pc3_h60_s7232026_pim.bgo2",
+        "n": 100000,
+        "n_bgo_ncluster1": 20311,
+        "n_selected": 20104,
+        "selected_fraction": 0.20104,
+        "selected_wilson95": [
+          0.19856750368433526,
+          0.2035354642839404
+        ],
+        "rejected_fraction": 0.79896,
+        "rejected_wilson95": [
+          0.7964645357160596,
+          0.8014324963156647
+        ],
+        "conditional_pc_veto_count": 207,
+        "conditional_pc_veto_fraction": 0.01019152183545862,
+        "ncluster_hist_0_1_2_3_4_5plus": [
+          1090,
+          20311,
+          21324,
+          17250,
+          13699,
+          26326
+        ],
+        "pc_edep_quantile_mev": {
+          "0.0": 0.0,
+          "0.5": 0.0,
+          "0.9": 0.0,
+          "0.99": 0.5426452159881592,
+          "1.0": 31.41436004638672
+        },
+        "threshold_mev_per_bgo_cell": 3,
+        "pc_threshold_mev": 0.2,
+        "geometry_mode": 2,
+        "n_layer": 31,
+        "n_sector": 60
+      },
+      "pi0": {
+        "root": "/gpfs/home/had/yhong/geant4/beta/beta_org/build_bgoegg_frustum/output/scan/bgoegg31_balanced_pc3_h60_s7232026_pi0.root",
+        "cache": "/gpfs/home/had/yhong/geant4/beta/beta_org/tmp/balanced_pc3_hole60_s7232026/bgoegg31_balanced_pc3_h60_s7232026_pi0.bgo2",
+        "n": 100000,
+        "n_bgo_ncluster1": 1148,
+        "n_selected": 705,
+        "selected_fraction": 0.00705,
+        "selected_wilson95": [
+          0.006550031341884075,
+          0.0075878401458115445
+        ],
+        "rejected_fraction": 0.99295,
+        "rejected_wilson95": [
+          0.9924121598541884,
+          0.993449968658116
+        ],
+        "conditional_pc_veto_count": 443,
+        "conditional_pc_veto_fraction": 0.3858885017421603,
+        "ncluster_hist_0_1_2_3_4_5plus": [
+          4,
+          1148,
+          47191,
+          34829,
+          12904,
+          3924
+        ],
+        "pc_edep_quantile_mev": {
+          "0.0": 0.0,
+          "0.5": 0.0,
+          "0.9": 0.0,
+          "0.99": 0.0,
+          "1.0": 15.362966537475586
+        },
+        "threshold_mev_per_bgo_cell": 3,
+        "pc_threshold_mev": 0.2,
+        "geometry_mode": 2,
+        "n_layer": 31,
+        "n_sector": 60
+      }
+    }
+  }
+}

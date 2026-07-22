@@ -33,6 +33,7 @@
 #include "G4PhysicalVolumeStore.hh"
 #include "G4LogicalVolumeStore.hh"
 #include "G4SolidStore.hh"
+#include "G4SubtractionSolid.hh"
 
 #include "G4SDManager.hh"
 #include "G4VSensitiveDetector.hh"
@@ -392,11 +393,15 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
       pcScintiVis->SetVisibility(true);
       fVisAttributes.push_back(pcScintiVis);
 
+      const G4double pcSquareHoleHalf =
+          config.HasPCSquareHole() ? config.PCSquareHoleMm() / 2. * mm : 0.;
+
       // Legacy PCDown means the +z endcap.  The incident beam travels +z ->
       // -z, so this is physically upstream (the small BGOC opening).
       if (config.HasDownstreamPhotonCounter())
       {
         const G4double tanInner =
+            config.HasPCSquareHole() ? 0. :
             std::tan(config.PCDownThetaInnerDeg() * deg);
         const G4double tanOuter =
             std::tan(config.PCDownThetaOuterDeg() * deg);
@@ -406,16 +411,29 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
           const G4double leadBack = leadFront + pcPbThickness;
           const G4double scintiBack = leadBack + pcScintiThickness;
           const auto suffix = std::to_string(layer);
-          auto pcPbS = new G4Cons(
-              "PCLeadS_" + suffix,
+          auto pcPbCons = new G4Cons(
+              "PCLeadCons_" + suffix,
               leadFront * tanInner, leadFront * tanOuter,
               leadBack * tanInner, leadBack * tanOuter,
               pcPbThickness / 2., 0.*deg, 360.*deg);
-          auto pcScintiS = new G4Cons(
-              "PCScintiS_" + suffix,
+          auto pcScintiCons = new G4Cons(
+              "PCScintiCons_" + suffix,
               leadBack * tanInner, leadBack * tanOuter,
               scintiBack * tanInner, scintiBack * tanOuter,
               pcScintiThickness / 2., 0.*deg, 360.*deg);
+          G4VSolid *pcPbS = pcPbCons;
+          G4VSolid *pcScintiS = pcScintiCons;
+          if (config.HasPCSquareHole())
+          {
+            auto holePb = new G4Box("PCHolePb_" + suffix,
+                pcSquareHoleHalf, pcSquareHoleHalf, pcPbThickness);
+            pcPbS = new G4SubtractionSolid(
+                "PCLeadS_" + suffix, pcPbCons, holePb);
+            auto holeSc = new G4Box("PCHoleSc_" + suffix,
+                pcSquareHoleHalf, pcSquareHoleHalf, pcScintiThickness);
+            pcScintiS = new G4SubtractionSolid(
+                "PCScintiS_" + suffix, pcScintiCons, holeSc);
+          }
           auto pcPbLV = new G4LogicalVolume(
               pcPbS, G4Material::GetMaterial("G4_Pb"),
               "PCLeadLV_" + suffix);
@@ -437,7 +455,9 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
       // large BGOC opening).  Keep the names for ROOT compatibility.
       if (config.HasUpstreamPhotonCounter())
       {
-        const G4double tanInner = std::tan(config.PCUpThetaInnerDeg() * deg);
+        const G4double tanInner =
+            config.HasPCSquareHole() ? 0. :
+            std::tan(config.PCUpThetaInnerDeg() * deg);
         const G4double tanOuter = std::tan(config.PCUpThetaOuterDeg() * deg);
         for (G4int layer = 0; layer < pcNLayers; ++layer)
         {
@@ -446,16 +466,29 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
           const G4double scintiFar = leadFar + pcScintiThickness;
           const auto suffix = std::to_string(layer);
           // Local -z is the far face for a volume placed on global -z.
-          auto pcUpPbS = new G4Cons(
-              "PCUpLeadS_" + suffix,
+          auto pcUpPbCons = new G4Cons(
+              "PCUpLeadCons_" + suffix,
               leadFar * tanInner, leadFar * tanOuter,
               leadNear * tanInner, leadNear * tanOuter,
               pcPbThickness / 2., 0.*deg, 360.*deg);
-          auto pcUpScintiS = new G4Cons(
-              "PCUpScintiS_" + suffix,
+          auto pcUpScintiCons = new G4Cons(
+              "PCUpScintiCons_" + suffix,
               scintiFar * tanInner, scintiFar * tanOuter,
               leadFar * tanInner, leadFar * tanOuter,
               pcScintiThickness / 2., 0.*deg, 360.*deg);
+          G4VSolid *pcUpPbS = pcUpPbCons;
+          G4VSolid *pcUpScintiS = pcUpScintiCons;
+          if (config.HasPCSquareHole())
+          {
+            auto holeUpPb = new G4Box("PCUpHolePb_" + suffix,
+                pcSquareHoleHalf, pcSquareHoleHalf, pcPbThickness);
+            pcUpPbS = new G4SubtractionSolid(
+                "PCUpLeadS_" + suffix, pcUpPbCons, holeUpPb);
+            auto holeUpSc = new G4Box("PCUpHoleSc_" + suffix,
+                pcSquareHoleHalf, pcSquareHoleHalf, pcScintiThickness);
+            pcUpScintiS = new G4SubtractionSolid(
+                "PCUpScintiS_" + suffix, pcUpScintiCons, holeUpSc);
+          }
           auto pcUpPbLV = new G4LogicalVolume(
               pcUpPbS, G4Material::GetMaterial("G4_Pb"),
               "PCUpLeadLV_" + suffix);
@@ -478,7 +511,10 @@ G4VPhysicalVolume *betaDetectorConstruction::DefineVolumes()
              << " down_theta_deg=" << config.PCDownThetaInnerDeg()
              << "--" << config.PCDownThetaOuterDeg()
              << " up_theta_deg=" << config.PCUpThetaInnerDeg()
-             << "--" << config.PCUpThetaOuterDeg() << G4endl;
+             << "--" << config.PCUpThetaOuterDeg();
+      if (config.HasPCSquareHole())
+        G4cout << " square_hole_mm=" << config.PCSquareHoleMm();
+      G4cout << G4endl;
     }
   }
 
